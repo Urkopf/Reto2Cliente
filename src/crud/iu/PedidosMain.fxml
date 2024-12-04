@@ -26,9 +26,9 @@
             <center>
                 <VBox spacing="10">
                     <HBox fx:id="HBox" alignment="CENTER_LEFT" spacing="10">
-                        <Button fx:id="botonAgregar" minWidth="30" text="+" />
+                        <Button fx:id="botonAgregar" minWidth="30" text="Añadir" />
                         <TextField promptText="Buscar" HBox.hgrow="ALWAYS" />
-                        <Button fx:id="botonBusqueda" minWidth="30" text="">
+                        <Button fx:id="botonBusqueda" minWidth="30" text="Buscar">
                             <graphic>
                                 <ImageView>
                                     <Image url="@../resources/iconos/search.png" />
@@ -66,9 +66,15 @@
                             <Insets />
                         </GridPane.margin>
                     </Pagination>
-
+                    
                     <!-- Botón Ver -->
-                    <Button text="Ver" GridPane.columnIndex="2" GridPane.halignment="RIGHT">
+                    <Button text="Eliminar" GridPane.columnIndex="2" GridPane.halignment="RIGHT">
+                        <GridPane.margin>
+                            <Insets right="20.0" />
+                        </GridPane.margin>
+                    </Button>
+                    <!-- Botón Ver -->
+                    <Button text="Detalles" GridPane.columnIndex="2" GridPane.halignment="RIGHT">
                         <GridPane.margin>
                             <Insets right="20.0" />
                         </GridPane.margin>
