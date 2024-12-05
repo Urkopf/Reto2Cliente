@@ -226,3 +226,7 @@ TableView {
     -fx-background-color: rgba(74, 74, 74, 0.8); /* Fondo de fila seleccionada */
     -fx-text-fill: #FFFFFF;                      /* Texto blanco en fila seleccionada */
 }
+
+.pagination .page-information {
+    -fx-opacity: 0;
+}
