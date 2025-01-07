@@ -5,6 +5,7 @@
  */
 package crud.iu.controladores;
 
+import crud.objetosTransferibles.Usuario;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
@@ -58,7 +59,7 @@ public class PedidosMainController implements Initializable {
         // TODO
     }
 
-    public void setUser(Usuario usuario) {
+    public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
 
