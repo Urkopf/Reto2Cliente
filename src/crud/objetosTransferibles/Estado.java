@@ -3,4 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package crud.controladores;
+package crud.objetosTransferibles;
+
+/**
+ *
+ * @author Urko
+ */
+public enum Estado {
+    PREPARACION, ENVIADO, CANCELADO, INDICENCIA, COMPLETADO
+}
