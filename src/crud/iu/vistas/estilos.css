@@ -9,14 +9,14 @@ AnchorPane {
     -fx-background-position: center;
 }
 
-GridPane {
+/*GridPane {
     -fx-padding: 20;
     -fx-background-color: rgba(58, 58, 58, 0.5);
     -fx-border-radius: 10;
     -fx-background-radius: 10;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 10, 0, 0, 5);
-    /*-fx-effect: gaussian-blur(10);*/
-}
+    /*-fx-effect: gaussian-blur(10);
+}*/
 
 Label {
     -fx-text-fill: #FFFFFF;
@@ -26,8 +26,6 @@ Label {
 }
 
 TextField, PasswordField {
-    -fx-pref-width: 400px;
-    -fx-padding: 15;
     -fx-background-radius: 5;
     -fx-font-size: 18px;
     -fx-background-color: rgba(74, 74, 74, 0.8);
@@ -55,12 +53,9 @@ TextField:focused, PasswordField:focused {
 Button {
     -fx-background-color: rgba(90, 90, 90, 0.8);
     -fx-text-fill: #FFFFFF;
-    -fx-padding: 10;
     -fx-font-size: 18px;
     -fx-background-radius: 5;
     -fx-cursor: hand;
-    -fx-pref-width: 330px;
-    -fx-pref-height: 55px;
     -fx-font-family: "Protest Strike";
 }
 
@@ -97,7 +92,7 @@ VBox {
     -fx-text-fill: #E0E0E0;
     -fx-background-color: rgba(58, 58, 58, 0.5);
     -fx-border-radius: 5;
-    
+
 }
 
 .custom-hyperlink:pressed {
@@ -150,6 +145,88 @@ Button.mostrarPass:pressed {
     -fx-pref-height: 30;
 }
 
+/* Estilo general para MenuBar */
+MenuBar {
+    -fx-text-fill: #FFFFFF;
+    -fx-background-color: rgba(58, 58, 58, 0.8); /* Fondo oscuro semi-transparente */
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 10, 0, 0, 5);
+    -fx-font-family: "Protest Strike"; /* Fuente personalizada */
+    -fx-font-size: 18px;
+}
+
+/* Estilo para los menús (texto visible en MenuBar) */
+Menu {
+
+    -fx-font-family: "Protest Strike";
+    -fx-font-size: 18px;
+}
+
+/* Estilo para los ítems dentro de los menús */
+MenuItem {
+    -fx-text-fill: #FFFFFF; /* Fuerza el texto en blanco */
+    -fx-font-family: "Protest Strike";
+    -fx-font-size: 16px;
+    -fx-background-color: transparent; /* Fondo transparente por defecto */
+}
 
 
 
+MenuItem:hover {
+    -fx-background-color: #8A2BE2;
+    -fx-text-fill: #FFFFFF; /* Asegura el contraste del texto */
+}
+
+MenuItem:pressed {
+    -fx-background-color: #4A148C; /* Fondo más oscuro al presionar */
+}
+
+/* Ajuste adicional para asegurar que los menús desplegables también muestren texto en blanco */
+.context-menu {
+    -fx-text-fill: #FFFFFF; /* Texto en blanco para el menú contextual */
+    -fx-font-family: "Protest Strike";
+    -fx-font-size: 16px;
+    -fx-background-color: rgba(58, 58, 58, 0.8); /* Fondo del menú */
+}
+
+MenuBar, Menu, MenuItem .label-text, .label{
+    -fx-text-fill: #FFFFFF; /* Fuerza el texto blanco en todos los menús */
+}
+
+/* Estilo general para TableView */
+TableView {
+    -fx-background-color: transparent; /* Fondo transparente */
+    -fx-border-color: transparent;    /* Sin bordes visibles */
+    -fx-font-family: "Protest Strike";
+    -fx-font-size: 16px; /* Tamaño de fuente para el texto */
+}
+
+/* Estilo para el texto en las celdas */
+.table-cell {
+    -fx-text-fill: black; /* Color del texto en las celdas */
+    -fx-font-family: "Protest Strike";    /* Fuente personalizada */
+    -fx-font-size: 16px;                  /* Tamaño de la fuente */
+}
+
+/* Estilo para el texto en las celdas de encabezado */
+.table-column-header {
+    -fx-background-color: rgba(90, 90, 90, 0.8); /* Fondo del encabezado */
+    -fx-text-fill: black;        /* Color del texto del encabezado */
+    -fx-font-family: "Protest Strike";          /* Fuente personalizada */
+    -fx-font-size: 18px;                        /* Tamaño de la fuente */
+    -fx-alignment: CENTER;                      /* Alineación central */
+}
+
+/* Estilo al pasar el cursor por una fila */
+.table-row-cell:hover {
+    -fx-background-color: rgba(138, 43, 226, 0.2); /* Color de fondo al pasar el cursor */
+}
+
+/* Estilo para filas seleccionadas */
+.table-row-cell:selected {
+    -fx-background-color: rgba(74, 74, 74, 0.8); /* Fondo de fila seleccionada */
+    -fx-text-fill: #FFFFFF;                      /* Texto blanco en fila seleccionada */
+}
+
+.pagination .page-information {
+    -fx-opacity: 0;
+}
