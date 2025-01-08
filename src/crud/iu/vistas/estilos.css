@@ -292,13 +292,9 @@ TableView {
 .check-box .box {
     -fx-border-color: #FFFFFF;       /* Color del borde del recuadro */
     -fx-border-width: 2px;           /* Ancho del borde */
-    -fx-background-color: transparent; /* Fondo transparente */
+    -fx-background-color: #FFFFFF; /* Fondo transparente */
 }
 
-.check-box:selected .box {
-    -fx-background-color: #8A2BE2;   /* Fondo púrpura cuando está seleccionado */
-    -fx-border-color: #8A2BE2;       /* Borde púrpura */
-}
 
 /* Estilo para el contenido dentro del DatePicker */
 .date-picker .text-field {
@@ -477,4 +473,17 @@ TableView {
 
 .pagination .page-information {
     -fx-opacity: 0; /* Oculta la información de la página */
+}
+
+/* Estilo para los RadioButton */
+.radio-button {
+    -fx-font-family: "Protest Strike";  /* Fuente personalizada */
+    -fx-font-size: 18px;                /* Tamaño de fuente */
+    -fx-text-fill: #FFFFFF;             /* Texto blanco */
+    -fx-cursor: hand;                   /* Cambia el cursor a mano */
+    -fx-background-color: transparent; /* Fondo transparente */
+}
+
+.radio-button .radio {
+    -fx-background-color: #FFFFFF; 
 }

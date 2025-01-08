@@ -1,4 +1,4 @@
-package view;
+package crud.iu.controladores;
 
 import business.ApplicationClientFactory;
 import business.Client;
