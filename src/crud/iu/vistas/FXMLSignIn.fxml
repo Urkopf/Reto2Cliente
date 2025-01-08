@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane fx:id="signIn" maxHeight="650" maxWidth="750.0" minHeight="650" minWidth="750.0" prefHeight="650" prefWidth="750.0" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.ApplicationClientSignInController">
+    <children>
+        <BorderPane prefHeight="650.0" prefWidth="750.0">
+            <top>
+                <GridPane alignment="CENTER" prefHeight="200.0" prefWidth="750.0" BorderPane.alignment="CENTER">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                    <children>
+                        <HBox alignment="CENTER">
+                            <children>
+                                <ImageView fitHeight="168.0" fitWidth="714.0" nodeOrientation="INHERIT" preserveRatio="true" smooth="false">
+                                    <image>
+                                        <Image url="@../../../recursos/fondo_lite_completo.png" />
+                                    </image>
+                                    <effect>
+                                        <DropShadow blurType="GAUSSIAN" />
+                                    </effect>
+                                </ImageView>
+                            </children>
+                            <padding>
+                                <Insets top="50.0" />
+                            </padding>
+                        </HBox>
+                    </children>
+                    <opaqueInsets>
+                        <Insets />
+                    </opaqueInsets>
+                </GridPane>
+            </top>
+            <bottom>
+                <VBox alignment="BOTTOM_CENTER" spacing="20.0" BorderPane.alignment="CENTER">
+                    <children>
+                        <!-- Botón de Iniciar Sesión -->
+                        <Button fx:id="actualizarDatos" contentDisplay="CENTER" graphicTextGap="0.0" onAction="#handleButtonLoginButton" text="Salir" />
+                        <Button fx:id="actualizarDatos1" contentDisplay="CENTER" graphicTextGap="0.0" onAction="#handleButtonLoginButton" text="Recuperar Contraseña" />
+                    </children>
+                </VBox>
+            </bottom>
+         <right>
+                <GridPane fx:id="gridPane" alignment="CENTER" hgap="10" prefHeight="320.0" prefWidth="750.0" vgap="20" BorderPane.alignment="CENTER">
+                    <!-- Definición de columnas para mejor alineación -->
+                    <columnConstraints>
+                        <ColumnConstraints />
+                        <ColumnConstraints halignment="CENTER" />
+                        <ColumnConstraints halignment="CENTER" />
+                        <ColumnConstraints halignment="CENTER" />
+                        <ColumnConstraints />
+                    </columnConstraints>
+
+                    <!-- Título -->
+                    <Label fx:id="label" styleClass="titulo" text="Iniciar Sesión" GridPane.columnIndex="2" GridPane.columnSpan="2" />
+
+                    <!-- Campo de Login con Imagen -->
+                    <ImageView fitHeight="40" fitWidth="40" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <image>
+                            <Image url="@../../../recursos/iconos/usuario2.png" />
+                        </image>
+                    </ImageView>
+                    <TextField fx:id="loginField" promptText="Introduce tu correo electrónico" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="1">
+                        <tooltip>
+                            <Tooltip text="Ingrese su correo electronico para iniciar la sesión." />
+                        </tooltip>
+                    </TextField>
+                    <!-- Campo de Contraseña con Imagen -->
+                    <ImageView fitHeight="40" fitWidth="40" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                        <image>
+                            <Image url="@../../../recursos/iconos/contraseña.png" />
+                        </image>
+                    </ImageView>
+                    <PasswordField fx:id="passwordField" promptText="Introduce tu contraseña" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="2">
+                        <tooltip>
+                            <Tooltip text="Introduce tu contraseña." />
+                        </tooltip>
+                    </PasswordField>
+                    <TextField fx:id="passwordFieldVisual" promptText="Introduce tu contraseña" visible="false" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="2">
+
+                    </TextField>
+                    <!-- Botón con imagen del ojo -->
+                    <Button fx:id="toggleVisibilityButton" style="-fx-background-color: transparent;" styleClass="mostrarPass" translateX="113" GridPane.columnIndex="3" GridPane.rowIndex="2">
+                        <graphic>
+                            <ImageView fx:id="eyeIcon2" fitHeight="30" fitWidth="30" pickOnBounds="true" preserveRatio="true" styleClass="mostrarPassImage">
+                                <image>
+                                    <Image fx:id="imagePassConfirm" url="@../../../recursos/iconos/visualizar.png" />
+                                </image>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+
+                    <!-- Errores visuales -->
+                    <ImageView fx:id="errorImageLogin" fitHeight="28.0" fitWidth="28.0" visible="false" GridPane.columnIndex="4" GridPane.rowIndex="1">
+                        <image>
+                            <Image url="@../../../recursos/iconos/error.png" />
+                        </image>
+                    </ImageView>
+
+                    <ImageView fx:id="errorImagePass" fitHeight="28.0" fitWidth="28.0" visible="false" GridPane.columnIndex="4" GridPane.rowIndex="2">
+                        <image>
+                            <Image url="@../../../recursos/iconos/error.png" />
+                        </image>
+                    </ImageView>
+                    <HBox alignment="CENTER" spacing="20.0" GridPane.columnIndex="3" GridPane.rowIndex="3">
+                        <children>
+                            <Button fx:id="loginButton1" maxWidth="Infinity" onAction="#handleButtonLoginButton" text="Registro" />
+                            <!-- Botón de Iniciar Sesión -->
+                            <Button fx:id="loginButton" maxWidth="Infinity" onAction="#handleButtonLoginButton" text="Iniciar Sesión" />
+                        </children>
+                    </HBox>
+
+                    <!-- Definición de filas para mejor alineación -->
+                    <rowConstraints>
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                    </rowConstraints>
+                </GridPane>
+         </right>
+        </BorderPane>
+    </children>
+</AnchorPane>
