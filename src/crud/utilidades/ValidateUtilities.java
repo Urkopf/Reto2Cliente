@@ -1,4 +1,4 @@
-package utilities;
+package crud.utilidades;
 
 import java.util.ResourceBundle;
 import java.util.logging.Logger;

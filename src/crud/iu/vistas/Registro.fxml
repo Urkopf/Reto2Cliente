@@ -205,7 +205,7 @@
                               <Tooltip text="Ingrese su contraseña, minimo 8 caracteres, una mayúscula, una minúscula y un número" />
                            </tooltip>
                         </PasswordField>
-                        <TextField id="passwordFieldVisual" fx:id="passwordFieldVisual1" promptText="Contraseña" visible="false" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1">
+                        <TextField id="passwordFieldVisual" fx:id="campoContrasenaVista" promptText="Contraseña" visible="false" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1">
                            <tooltip>
                               <Tooltip text="Ingrese su contraseña, minimo 8 caracteres, una mayúscula, una minúscula y un número" />
                            </tooltip>
@@ -215,12 +215,12 @@
                               <Image url="@../../../recursos/iconos/contraseñaconf.png" />
                            </image>
                         </ImageView>
-                        <PasswordField id="confirmpasswordField" fx:id="campoConfirmacion" promptText="Confirmar contraseña" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2">
+                        <PasswordField id="confirmpasswordField" fx:id="campoRepiteContrasena" promptText="Confirmar contraseña" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2">
                            <tooltip>
                               <Tooltip text="Confirme su contraseña, minimo 8 caracteres, una mayúscula, una minúscula y un número" />
                            </tooltip>
                         </PasswordField>
-                        <TextField fx:id="confirmPasswordFieldVisual1" promptText="Confirmar contraseña" visible="false" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2">
+                        <TextField fx:id="campoRepiteContrasenaVista" promptText="Confirmar contraseña" visible="false" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2">
                            <tooltip>
                               <Tooltip text="Confirme su contraseña, minimo 8 caracteres, una mayúscula, una minúscula y un número" />
                            </tooltip>
@@ -249,7 +249,7 @@
                            <children>
                               <Label text="Activo:" GridPane.columnIndex="1" GridPane.rowIndex="10" />
                               <CheckBox fx:id="checkActivo" onAction="#handleActiveCheckBoxChange" selected="true" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="10" />
-                              <HBox fx:id="warningbox1" alignment="CENTER_LEFT" spacing="10" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="10">
+                              <HBox fx:id="avisoNoActivo" alignment="CENTER_LEFT" spacing="10" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="10">
                                  <children>
                                     <ImageView fitHeight="40" fitWidth="40">
                                        <image>
@@ -296,12 +296,12 @@
                               </Group>
                            </children>
                         </HBox>
-                        <ImageView fx:id="eyeIcon11" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" styleClass="mostrarPassImage" translateX="135.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                        <ImageView fx:id="botonOjoContrasena" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" styleClass="mostrarPassImage" translateX="135.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
                            <image>
                               <Image fx:id="imagePass1" url="@../../../recursos/iconos/visualizar.png" />
                            </image>
                         </ImageView>
-                        <ImageView fx:id="eyeIcon21" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" styleClass="mostrarPassImage" translateX="135.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                        <ImageView fx:id="botonOjoRepite" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" styleClass="mostrarPassImage" translateX="135.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
                            <image>
                               <Image fx:id="imagePassConfirm1" url="@../../../recursos/iconos/visualizar.png" />
                            </image>
