@@ -29,44 +29,44 @@
                   <children>
                      <HBox alignment="CENTER_LEFT">
                         <children>
-                           <CheckBox mnemonicParsing="false" text="Por ID de Pedido. desde  " />
-                           <Spinner />
+                           <CheckBox mnemonicParsing="false" text="Por ID de pedido, desde  " />
+                           <Spinner prefHeight="35.0" prefWidth="180.0" />
                            <Label text=" hasta " />
-                           <Spinner />
+                           <Spinner prefHeight="35.0" prefWidth="180.0" />
                         </children>
                      </HBox>
                      <HBox alignment="CENTER_LEFT">
                         <children>
                            <CheckBox mnemonicParsing="false" text="Por CIF  " />
-                           <ComboBox prefHeight="44.0" prefWidth="206.0" />
+                           <ComboBox prefHeight="35.0" prefWidth="180.0" />
                         </children>
                      </HBox>
                      <HBox alignment="CENTER_LEFT">
                         <children>
                            <CheckBox mnemonicParsing="false" text="Por dirección  " />
-                           <TextField prefHeight="38.0" prefWidth="553.0" />
+                           <TextField prefHeight="37.0" prefWidth="531.0" />
                         </children>
                      </HBox>
                      <HBox alignment="CENTER_LEFT" prefWidth="200.0">
                         <children>
-                           <CheckBox mnemonicParsing="false" text="Por Fecha de Pedido. desde  " />
-                           <DatePicker prefHeight="44.0" prefWidth="186.0" />
+                           <CheckBox mnemonicParsing="false" text="Por Fecha de pedido, desde  " />
+                           <DatePicker prefHeight="35.0" prefWidth="180.0" />
                            <Label text=" hasta " />
-                           <DatePicker prefHeight="44.0" prefWidth="183.0" />
+                           <DatePicker prefHeight="35.0" prefWidth="180.0" />
                         </children>
                      </HBox>
                      <HBox alignment="CENTER_LEFT" prefWidth="200.0">
                         <children>
-                           <CheckBox mnemonicParsing="false" text="Por estado del Pedido  " />
-                           <ComboBox prefWidth="150.0" promptText="asd" />
+                           <CheckBox mnemonicParsing="false" text="Por estado del pedido  " />
+                           <ComboBox prefHeight="35.0" prefWidth="180.0" />
                         </children>
                      </HBox>
                      <HBox alignment="CENTER_LEFT">
                         <children>
-                           <CheckBox mnemonicParsing="false" text="Por Precio total del Pedido. desde  " />
-                           <Spinner prefWidth="170.0" />
+                           <CheckBox mnemonicParsing="false" text="Por Precio total del pedido, desde  " />
+                           <Spinner prefWidth="180.0" />
                            <Label text=" hasta " />
-                           <Spinner prefWidth="170.0" />
+                           <Spinner prefWidth="180.0" />
                         </children>
                      </HBox>
                   </children>
