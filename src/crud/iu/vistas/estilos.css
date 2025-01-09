@@ -45,6 +45,14 @@ TextField, PasswordField {
     -fx-padding: 10;
 }
 
+.botonGrande {
+    -fx-font-family: "Protest Strike";
+    -fx-font-size: 25px;
+    -fx-text-fill: rgba(74, 74, 74, 1);
+    -fx-font-weight: bold;
+    -fx-padding: 10;
+    -fx-background-color: rgba(255, 255, 255, 0.5);
+}
 
 TextField:focused, PasswordField:focused {
     -fx-border-color: #8A2BE2;
@@ -485,5 +493,5 @@ TableView {
 }
 
 .radio-button .radio {
-    -fx-background-color: #FFFFFF; 
+    -fx-background-color: #FFFFFF;
 }
