@@ -2,8 +2,10 @@ package crud.iu.controladores;
 
 import crud.objetosTransferibles.Usuario;
 import java.net.URL;
+import java.util.Collection;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -15,6 +17,8 @@ import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 /**
  * Controlador para la ventana principal de Pedidos.
@@ -64,6 +68,29 @@ public class PedidosPrincipalController implements Initializable {
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
         LOGGER.info("Usuario asignado: " + usuario.getNombre());
+    }
+
+    public void inicializarTabla() {
+        tablaPedidos.getSelectionModel().selectedItemProperty().addListener(this::handleUsersTableSelectionChanged);
+
+        TableColumn tablaColumnaId = new TableColumn();
+        TableColumn tablaColumnaCifCliente = new TableColumn();
+        Collection datosTabla;
+
+        tablaColumnaId.setCellValueFactory(new PropertyValueFactory("id"));
+        tablaColumnaCifCliente.setCellValueFactory(new PropertyValueFactory("cifCliente"));
+
+        try {
+            datosTabla = FXCollections.observableArrayList(managerUsuarios.getAllUsers);
+        } catch (NegocioException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "No se ha podido cargar ")
+        }
+
+        tablaPedidos.setItems(datosTabla);
+    }
+
+    public void handleUsersTableSelectionChanged() {
+
     }
 
     /**
