@@ -25,7 +25,9 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import utilidades.Message;
-import utilidades.User;
+import crud.objetosTransferibles.Usuario;
+import crud.objetosTransferibles.Cliente;
+import crud.objetosTransferibles.Trabajador;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
 import static crud.utilidades.ValidateUtilities.isValid;
 import javafx.scene.control.ContextMenu;
@@ -42,9 +44,9 @@ public class ControladorInicioSesion implements Initializable {
 
     private static final Logger LOGGER = Logger.getLogger(ApplicationClientSignInController.class.getName());
     private Stage stage = new Stage();
-    private FactoriaUsuarios factory = FactoriaUsuarios.getInstance();
+    private FactoriaUsuarios factoria = FactoriaUsuarios.getInstance();
     private boolean hasError = false;  // Indica si hay errores en el formulario
-    private User user;  // Usuario que intenta iniciar sesión
+    private Usuario usuario;  // Usuario que intenta iniciar sesión
 
     // Elementos de la interfaz FXML
     @FXML
@@ -254,7 +256,7 @@ public class ControladorInicioSesion implements Initializable {
      */
     @FXML
     private void handleHyperLinkRegistry(ActionEvent event) {
-        FactoriaUsuarios.getInstance().loadSignUpWindow(stage, null);  // Cargar la ventana de registro
+        factoria.loadSignUpWindow(stage, null);  // Cargar la ventana de registro
     }
 
     /**
@@ -308,11 +310,11 @@ public class ControladorInicioSesion implements Initializable {
             showErrorDialog(AlertType.ERROR, "Error", "Uno o varios campos incorrectos o vacíos. Mantenga el cursor encima de los campos para más información.");
         } else {
             // Si no hay errores, proceder con el formulario
-            user = new User();  // Crear un nuevo usuario
-            user.setLogin(campoEmail.getText());
-            user.setPass(campoContrasena.getText());
+            usuario = new Usuario();  // Crear un nuevo usuario
+            usuario.setCorreo(campoEmail.getText());
+            usuario.setContrasena(campoContrasena.getText());
 
-            Message response = FactoriaUsuarios.getInstance().access().signIn(user);  // Enviar los datos de inicio de sesión al servidor
+            Message response = FactoriaUsuarios.getInstance().access().signIn(usuario);  // Enviar los datos de inicio de sesión al servidor
 
             messageManager(response);  // Manejar la respuesta del servidor
         }
@@ -329,9 +331,9 @@ public class ControladorInicioSesion implements Initializable {
                 botonIniciarSesion.setDisable(true);  // Deshabilitar el botón de inicio de sesión
                 if (!actualizar) {
 
-                    factory.loadMainUserWindow(stage, (User) message.getObject());  // Cargar la ventana principal
+                    factoria.loadMainUserWindow(stage, (Usuario) message.getObject());  // Cargar la ventana principal
                 } else {
-                    factory.loadSignUpWindow(stage, (User) message.getObject());  // Cargar el SignUP
+                    factoria.loadSignUpWindow(stage, (Usuario) message.getObject());  // Cargar el SignUP
                 }
                 break;
             case SIGNIN_ERROR:

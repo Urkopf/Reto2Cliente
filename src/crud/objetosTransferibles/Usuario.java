@@ -30,6 +30,8 @@ public class Usuario implements Serializable {
 
     private String codPostal;
 
+    private String cif;
+
     public Usuario() {
     }
 
@@ -88,6 +90,14 @@ public class Usuario implements Serializable {
 
     public void setCodPostal(String codPostal) {
         this.codPostal = codPostal;
+    }
+
+    public String getCif() {
+        return cif;
+    }
+
+    public void setCif(String cif) {
+        this.cif = cif;
     }
 
     @Override

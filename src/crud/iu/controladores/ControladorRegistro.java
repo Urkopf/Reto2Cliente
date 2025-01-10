@@ -29,7 +29,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import utilidades.Message;
-import utilidades.User;
+import crud.objetosTransferibles.Usuario;
+import crud.objetosTransferibles.Cliente;
+import crud.objetosTransferibles.Trabajador;
 import static crud.utilidades.AlertUtilities.showConfirmationDialog;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
 import static crud.utilidades.ValidateUtilities.isValid;
@@ -45,9 +47,9 @@ public class ControladorRegistro implements Initializable {
 
     private static final Logger LOGGER = Logger.getLogger(ControladorRegistro.class.getName());
     private Stage stage = new Stage();
-    private FactoriaUsuarios factory = FactoriaUsuarios.getInstance();
-    private User user;
-    private User user2;
+    private FactoriaUsuarios factoria = FactoriaUsuarios.getInstance();
+    private Usuario user;
+    private Usuario user2;
     private boolean hasError = false;  // Indica si hay errores en el formulario
 
     // Elementos de la interfaz FXML
@@ -240,7 +242,7 @@ public class ControladorRegistro implements Initializable {
         this.stage = stage;
     }
 
-    public void setUser(User user) {
+    public void setUser(Usuario user) {
         this.user = user;
     }
 
@@ -394,10 +396,10 @@ public class ControladorRegistro implements Initializable {
             Message response;
             if (checkActivo.isSelected() || (!checkActivo.isSelected() && confirmNoActiveUserRegister())) {
                 if (actualizar) {
-                    user2.setResUserId(user.getResUserId());
-                    response = factory.access().actualizar(user2);
+                    user2.setId(user.getId());
+                    response = factoria.access().actualizar(user2);
                 } else {
-                    response = factory.access().signUp(user2);
+                    response = factoria.access().signUp(user2);
                 }
 
                 messageManager(response);
@@ -419,7 +421,7 @@ public class ControladorRegistro implements Initializable {
 
         if (showConfirmationDialog("Confirmación", "¿Estás seguro de que deseas cancelar?")) {
             // Si el usuario confirma, realizar la acción de cancelar
-            factory.loadSignInWindow(stage, "");
+            factoria.loadSignInWindow(stage, "");
         }
     }
 
@@ -549,7 +551,7 @@ public class ControladorRegistro implements Initializable {
                 } else {
                     showErrorDialog(AlertType.INFORMATION, "Información", "La actualización se ha realizado con éxito.");
                 }
-                factory.loadSignInWindow(stage, user.getLogin());
+                factoria.loadSignInWindow(stage, user.getCorreo());
                 break;
             case SIGNUP_ERROR:
                 showErrorDialog(AlertType.ERROR, "Error", "Se ha producido un error al intentar registrar sus datos. Vuelva a intentarlo.");
@@ -695,13 +697,13 @@ public class ControladorRegistro implements Initializable {
         campoRepiteContrasena.setVisible(false);
         campoContrasenaVista.setVisible(false);
         campoRepiteContrasenaVista.setVisible(false);
-        campoDireccion.setText(user.getStreet());
-        campoCiudad.setText(user.getCity());
-        campoCodigoPostal.setText(user.getZip());
+        campoDireccion.setText(user.getCalle());
+        campoCiudad.setText(user.getCiudad());
+        campoCodigoPostal.setText(user.getCodPostal());
         if (user instanceof Cliente) {
-            campoSector.setText(user.getSector());
+            campoSector.setText(((Cliente) user).getSector());
         } else {
-            campoSector.setText(user.getDepartamento());
+            campoSector.setText(((Trabajador) user).getDepartamento());
         }
         campoCIF.setText(user.getCif());
 
