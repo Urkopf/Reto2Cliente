@@ -5,7 +5,7 @@
  */
 package crud.negocio;
 
-import crud.rest.UsuarioRestClient;
+import crud.rest.UsuariosRestFull;
 import java.util.Collection;
 import java.util.List;
 import javax.ws.rs.core.GenericType;
@@ -16,12 +16,12 @@ import javax.ws.rs.core.GenericType;
  */
 public class UsuarioImpl<T> implements IUsuario<T> {
 
-    private UsuarioRestClient usuarioCliente;
+    private UsuariosRestFull usuarioCliente;
     private String tipo;
 
     public UsuarioImpl(String tipo) {
         this.tipo = tipo;
-        usuarioCliente = new UsuarioRestClient(tipo);
+        usuarioCliente = new UsuariosRestFull(tipo);
     }
 
     @Override
