@@ -3,7 +3,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Protest+Strike&display=swap');
 
 AnchorPane {
-    -fx-background-image: url('/resources/img/fondo.jpg');
+    -fx-background-image: url('../../../recursos/fondo.jpg');
     -fx-background-size: cover;
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
@@ -45,6 +45,14 @@ TextField, PasswordField {
     -fx-padding: 10;
 }
 
+.botonGrande {
+    -fx-font-family: "Protest Strike";
+    -fx-font-size: 25px;
+    -fx-text-fill: rgba(74, 74, 74, 1);
+    -fx-font-weight: bold;
+    -fx-padding: 10;
+    -fx-background-color: rgba(255, 255, 255, 0.5);
+}
 
 TextField:focused, PasswordField:focused {
     -fx-border-color: #8A2BE2;
@@ -227,6 +235,263 @@ TableView {
     -fx-text-fill: #FFFFFF;                      /* Texto blanco en fila seleccionada */
 }
 
+
+/* Estilo general para ComboBox, Spinner y DatePicker */
+.combo-box, .spinner, .date-picker {
+    -fx-background-color: rgba(74, 74, 74, 0.8); /* Fondo oscuro semi-transparente */
+    -fx-border-color: #666;                     /* Borde gris */
+    -fx-border-width: 1px;                      /* Ancho del borde */
+    -fx-border-radius: 5;                       /* Bordes redondeados */
+    -fx-background-radius: 5;                   /* Bordes redondeados para el fondo */
+    -fx-font-family: "Protest Strike";          /* Fuente personalizada */
+    -fx-font-size: 16px;                        /* Tamaño de fuente */
+    -fx-text-fill: #FFFFFF;                     /* Texto blanco */
+
+}
+
+/* Efecto al pasar el cursor */
+.combo-box:hover, .spinner:hover, .date-picker:hover {
+    -fx-background-color: #8A2BE2; /* Fondo púrpura claro */
+    -fx-border-color: #8A2BE2;     /* Borde púrpura */
+}
+
+/* Efecto al hacer clic */
+.combo-box:pressed, .spinner:pressed, .date-picker:pressed {
+    -fx-background-color: #4A148C; /* Fondo púrpura oscuro */
+}
+
+/* Efecto cuando están enfocados */
+.combo-box:focused, .spinner:focused, .date-picker:focused {
+    -fx-border-color: #8A2BE2; /* Cambia el color del borde al enfocarse */
+}
+
+/* Estilo para los menús desplegables del ComboBox */
+.combo-box-popup, .date-picker-popup {
+    -fx-background-color: rgba(74, 74, 74, 0.9); /* Fondo oscuro */
+    -fx-text-fill: #FFFFFF;                      /* Texto blanco */
+    -fx-font-family: "Protest Strike";          /* Fuente personalizada */
+    -fx-font-size: 16px;                        /* Tamaño de fuente */
+    -fx-border-color: #666;                     /* Borde gris */
+}
+
+/* Estilo para los elementos del menú desplegable */
+.combo-box .list-cell, .date-picker .list-cell {
+    -fx-background-color: transparent; /* Fondo transparente por defecto */
+    -fx-text-fill: #FFFFFF;            /* Texto blanco */
+}
+
+.combo-box .list-cell:hover, .date-picker .list-cell:hover {
+    -fx-background-color: #8A2BE2; /* Fondo púrpura al pasar el cursor */
+}
+
+.combo-box .list-cell:focused, .date-picker .list-cell:focused {
+    -fx-background-color: #4A148C; /* Fondo púrpura oscuro al enfocarse */
+}
+
+/* Estilo para CheckBox */
+.check-box {
+    -fx-text-fill: #FFFFFF;          /* Texto blanco */
+    -fx-font-family: "Protest Strike"; /* Fuente personalizada */
+    -fx-font-size: 18px;             /* Tamaño de fuente */
+    -fx-cursor: hand;                /* Cambia el cursor a mano */
+    -fx-background-color: transparent; /* Sin fondo */
+}
+
+.check-box .box {
+    -fx-border-color: #FFFFFF;       /* Color del borde del recuadro */
+    -fx-border-width: 2px;           /* Ancho del borde */
+    -fx-background-color: #FFFFFF; /* Fondo transparente */
+}
+
+
+/* Estilo para el contenido dentro del DatePicker */
+.date-picker .text-field {
+    -fx-background-color: transparent; /* Sin fondo */
+    -fx-text-fill: #FFFFFF;            /* Texto blanco */
+    -fx-font-family: "Protest Strike"; /* Fuente personalizada */
+    -fx-font-size: 16px;               /* Tamaño de fuente */
+    -fx-border: none;                  /* Sin bordes */
+}
+
+/* Estilo para el botón del DatePicker */
+.date-picker .arrow-button {
+    -fx-background-color: rgba(58, 58, 58, 0.8); /* Fondo oscuro semi-transparente */
+    -fx-border-radius: 5;                       /* Bordes redondeados */
+    -fx-cursor: hand;                           /* Cambia el cursor a mano */
+    -fx-padding: 5;                             /* Relleno interno */
+}
+
+.date-picker .arrow-button:hover {
+    -fx-background-color: #8A2BE2; /* Fondo púrpura claro al pasar el cursor */
+}
+
+.date-picker .arrow-button:pressed {
+    -fx-background-color: #4A148C; /* Fondo púrpura oscuro al presionar */
+}
+
+/* Estilo general para Spinner */
+.spinner {
+    -fx-background-color: rgba(74, 74, 74, 0.8); /* Fondo oscuro semi-transparente */
+    -fx-border-color: #666;                     /* Borde gris */
+    -fx-border-width: 1px;                      /* Ancho del borde */
+    -fx-border-radius: 5;                       /* Bordes redondeados */
+    -fx-background-radius: 5;                   /* Bordes redondeados para el fondo */
+    -fx-font-family: "Protest Strike";          /* Fuente personalizada */
+    -fx-font-size: 16px;                        /* Tamaño de fuente */
+    -fx-text-fill: #FFFFFF;                     /* Texto blanco */
+
+}
+
+/* Elimina el recuadro interno blanco del Spinner */
+.spinner .text-field {
+    -fx-background-color: transparent; /* Fondo transparente */
+    -fx-text-fill: #FFFFFF;            /* Texto blanco */
+    -fx-border-color: transparent;     /* Sin bordes visibles */
+    -fx-font-family: "Protest Strike"; /* Fuente personalizada */
+    -fx-font-size: 16px;               /* Tamaño de fuente */
+    -fx-alignment: center;             /* Texto centrado */
+}
+
+/* Botones del Spinner */
+.spinner .increment-arrow-button, .spinner .decrement-arrow-button {
+    -fx-background-color: rgba(58, 58, 58, 0.8); /* Fondo oscuro semi-transparente */
+    -fx-border-color: transparent;              /* Sin bordes */
+    -fx-border-radius: 5;                       /* Bordes redondeados */
+    -fx-cursor: hand;                           /* Cambia el cursor a mano */
+}
+
+.spinner .increment-arrow-button:hover, .spinner .decrement-arrow-button:hover {
+    -fx-background-color: #8A2BE2; /* Fondo púrpura claro al pasar el cursor */
+}
+
+.spinner .increment-arrow-button:pressed, .spinner .decrement-arrow-button:pressed {
+    -fx-background-color: #4A148C; /* Fondo púrpura oscuro al presionar */
+}
+
+
+/* Aumentar visibilidad de los botones del Spinner */
+.spinner .increment-arrow-button, .spinner .decrement-arrow-button {
+    -fx-pref-width: 15; /* Ancho preferido para los botones */
+    -fx-pref-height: 15; /* Alto preferido para los botones */
+}
+
+
+/* Estilo general para Paginator */
+.pagination {
+    -fx-font-family: "Protest Strike";         /* Fuente personalizada */
+    -fx-font-size: 18px;                        /* Tamaño de fuente */
+    -fx-text-fill: #FFFFFF;                     /* Texto blanco */
+}
+
+/* Estilo para los botones de paginación */
+.pagination .control-buttons {
+    -fx-background-color: rgba(58, 58, 58, 0.8); /* Fondo oscuro para botones */
+    -fx-border-radius: 5;                       /* Bordes redondeados */
+    -fx-cursor: hand;                           /* Cambia el cursor a mano */
+}
+
+.pagination .control-buttons:hover {
+    -fx-background-color: #8A2BE2; /* Fondo púrpura claro al pasar el cursor */
+}
+
+.pagination .control-buttons:pressed {
+    -fx-background-color: #4A148C; /* Fondo púrpura oscuro al presionar */
+}
+
+.pagination .control-buttons .toggle-button {
+    -fx-background-color: rgba(58, 58, 58, 0.8); /* Fondo oscuro semi-transparente */
+    -fx-border-radius: 5;                        /* Bordes redondeados */
+    -fx-text-fill: #FFFFFF;                      /* Texto blanco */
+    -fx-font-family: "Protest Strike";           /* Fuente personalizada */
+    -fx-font-size: 18px;                         /* Tamaño de fuente */
+    -fx-cursor: hand;                            /* Cambia el cursor a mano */
+}
+
+.pagination .control-buttons .toggle-button:hover {
+    -fx-background-color: #8A2BE2; /* Fondo púrpura claro al pasar el cursor */
+    -fx-text-fill: #FFFFFF;        /* Texto blanco */
+}
+
+.pagination .control-buttons .toggle-button:pressed {
+    -fx-background-color: #4A148C; /* Fondo púrpura oscuro al presionar */
+}
+
+.pagination .control-buttons .toggle-button:selected {
+    -fx-background-color: #8A2BE2; /* Fondo púrpura para la página seleccionada */
+    -fx-text-fill: #FFFFFF;        /* Texto blanco */
+    -fx-font-weight: bold;         /* Negrita para destacar */
+    -fx-border-color: #4A148C;     /* Borde púrpura oscuro */
+    -fx-border-width: 2px;         /* Borde más grueso */
+}
+
+.pagination .control-buttons .button {
+    -fx-background-color: rgba(58, 58, 58, 0.8); /* Fondo oscuro */
+    -fx-border-color: #666;                     /* Borde gris */
+    -fx-border-radius: 5;                       /* Bordes redondeados */
+    -fx-text-fill: #FFFFFF;                     /* Texto blanco */
+    -fx-font-family: "Protest Strike";          /* Fuente personalizada */
+    -fx-font-size: 18px;                        /* Tamaño de fuente */
+    -fx-padding: 5;                             /* Relleno interno */
+    -fx-cursor: hand;                           /* Cambia el cursor a mano */
+}
+
+.pagination .control-buttons .button:hover {
+    -fx-background-color: #8A2BE2; /* Fondo púrpura claro al pasar el cursor */
+}
+
+.pagination .control-buttons .button:pressed {
+    -fx-background-color: #4A148C; /* Fondo púrpura oscuro al presionar */
+}
+
+.pagination .control-buttons .button:selected {
+    -fx-background-color: #8A2BE2; /* Fondo púrpura para la página seleccionada */
+    -fx-text-fill: #FFFFFF;        /* Texto blanco */
+    -fx-font-weight: bold;         /* Negrita para destacar */
+    -fx-border-color: #4A148C;     /* Borde púrpura oscuro */
+    -fx-border-width: 2px;         /* Borde más grueso */
+}
+
+.pagination .control-buttons .page-button {
+    -fx-background-color: rgba(58, 58, 58, 0.8); /* Fondo oscuro */
+    -fx-border-color: #666;                     /* Borde gris */
+    -fx-border-radius: 5;                       /* Bordes redondeados */
+    -fx-text-fill: #FFFFFF;                     /* Texto blanco */
+    -fx-font-family: "Protest Strike";          /* Fuente personalizada */
+    -fx-font-size: 18px;                        /* Tamaño de fuente */
+    -fx-padding: 5;                             /* Relleno interno */
+    -fx-cursor: hand;                           /* Cambia el cursor a mano */
+}
+
+.pagination .control-buttons .page-button:hover {
+    -fx-background-color: #8A2BE2; /* Fondo púrpura claro al pasar el cursor */
+}
+
+.pagination .control-buttons .page-button:pressed {
+    -fx-background-color: #4A148C; /* Fondo púrpura oscuro al presionar */
+}
+
+.pagination .control-buttons .page-button:selected {
+    -fx-background-color: #8A2BE2; /* Fondo púrpura para la página seleccionada */
+    -fx-text-fill: #FFFFFF;        /* Texto blanco */
+    -fx-font-weight: bold;         /* Negrita para destacar */
+    -fx-border-color: #4A148C;     /* Borde púrpura oscuro */
+    -fx-border-width: 2px;         /* Borde más grueso */
+}
+
+
 .pagination .page-information {
-    -fx-opacity: 0;
+    -fx-opacity: 0; /* Oculta la información de la página */
+}
+
+/* Estilo para los RadioButton */
+.radio-button {
+    -fx-font-family: "Protest Strike";  /* Fuente personalizada */
+    -fx-font-size: 18px;                /* Tamaño de fuente */
+    -fx-text-fill: #FFFFFF;             /* Texto blanco */
+    -fx-cursor: hand;                   /* Cambia el cursor a mano */
+    -fx-background-color: transparent; /* Fondo transparente */
+}
+
+.radio-button .radio {
+    -fx-background-color: #FFFFFF;
 }
