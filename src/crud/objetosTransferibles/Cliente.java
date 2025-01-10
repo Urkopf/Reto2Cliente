@@ -22,8 +22,6 @@ public class Cliente extends Usuario {
 
     private String telefono;
 
-    private String cif;
-
     public Cliente() {
     }
 
@@ -49,14 +47,6 @@ public class Cliente extends Usuario {
 
     public void setTelefono(String telefono) {
         this.telefono = telefono;
-    }
-
-    public String getCif() {
-        return cif;
-    }
-
-    public void setCif(String cif) {
-        this.cif = cif;
     }
 
     @Override

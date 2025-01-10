@@ -15,26 +15,26 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class Trabajador extends Usuario {
 
-    private String departamento;
+    private Departamento departamento;
 
-    private String categoria;
+    private Categoria categoria;
 
     public Trabajador() {
     }
 
-    public String getDepartamento() {
+    public Departamento getDepartamento() {
         return departamento;
     }
 
-    public void setDepartamento(String departamento) {
+    public void setDepartamento(Departamento departamento) {
         this.departamento = departamento;
     }
 
-    public String getCategoria() {
+    public Categoria getCategoria() {
         return categoria;
     }
 
-    public void setCategoria(String categoria) {
+    public void setCategoria(Categoria categoria) {
         this.categoria = categoria;
     }
 
