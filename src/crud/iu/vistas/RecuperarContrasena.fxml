@@ -46,6 +46,11 @@
          <top>
             <HBox alignment="CENTER" prefHeight="122.0" prefWidth="777.0" BorderPane.alignment="CENTER">
                <children>
+                  <ImageView fitHeight="101.0" fitWidth="130.0" preserveRatio="true">
+                     <image>
+                        <Image url="@../../../recursos/logo_lite_clear.png" />
+                     </image>
+                  </ImageView>
          
                               <Label fx:id="labelTitulo1" styleClass="titulo" text="Recuperar contraseña" textAlignment="CENTER" />
                </children>
@@ -55,11 +60,6 @@
       <ImageView fx:id="botonAyuda" fitHeight="43.0" fitWidth="43.0" layoutX="824.0" layoutY="3.0" pickOnBounds="true" preserveRatio="true" styleClass="mostrarPassImage" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
          <image>
             <Image fx:id="imagePass11" url="@../../../recursos/iconos/ayuda.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="101.0" fitWidth="130.0" layoutX="759.0" layoutY="667.0" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="759.0" AnchorPane.rightAnchor="9.0" AnchorPane.topAnchor="667.0">
-         <image>
-            <Image url="@../../../../../../../../Downloads/logo_lite_clear.png" />
          </image>
       </ImageView>
     </children>

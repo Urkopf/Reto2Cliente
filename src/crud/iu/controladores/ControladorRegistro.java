@@ -121,6 +121,7 @@ public class ControladorRegistro implements Initializable {
     private Button botonOjoRepiteContrasena;  // Botón para alternar la visibilidad de la confirmación de la contraseña
 
     private ContextMenu contextMenu;  // Menú contextual personalizado
+    private boolean actualizar;
 
     /**
      * Inicializa el controlador y configura el menú contextual, los eventos de
@@ -181,8 +182,11 @@ public class ControladorRegistro implements Initializable {
         assignCustomContextMenu(campoDireccion);
         assignCustomContextMenu(campoCiudad);
         assignCustomContextMenu(campoCodigoPostal);
+        assignCustomContextMenu(campoCIF);
         assignCustomContextMenu(campoContrasena);
         assignCustomContextMenu(campoRepiteContrasena);
+        assignCustomContextMenu(campoSector);
+        assignCustomContextMenu(campoTelefono);
 
         // Asignar el menú contextual al GridPane
         gridPane.setOnMouseClicked(event -> {
@@ -209,7 +213,7 @@ public class ControladorRegistro implements Initializable {
         campoRepiteContrasena.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.TAB) {
                 event.consume();  // Evita la acción por defecto de la tecla TAB
-                campoDireccion.requestFocus();  // Mover el foco al siguiente campo
+                grupoRadio.requestFocus();  // Mover el foco al siguiente campo
             }
         });
     }
@@ -240,6 +244,10 @@ public class ControladorRegistro implements Initializable {
         this.user = user;
     }
 
+    public void setModoActualizar(boolean modo) {
+        this.actualizar = modo;
+    }
+
     /**
      * Inicializa el escenario con el contenido de la vista.
      *
@@ -252,7 +260,7 @@ public class ControladorRegistro implements Initializable {
             Scene scene = new Scene(root);
             scene.focusOwnerProperty();
             stage.setScene(scene);
-            stage.setTitle("Registro de Usuario");
+            stage.setTitle("Registro");
             stage.setResizable(false);
             stage.setOnShowing(this::handleWindowShowing);
             botonRegistrar.setOnAction(null);
@@ -286,7 +294,9 @@ public class ControladorRegistro implements Initializable {
                 }
             });
             configureMnemotecnicKeys();  // Configurar teclas de acceso rápido
-
+            if (actualizar) {
+                actualizarInit();
+            }
             stage.show();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al inicializar el stage", e);
@@ -383,8 +393,12 @@ public class ControladorRegistro implements Initializable {
             LOGGER.info("Validación de campos correcta.");
             Message response;
             if (checkActivo.isSelected() || (!checkActivo.isSelected() && confirmNoActiveUserRegister())) {
-
-                response = FactoriaUsuarios.getInstance().access().signUp(user2);
+                if (actualizar) {
+                    user2.setResUserId(user.getResUserId());
+                    response = factory.access().actualizar(user2);
+                } else {
+                    response = factory.access().signUp(user2);
+                }
 
                 messageManager(response);
             }
@@ -469,11 +483,11 @@ public class ControladorRegistro implements Initializable {
             errorApellido1.setVisible(true);
         } else if (node == campoApellido2) {
             errorApellido2.setVisible(true);
-        } else if (node == campoEmail) {
+        } else if (node == campoEmail && !actualizar) {
             errorEmail.setVisible(true);
-        } else if (node == campoContrasena) {
+        } else if (node == campoContrasena && !actualizar) {
             errorContrasena.setVisible(true);
-        } else if (node == campoRepiteContrasena) {
+        } else if (node == campoRepiteContrasena && !actualizar) {
             errorRepiteContrasena.setVisible(true);
         } else if (node == campoDireccion) {
             errorDireccion.setVisible(true);
@@ -501,11 +515,11 @@ public class ControladorRegistro implements Initializable {
             errorApellido1.setVisible(false);
         } else if (node == campoApellido2) {
             errorApellido2.setVisible(false);
-        } else if (node == campoEmail) {
+        } else if (node == campoEmail && !actualizar) {
             errorEmail.setVisible(false);
-        } else if (node == campoContrasena) {
+        } else if (node == campoContrasena && !actualizar) {
             errorContrasena.setVisible(false);
-        } else if (node == campoRepiteContrasena) {
+        } else if (node == campoRepiteContrasena && !actualizar) {
             errorRepiteContrasena.setVisible(false);
         } else if (node == campoDireccion) {
             errorDireccion.setVisible(false);
@@ -530,9 +544,11 @@ public class ControladorRegistro implements Initializable {
         switch (message.getType()) {
             case OK_RESPONSE:
                 botonRegistrar.setDisable(true);
-
-                showErrorDialog(AlertType.INFORMATION, "Información", "El registro se ha realizado con éxito.");
-
+                if (!actualizar) {
+                    showErrorDialog(AlertType.INFORMATION, "Información", "El registro se ha realizado con éxito.");
+                } else {
+                    showErrorDialog(AlertType.INFORMATION, "Información", "La actualización se ha realizado con éxito.");
+                }
                 factory.loadSignInWindow(stage, user.getLogin());
                 break;
             case SIGNUP_ERROR:
@@ -589,9 +605,11 @@ public class ControladorRegistro implements Initializable {
         campoApellido1.clear();
         campoApellido2.clear();
 
-        campoEmail.clear();
-        campoContrasena.clear();
-        campoRepiteContrasena.clear();
+        if (!actualizar) {
+            campoEmail.clear();
+            campoContrasena.clear();
+            campoRepiteContrasena.clear();
+        }
 
         campoDireccion.clear();
         campoCiudad.clear();
@@ -660,6 +678,42 @@ public class ControladorRegistro implements Initializable {
         // Recuperar el foco y colocar el cursor al final del texto sin seleccionar todo
         passwordFieldParam.requestFocus();
         passwordFieldParam.positionCaret(passwordFieldParam.getText().length());
+    }
+
+    private void actualizarInit() {
+        labelTitulo.setText("Actualizar Datos");
+        String[] nombreCompleto = user.getName().split(" ");
+
+        campoNombre.setText(nombreCompleto[0]);
+        campoApellido1.setText(nombreCompleto[1]);
+        campoApellido2.setText(nombreCompleto[2]);
+        campoEmail.setText(user.getLogin());
+        campoEmail.setDisable(true);
+        campoContrasena.setText(user.getPass());//QUITAR
+        campoContrasena.setDisable(true);
+        campoRepiteContrasena.setText(user.getPass());//QUITAR
+        campoRepiteContrasena.setVisible(false);
+        campoContrasenaVista.setVisible(false);
+        campoRepiteContrasenaVista.setVisible(false);
+        campoDireccion.setText(user.getStreet());
+        campoCiudad.setText(user.getCity());
+        campoCodigoPostal.setText(user.getZip());
+        if (user instanceof Cliente) {
+            campoSector.setText(user.getSector());
+        } else {
+            campoSector.setText(user.getDepartamento());
+        }
+        campoCIF.setText(user.getCif());
+
+        campoTelefono.setText(user.getTelefono());
+        checkActivo.setSelected(user.getActive());
+        //Faltan campos
+
+        botonRegistrar.setText("Actualizar Datos");
+
+        botonOjoContrasena.setVisible(false);
+        botonOjoRepiteContrasena.setVisible(false);;
+
     }
 
 }

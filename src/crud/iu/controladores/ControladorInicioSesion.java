@@ -28,6 +28,8 @@ import utilidades.Message;
 import utilidades.User;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
 import static crud.utilidades.ValidateUtilities.isValid;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 
 /**
  * Controlador FXML para la vista de inicio de sesión (SignIn). Este controlador
@@ -65,10 +67,65 @@ public class ControladorInicioSesion implements Initializable {
     private ImageView errorContrasena;  // Icono de error para el campo de contraseña
     @FXML
     private Button botonOjo;  // Botón para alternar la visibilidad de la contraseña
+    @FXML
+    private Button botonActualizar;
+
+    private ContextMenu contextMenu;  // Menú contextual personalizado
+    private Boolean actualizar = false;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
+        // Crear el menú contextual personalizado
+        contextMenu = new ContextMenu();
+        contextMenu.getStyleClass().add("context-menu");
+        contextMenu.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8);"
+                + "-fx-text-fill: #FFFFFF;"
+                + "-fx-font-size: 18px;"
+                + "-fx-font-weight: bold;"
+                + "-fx-font-family: 'Protest Strike';"
+                + "-fx-max-width: 250px;"
+                + "-fx-wrap-text: true;"
+                + "-fx-padding: 10px;"
+                + "-fx-border-width: 1;"
+                + "-fx-border-radius: 5;"
+                + "-fx-background-radius: 5;");
+
+        // Opción "Borrar campos" en el menú contextual
+        MenuItem clearFieldsItem = new MenuItem("Borrar campos");
+        clearFieldsItem.setStyle("-fx-font-size: 18px;"
+                + "-fx-font-weight: bold;"
+                + "-fx-font-family: 'Protest Strike';"
+                + "-fx-text-fill: #FFFFFF;"
+                + "-fx-background-color: transparent;"
+                + "-fx-max-width: 250px;"
+                + "-fx-wrap-text: true;");
+        clearFieldsItem.setOnAction(event -> handleClearFields());
+
+        // Opción "Salir" en el menú contextual
+        MenuItem exitItem = new MenuItem("Salir");
+        exitItem.setStyle("-fx-font-size: 18px;"
+                + "-fx-font-weight: bold;"
+                + "-fx-font-family: 'Protest Strike';"
+                + "-fx-text-fill: #FFFFFF;"
+                + "-fx-background-color: transparent;"
+                + "-fx-max-width: 250px;"
+                + "-fx-wrap-text: true;");
+        exitItem.setOnAction(event -> handleExit());
+
+        // Añadir las opciones personalizadas al menú contextual
+        contextMenu.getItems().addAll(clearFieldsItem, exitItem);
+
+        // Asignar el menú personalizado a cada campo de texto y eliminar el menú predeterminado
+        assignCustomContextMenu(campoEmail);
+        assignCustomContextMenu(campoContrasena);
+
+        // Asignar el menú contextual al GridPane
+        gridPane.setOnMouseClicked(event -> {
+            if (event.getButton() == MouseButton.SECONDARY) {
+                contextMenu.show(gridPane, event.getScreenX(), event.getScreenY());
+            }
+        });
         // Añadir listener a cada TextField o PasswordField en el GridPane
         for (Node node : gridPane.getChildren()) {
             if (node instanceof TextField || node instanceof PasswordField) {
@@ -172,6 +229,16 @@ public class ControladorInicioSesion implements Initializable {
     }
 
     /**
+     * Asigna el menú contextual personalizado a un campo de texto.
+     *
+     * @param textField El campo de texto al que se le asignará el menú
+     * contextual.
+     */
+    private void assignCustomContextMenu(TextField textField) {
+        textField.setContextMenu(contextMenu);  // Asignar el menú contextual personalizado
+    }
+
+    /**
      * Maneja la acción al mostrar la ventana de inicio de sesión.
      *
      * @param event El evento de acción.
@@ -198,7 +265,16 @@ public class ControladorInicioSesion implements Initializable {
     @FXML
     private void handleButtonLoginButton(ActionEvent event) {
 
-        LOGGER.info("Botón Iniciar Sesion presionado");
+        if (event.getSource().equals(botonActualizar)) {
+            actualizar = true;
+        } else {
+            actualizar = false;
+        }
+        if (actualizar) {
+            LOGGER.info("Botón Actualizar Sesion presionado");
+        } else {
+            LOGGER.info("Botón Iniciar Sesion presionado");
+        }
 
         hasError = false;
         // Verificar si todos los campos están llenos
@@ -251,7 +327,12 @@ public class ControladorInicioSesion implements Initializable {
         switch (message.getType()) {
             case LOGIN_OK:
                 botonIniciarSesion.setDisable(true);  // Deshabilitar el botón de inicio de sesión
-                factory.loadSignUpWindow(stage, (User) message.getObject());  // Cargar el SignUP
+                if (!actualizar) {
+
+                    factory.loadMainUserWindow(stage, (User) message.getObject());  // Cargar la ventana principal
+                } else {
+                    factory.loadSignUpWindow(stage, (User) message.getObject());  // Cargar el SignUP
+                }
                 break;
             case SIGNIN_ERROR:
                 campoEmail.setStyle("-fx-border-color: red;");
