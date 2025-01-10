@@ -256,7 +256,7 @@ public class ControladorInicioSesion implements Initializable {
      */
     @FXML
     private void handleHyperLinkRegistry(ActionEvent event) {
-        factoria.loadSignUpWindow(stage, null);  // Cargar la ventana de registro
+        factoria.cargarRegistro(stage, null);  // Cargar la ventana de registro
     }
 
     /**
@@ -314,7 +314,7 @@ public class ControladorInicioSesion implements Initializable {
             usuario.setCorreo(campoEmail.getText());
             usuario.setContrasena(campoContrasena.getText());
 
-            Message response = FactoriaUsuarios.getInstance().access().signIn(usuario);  // Enviar los datos de inicio de sesión al servidor
+            Message response = factoria.getUsuarioService("inicioSesion", usuario);  // Enviar los datos de inicio de sesión al servidor
 
             messageManager(response);  // Manejar la respuesta del servidor
         }
