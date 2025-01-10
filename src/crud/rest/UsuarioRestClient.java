@@ -5,7 +5,6 @@
  */
 package crud.rest;
 
-import crud.objetosTransferibles.Trabajador;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
@@ -13,25 +12,25 @@ import javax.ws.rs.core.GenericType;
 
 /**
  *
- * @author Ser_090
+ * @author 2dam
  */
-public class TrabajadorRestClient {
+public class UsuarioRestClient {
 
     private final WebTarget webTarget;
     private final Client cliente;
-    private static final String BASE_URI = "La url";
+    private static final String BASE_URI = "la url";
 
-    public TrabajadorRestClient() {
+    public UsuarioRestClient() {
         cliente = javax.ws.rs.client.ClientBuilder.newClient();
-        webTarget = cliente.target(BASE_URI).path("trabajador");
+        webTarget = cliente.target(BASE_URI).path("cliente");
     }
 
-    public void create_XML(Object requestEntity) throws WebApplicationException {
+    public <T> void create_XML(T requestEntity) throws WebApplicationException {
         //Hace la peticion
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                .post(javax.ws.rs.client.Entity.entity(requestEntity,
-                        javax.ws.rs.core.MediaType.APPLICATION_XML),
-                        Trabajador.class);
+                .post(javax.ws.rs.client.Entity.entity(
+                        requestEntity,
+                        javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
     public <T> T find_XML(Class<T> responseType, Long id) throws WebApplicationException {

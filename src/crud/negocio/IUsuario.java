@@ -5,17 +5,16 @@
  */
 package crud.negocio;
 
-import crud.objetosTransferibles.Trabajador;
 import java.util.Collection;
 
 /**
  *
  * @author Ser_090
  */
-public interface ITrabajador {
+public interface IUsuario<T> {
 
-    public Collection<Trabajador> getAllUsers();
+    public Collection<T> getAllUsers();
 
-    public void createUser(Trabajador trabajador);
+    public void createUser(T usuario);
 
 }
