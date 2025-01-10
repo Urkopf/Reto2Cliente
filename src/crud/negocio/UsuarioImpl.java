@@ -17,9 +17,11 @@ import javax.ws.rs.core.GenericType;
 public class UsuarioImpl<T> implements IUsuario<T> {
 
     private UsuarioRestClient usuarioCliente;
+    private String tipo;
 
-    public UsuarioImpl() {
-        usuarioCliente = new UsuarioRestClient();
+    public UsuarioImpl(String tipo) {
+        this.tipo = tipo;
+        usuarioCliente = new UsuarioRestClient(tipo);
     }
 
     @Override

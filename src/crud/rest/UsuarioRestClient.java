@@ -20,9 +20,9 @@ public class UsuarioRestClient {
     private final Client cliente;
     private static final String BASE_URI = "la url";
 
-    public UsuarioRestClient() {
+    public UsuarioRestClient(String tipo) {
         cliente = javax.ws.rs.client.ClientBuilder.newClient();
-        webTarget = cliente.target(BASE_URI).path("cliente");
+        webTarget = cliente.target(BASE_URI).path(tipo);
     }
 
     public <T> void create_XML(T requestEntity) throws WebApplicationException {
