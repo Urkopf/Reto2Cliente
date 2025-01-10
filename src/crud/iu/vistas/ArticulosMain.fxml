@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Pagination?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane fx:id="AnchorPane" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="crud.iu.controladores.ArticulosMainController">
+    <children>
+        <BorderPane fx:id="BorderPane" prefHeight="768" prefWidth="1024">
+            <top>
+                <fx:include source="MenuVentanas.fxml" />
+            </top>
+
+            <center>
+                <VBox spacing="10">
+                    <HBox fx:id="HBoxSuperior" alignment="CENTER_LEFT" spacing="10">
+                        <GridPane fx:id="gridSuperior" prefHeight="35.0" prefWidth="983.0">
+                            <children>
+                                <Button fx:id="botonNuevo" minWidth="30" prefWidth="100.0" text="Nuevo" />
+                                <Button fx:id="botonReiniciar" minWidth="30" prefHeight="35.0" prefWidth="153.0" text="Reiniciar tabla" GridPane.columnIndex="2" GridPane.halignment="RIGHT">
+                                    <graphic>
+                                        <ImageView>
+                                            <Image url="@../resources/iconos/search.png" />
+                                        </ImageView>
+                                    </graphic>
+                                </Button>
+                                <Button fx:id="botonBusqueda" text="Búsqueda avanzada" GridPane.columnIndex="3" GridPane.halignment="RIGHT" />
+                            </children>
+                            <columnConstraints>
+                                <ColumnConstraints />
+                                <ColumnConstraints hgrow="ALWAYS" maxWidth="421.5651660756222" minWidth="0.0" prefWidth="318.88700871891297" />
+                                <ColumnConstraints hgrow="ALWAYS" maxWidth="421.5651660756222" minWidth="0.0" prefWidth="364.46088547820216" />
+                                <ColumnConstraints maxWidth="270.469569924829" minWidth="25.04354439113456" prefWidth="196.173915627954" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints />
+                            </rowConstraints>
+                        </GridPane>
+                    </HBox>
+
+                    <TableView fx:id="tablaPedidos" prefHeight="636.0" prefWidth="1261.0">
+                        <columns>
+                            <TableColumn fx:id="columna1" prefWidth="93.49563491344452" text="ID" />
+                            <TableColumn fx:id="columna2" prefWidth="166.12178802490234" text="ID Usuario" />
+                            <TableColumn fx:id="columna3" prefWidth="147.75653076171875" text="CIF" />
+                            <TableColumn fx:id="columna4" prefWidth="205.35665893554688" text="FECHA PEDIDO" />
+                            <TableColumn fx:id="columna5" prefWidth="177.80877685546875" text="ESTADO" />
+                            <TableColumn fx:id="columna6" minWidth="0.0" prefWidth="138.57391357421875" text="TOTAL" />
+                        </columns>
+                    </TableView>
+                </VBox>
+            </center>
+
+            <bottom>
+                <GridPane fx:id="gridInferior" hgap="10" prefHeight="74.0" prefWidth="873.0" vgap="10" AnchorPane.bottomAnchor="0">
+                    <!-- Botón Atrás -->
+                    <Button fx:id="botonAtras" text="Atrás" GridPane.columnIndex="0" GridPane.halignment="LEFT" GridPane.hgrow="NEVER">
+                        <GridPane.margin>
+                            <Insets bottom="29.0" left="20.0" />
+                        </GridPane.margin>
+                    </Button>
+
+                    <!-- Paginador en el centro -->
+                    <Pagination fx:id="paginador" maxPageIndicatorCount="3" pageCount="10" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.hgrow="NEVER" GridPane.valignment="CENTER">
+                        <GridPane.margin>
+                            <Insets />
+                        </GridPane.margin>
+                    </Pagination>
+
+                    <!-- Botón Ver -->
+                    <Button fx:id="botonEliminar" text="Eliminar" GridPane.columnIndex="2" GridPane.halignment="RIGHT">
+                        <GridPane.margin>
+                            <Insets bottom="29.0" right="20.0" />
+                        </GridPane.margin>
+                    </Button>
+                    <!-- Botón Ver -->
+                    <Button fx:id="botonDetalles" text="Detalles" GridPane.columnIndex="3" GridPane.halignment="RIGHT">
+                        <GridPane.margin>
+                            <Insets bottom="29.0" right="20.0" />
+                        </GridPane.margin>
+                    </Button>
+                    <Button fx:id="botonGuardar" text="Guardar cambios" GridPane.columnIndex="4">
+                        <GridPane.margin>
+                            <Insets bottom="29.0" right="20.0" />
+                        </GridPane.margin>
+                    </Button>
+
+                    <!-- Configuración de columnas -->
+                    <columnConstraints>
+                        <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" maxWidth="-Infinity" />
+                        <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" />
+                        <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="10.0" />
+                        <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="10.0" />
+                        <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="94.87831722035992" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints />
+                    </rowConstraints>
+                </GridPane>
+            </bottom>
+        </BorderPane>
+    </children>
+</AnchorPane>

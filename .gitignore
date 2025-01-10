@@ -1,0 +1,23 @@
+# Configuraciones de NetBeans
+nbproject/private/
+nbproject/configs/
+nbproject/Makefile-*
+
+# Archivos de compilación
+build/
+dist/
+
+# Logs y temporales
+*.log
+*.tmp
+*.bak
+
+# Dependencias externas
+lib/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos de respaldo de editores
+*.swp
