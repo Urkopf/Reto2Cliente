@@ -5,6 +5,7 @@
  */
 package crud.negocio;
 
+import crud.objetosTransferibles.Usuario;
 import crud.rest.UsuariosRestFull;
 import java.util.Collection;
 import java.util.List;
@@ -19,9 +20,9 @@ public class UsuarioImpl<T> implements IUsuario<T> {
     private UsuariosRestFull usuarioCliente;
     private String tipo;
 
-    public UsuarioImpl(String tipo) {
+    public UsuarioImpl(String tipo, Usuario usuario) {
         this.tipo = tipo;
-        usuarioCliente = new UsuariosRestFull(tipo);
+        usuarioCliente = new UsuariosRestFull(tipo, usuario);
     }
 
     @Override
@@ -45,6 +46,5 @@ public class UsuarioImpl<T> implements IUsuario<T> {
         }
 
     }
-
 
 }
