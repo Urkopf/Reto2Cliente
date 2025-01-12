@@ -28,7 +28,7 @@ public class PedidosRestFull {
     private WebTarget webTarget;
     private Client client;
     private static final String BASE_URI
-            = ResourceBundle.getBundle("crud.recursos.configCliente")
+            = ResourceBundle.getBundle("recursos.configCliente")
                     .getString("BASE_URI");
 
     public PedidosRestFull() {

@@ -1,6 +1,6 @@
 package crud.iu.controladores;
 
-import business.ApplicationClientFactory;
+//import business.ApplicationClientFactory;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -41,7 +41,7 @@ public class ApplicationClientSignUpController implements Initializable {
 
     private static final Logger LOGGER = Logger.getLogger(ApplicationClientSignUpController.class.getName());
     private Stage stage = new Stage();
-    private ApplicationClientFactory factory = ApplicationClientFactory.getInstance();
+    //   private ApplicationClientFactory factory = ApplicationClientFactory.getInstance();
     private User user;
     private User user2;
     private boolean hasError = false;  // Indica si hay errores en el formulario

@@ -28,7 +28,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import utilidades.Message;
+//import utilidades.Message;
 import crud.objetosTransferibles.Usuario;
 import crud.objetosTransferibles.Cliente;
 import crud.objetosTransferibles.Trabajador;
@@ -270,8 +270,8 @@ public class ControladorRegistro implements Initializable {
 
             // Asignar manejadores de eventos a los botones
             botonRegistrar.addEventHandler(ActionEvent.ACTION, this::handleButtonRegister);
-            botonCancelar.addEventHandler(ActionEvent.ACTION, this::handleButtonCancel);
-            checkActivo.addEventHandler(ActionEvent.ACTION, this::handleActiveCheckBoxChange);
+//            botonCancelar.addEventHandler(ActionEvent.ACTION, this::handleButtonCancel);
+            //           checkActivo.addEventHandler(ActionEvent.ACTION, this::handleActiveCheckBoxChange);
 
             // Configurar la visibilidad de las contraseñas
             botonOjoContrasena.setOnMousePressed(event -> {
@@ -380,7 +380,7 @@ public class ControladorRegistro implements Initializable {
             showErrorImage(campoCodigoPostal);
             hasError = true;
         }
-
+        /*
         // Si hay errores, no continuar
         if (hasError) {
             LOGGER.severe("Hay errores en el formulario.");
@@ -414,8 +414,8 @@ public class ControladorRegistro implements Initializable {
      * @param event El evento de acción.
      *
      * @author Urko
-     */
-    @FXML
+         */
+ /*   @FXML
     private void handleButtonCancel(ActionEvent event) {
         // Crear la alerta de confirmación
 
@@ -424,15 +424,15 @@ public class ControladorRegistro implements Initializable {
             factoria.loadSignInWindow(stage, "");
         }
     }
-
-    /**
-     * Metodo para visualizar una alerta de confirmacion de registro.
-     *
-     * @return true si pulsa aceptar o false si pulsa cancelar.
-     *
-     * @author Urko
-     */
-    private boolean confirmNoActiveUserRegister() {
+         */
+        /**
+         * Metodo para visualizar una alerta de confirmacion de registro.
+         *
+         * @return true si pulsa aceptar o false si pulsa cancelar.
+         *
+         * @author Urko
+         */
+        /*    private boolean confirmNoActiveUserRegister() {
         // Crear la alerta de confirmación
         return showConfirmationDialog("Confirmación de Registro", "Si el usuario esta 'No Activo', no podrá iniciar sesión ¿Desea continuar el registro?");
 
@@ -443,19 +443,21 @@ public class ControladorRegistro implements Initializable {
      *
      * @param event El evento de acción.
      * @author Sergio
-     */
-    @FXML
-    private void handleActiveCheckBoxChange(ActionEvent event) {
-        avisoNoActivo.setVisible(!checkActivo.isSelected());  // Mostrar/ocultar la advertencia
-    }
+         */
+        @FXML
+        private void handleActiveCheckBoxChange
+        (ActionEvent event
 
-    /**
-     * Muestra el icono de error en un campo que contiene un error de
-     * validación.
-     *
-     * @param node El nodo que representa el campo.
-     * @author Urko
-     */
+            ) {
+        avisoNoActivo.setVisible(!checkActivo.isSelected());  // Mostrar/ocultar la advertencia
+        }
+        /**
+         * Muestra el icono de error en un campo que contiene un error de
+         * validación.
+         *
+         * @param node El nodo que representa el campo.
+         * @author Urko
+         */
     private void showErrorImage(Node node) {
         node.getStyleClass().add("error-field");  // Añadir clase CSS para marcar el error
         showErrorIcon(node);  // Mostrar icono de error

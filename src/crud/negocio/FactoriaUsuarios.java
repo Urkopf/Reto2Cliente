@@ -5,8 +5,8 @@
  */
 package crud.negocio;
 
-import crud.iu.controladores.ControladorInicioSesion;
-import crud.iu.controladores.ControladorRegistro;
+//import crud.iu.controladores.ControladorInicioSesion;
+//import crud.iu.controladores.ControladorRegistro;
 import crud.objetosTransferibles.Usuario;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -54,7 +54,7 @@ public class FactoriaUsuarios {
                 throw new IllegalArgumentException("Tipo de usuario no valido: " + tipo);
         }
     }
-
+    /*
     //Ventanas
     public void cargarInicioSesion(Stage stage, String email) {
         try {
@@ -84,5 +84,5 @@ public class FactoriaUsuarios {
             showErrorDialog(AlertType.ERROR, "Error", "No se puede cargar la ventana de Inicio de sesión");
         }
     }
-
+     */
 }

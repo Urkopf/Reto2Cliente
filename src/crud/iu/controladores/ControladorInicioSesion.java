@@ -24,7 +24,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import utilidades.Message;
+//import utilidades.Message;
 import crud.objetosTransferibles.Usuario;
 import crud.objetosTransferibles.Cliente;
 import crud.objetosTransferibles.Trabajador;
@@ -314,9 +314,8 @@ public class ControladorInicioSesion implements Initializable {
             usuario.setCorreo(campoEmail.getText());
             usuario.setContrasena(campoContrasena.getText());
 
-            Message response = factoria.getUsuarioService("inicioSesion", usuario);  // Enviar los datos de inicio de sesión al servidor
-
-            messageManager(response);  // Manejar la respuesta del servidor
+//            Message response = factoria.getUsuarioService("inicioSesion", usuario);  // Enviar los datos de inicio de sesión al servidor
+//            messageManager(response);  // Manejar la respuesta del servidor
         }
     }
 
@@ -325,7 +324,7 @@ public class ControladorInicioSesion implements Initializable {
      *
      * @param message El mensaje de respuesta del servidor.
      */
-    private void messageManager(Message message) {
+    /*   private void messageManager(Message message) {
         switch (message.getType()) {
             case LOGIN_OK:
                 botonIniciarSesion.setDisable(true);  // Deshabilitar el botón de inicio de sesión

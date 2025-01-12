@@ -7,8 +7,11 @@ package crud.negocio;
 
 import crud.objetosTransferibles.Pedido;
 import crud.rest.PedidosRestFull;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.core.GenericType;
 
 /**
@@ -17,17 +20,19 @@ import javax.ws.rs.core.GenericType;
  */
 public class PedidoImpl implements IPedido {
 
-    private PedidosRestFull cliente;
+    private PedidosRestFull cliente = new PedidosRestFull();
+
+    private Logger LOGGER = Logger.getLogger(PedidoImpl.class.getName());
 
     @Override
     public Collection<Pedido> getAllPedidos() {
-        List<Pedido> pedidos = null;
         try {
-            pedidos = cliente.findAll_XML(new GenericType<List<Pedido>>() {
+            return cliente.findAll_XML(new GenericType<List<Pedido>>() {
             });
         } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error al obtener los pedidos desde el servidor REST", e);
+            return new ArrayList<>(); // Devuelve una lista vacía si falla la conexión
         }
-        return pedidos;
     }
 
     @Override
