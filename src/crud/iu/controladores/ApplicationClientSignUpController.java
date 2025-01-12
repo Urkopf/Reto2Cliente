@@ -29,9 +29,6 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import utilidades.Message;
 import utilidades.User;
-import static utilities.AlertUtilities.showConfirmationDialog;
-import static utilities.AlertUtilities.showErrorDialog;
-import static utilities.ValidateUtilities.isValid;
 
 /**
  * Controlador FXML para la vista de registro (SignUp). Este controlador

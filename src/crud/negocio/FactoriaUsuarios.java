@@ -19,7 +19,7 @@ public class FactoriaUsuarios {
     private FactoriaUsuarios() {
     }
 
-    public static synchronized FactoriaUsuarios getInstance() {
+    public static FactoriaUsuarios getInstance() {
         if (instance == null) {
             instance = new FactoriaUsuarios();
         }
