@@ -14,7 +14,7 @@ import java.util.Collection;
  */
 public interface IPedido {
 
-    public Collection<Pedido> getAllArticulos();
+    public Collection<Pedido> getAllPedidos();
 
-    public void crearArticulo(Pedido pedido);
+    public void crearPedido(Pedido pedido);
 }

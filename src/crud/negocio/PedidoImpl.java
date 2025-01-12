@@ -6,7 +6,10 @@
 package crud.negocio;
 
 import crud.objetosTransferibles.Pedido;
+import crud.rest.PedidosRestFull;
 import java.util.Collection;
+import java.util.List;
+import javax.ws.rs.core.GenericType;
 
 /**
  *
@@ -14,14 +17,26 @@ import java.util.Collection;
  */
 public class PedidoImpl implements IPedido {
 
+    private PedidosRestFull cliente;
+
     @Override
-    public Collection<Pedido> getAllArticulos() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Collection<Pedido> getAllPedidos() {
+        List<Pedido> pedidos = null;
+        try {
+            pedidos = cliente.findAll_XML(new GenericType<List<Pedido>>() {
+            });
+        } catch (Exception e) {
+        }
+        return pedidos;
     }
 
     @Override
-    public void crearArticulo(Pedido pedido) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void crearPedido(Pedido pedido) {
+        try {
+            cliente.create_XML(pedido);
+
+        } catch (Exception e) {
+        }
     }
 
 }
