@@ -87,6 +87,14 @@ public class Pedido implements Serializable {
         this.cliente = cliente;
     }
 
+    public Long getUsuarioId() {
+        return cliente != null ? cliente.getId() : null; // Devuelve el id del cliente si el cliente no es null
+    }
+
+    public void setUsuarioId(Long id) {
+        this.cliente.setId(id);
+    }
+
     @XmlTransient
     public Set<PedidoArticulo> getPedidoArticulos() {
         return pedidoArticulos;
