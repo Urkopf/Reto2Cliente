@@ -35,6 +35,7 @@ import crud.objetosTransferibles.Trabajador;
 import static crud.utilidades.AlertUtilities.showConfirmationDialog;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
 import static crud.utilidades.ValidateUtilities.isValid;
+import javafx.scene.control.ComboBox;
 
 /**
  * Controlador FXML para la vista de registro (SignUp). Este controlador
@@ -116,6 +117,10 @@ public class ControladorRegistro implements Initializable {
     @FXML
     private ImageView errorTelefono;
     @FXML
+    private ComboBox comboDepartamento;
+    @FXML
+    private ComboBox comboCategoria;
+    @FXML
     private HBox avisoNoActivo;  // Caja de advertencia para mostrar información adicional
     @FXML
     private Button botonOjoContrasena;  // Botón para alternar la visibilidad de la contraseña
@@ -124,6 +129,7 @@ public class ControladorRegistro implements Initializable {
 
     private ContextMenu contextMenu;  // Menú contextual personalizado
     private boolean actualizar;
+    private boolean esCliente;
 
     /**
      * Inicializa el controlador y configura el menú contextual, los eventos de
@@ -189,6 +195,8 @@ public class ControladorRegistro implements Initializable {
         assignCustomContextMenu(campoRepiteContrasena);
         assignCustomContextMenu(campoSector);
         assignCustomContextMenu(campoTelefono);
+        assignCustomContextMenuCombo(comboDepartamento);
+        assignCustomContextMenuCombo(comboCategoria);
 
         // Asignar el menú contextual al GridPane
         gridPane.setOnMouseClicked(event -> {
@@ -199,7 +207,7 @@ public class ControladorRegistro implements Initializable {
 
         // Añadir listener a cada TextField o PasswordField en el GridPane
         for (Node node : gridPane.getChildren()) {
-            if (node instanceof TextField || node instanceof PasswordField) {
+            if (node instanceof TextField || node instanceof PasswordField || node instanceof ComboBox) {
                 node.setOnKeyTyped(event -> hideErrorImage(node));  // Ocultar error tan pronto como se escribe algo
             }
         }
@@ -230,6 +238,11 @@ public class ControladorRegistro implements Initializable {
     private void assignCustomContextMenu(TextField textField) {
         // Asignar el menú contextual personalizado y eliminar el predeterminado
         textField.setContextMenu(contextMenu);
+    }
+
+    private void assignCustomContextMenuCombo(ComboBox combobox) {
+        // Asignar el menú contextual personalizado y eliminar el predeterminado
+        combobox.setContextMenu(contextMenu);
     }
 
     /**
@@ -276,23 +289,23 @@ public class ControladorRegistro implements Initializable {
             // Configurar la visibilidad de las contraseñas
             botonOjoContrasena.setOnMousePressed(event -> {
                 if (event.getButton() == MouseButton.PRIMARY) {
-                    togglePasswordVisibility(campoContrasena, campoContrasenaVista);
+                    utilidadVisibilidadContrasena(campoContrasena, campoContrasenaVista);
                 }
             });
             botonOjoRepiteContrasena.setOnMousePressed(event -> {
                 if (event.getButton() == MouseButton.PRIMARY) {
-                    togglePasswordVisibility(campoRepiteContrasena, campoRepiteContrasenaVista);
+                    utilidadVisibilidadContrasena(campoRepiteContrasena, campoRepiteContrasenaVista);
                 }
             });
 
             botonOjoContrasena.setOnMouseReleased(event -> {
                 if (event.getButton() == MouseButton.PRIMARY) {
-                    togglePasswordVisibilityReleased(campoContrasena, campoContrasenaVista);
+                    utilidadOcultacionContrasena(campoContrasena, campoContrasenaVista);
                 }
             });
             botonOjoRepiteContrasena.setOnMouseReleased(event -> {
                 if (event.getButton() == MouseButton.PRIMARY) {
-                    togglePasswordVisibilityReleased(campoRepiteContrasena, campoRepiteContrasenaVista);
+                    utilidadOcultacionContrasena(campoRepiteContrasena, campoRepiteContrasenaVista);
                 }
             });
             configureMnemotecnicKeys();  // Configurar teclas de acceso rápido
@@ -448,6 +461,24 @@ public class ControladorRegistro implements Initializable {
         private void handleActiveCheckBoxChange
         (ActionEvent event
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             ) {
         avisoNoActivo.setVisible(!checkActivo.isSelected());  // Mostrar/ocultar la advertencia
         }
@@ -535,6 +566,10 @@ public class ControladorRegistro implements Initializable {
             errorSector.setVisible(false);
         } else if (node == campoTelefono) {
             errorTelefono.setVisible(false);
+        } else if (node == comboDepartamento) {
+            errorSector.setVisible(false);
+        } else if (node == comboCategoria) {
+            errorTelefono.setVisible(false);
         }
     }
 
@@ -618,7 +653,11 @@ public class ControladorRegistro implements Initializable {
         campoDireccion.clear();
         campoCiudad.clear();
         campoCodigoPostal.clear();
+        campoSector.clear();
+        campoTelefono.clear();
+        comboDepartamento.getSelectionModel().clearSelection();
         labelTitulo.requestFocus();  // Devuelve el foco al título
+
     }
 
     /**
@@ -640,7 +679,7 @@ public class ControladorRegistro implements Initializable {
      * @param textFieldParam El TextField alternativo para ver la contraseña.
      * @author Urko
      */
-    private void togglePasswordVisibility(PasswordField passwordFieldParam, TextField textFieldParam) {
+    private void utilidadVisibilidadContrasena(PasswordField passwordFieldParam, TextField textFieldParam) {
         textFieldParam.setText(passwordFieldParam.getText());  // Copiar contenido del PasswordField al TextField
         passwordFieldParam.setVisible(false);
         textFieldParam.setVisible(true);
@@ -666,7 +705,7 @@ public class ControladorRegistro implements Initializable {
      * contraseña.
      * @author Sergio
      */
-    private void togglePasswordVisibilityReleased(PasswordField passwordFieldParam, TextField textFieldParam) {
+    private void utilidadOcultacionContrasena(PasswordField passwordFieldParam, TextField textFieldParam) {
         passwordFieldParam.setText(textFieldParam.getText());  // Copiar contenido del TextField al PasswordField
         passwordFieldParam.setVisible(true);
         textFieldParam.setVisible(false);
@@ -686,16 +725,14 @@ public class ControladorRegistro implements Initializable {
 
     private void actualizarInit() {
         labelTitulo.setText("Actualizar Datos");
-        String[] nombreCompleto = user.getName().split(" ");
+        String[] nombreCompleto = user.getNombre().split(" ");
 
         campoNombre.setText(nombreCompleto[0]);
         campoApellido1.setText(nombreCompleto[1]);
         campoApellido2.setText(nombreCompleto[2]);
-        campoEmail.setText(user.getLogin());
+        campoEmail.setText(user.getCorreo());
         campoEmail.setDisable(true);
-        campoContrasena.setText(user.getPass());//QUITAR
         campoContrasena.setDisable(true);
-        campoRepiteContrasena.setText(user.getPass());//QUITAR
         campoRepiteContrasena.setVisible(false);
         campoContrasenaVista.setVisible(false);
         campoRepiteContrasenaVista.setVisible(false);
@@ -704,13 +741,14 @@ public class ControladorRegistro implements Initializable {
         campoCodigoPostal.setText(user.getCodPostal());
         if (user instanceof Cliente) {
             campoSector.setText(((Cliente) user).getSector());
+            campoTelefono.setText(((Cliente) user).getTelefono());
         } else {
-            campoSector.setText(((Trabajador) user).getDepartamento());
+            comboDepartamento.getSelectionModel().select(((Trabajador) user).getDepartamento());
+            comboCategoria.getSelectionModel().select(((Trabajador) user).getCategoria());
         }
         campoCIF.setText(user.getCif());
 
-        campoTelefono.setText(user.getTelefono());
-        checkActivo.setSelected(user.getActive());
+        checkActivo.setSelected(user.getActivo());
         //Faltan campos
 
         botonRegistrar.setText("Actualizar Datos");

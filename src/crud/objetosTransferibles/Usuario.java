@@ -32,6 +32,8 @@ public class Usuario implements Serializable {
 
     private String cif;
 
+    private Boolean activo;
+
     public Usuario() {
     }
 
@@ -98,6 +100,14 @@ public class Usuario implements Serializable {
 
     public void setCif(String cif) {
         this.cif = cif;
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
     }
 
     @Override
