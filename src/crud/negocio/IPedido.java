@@ -5,6 +5,7 @@
  */
 package crud.negocio;
 
+import crud.excepciones.LogicaNegocioException;
 import crud.objetosTransferibles.Pedido;
 import java.util.Collection;
 
@@ -14,7 +15,11 @@ import java.util.Collection;
  */
 public interface IPedido {
 
-    public Collection<Pedido> getAllPedidos();
+    public Collection<Pedido> getAllPedidos() throws LogicaNegocioException;
 
-    public void crearPedido(Pedido pedido);
+    public void crearPedido(Pedido pedido) throws LogicaNegocioException;
+
+    public void actualizarPedido(Pedido pedido) throws LogicaNegocioException;
+
+    public void borrarPedido(Pedido pedido) throws LogicaNegocioException;
 }
