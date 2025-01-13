@@ -139,9 +139,9 @@
                                             <TableColumn fx:id="columnaUnidades2" prefWidth="114.36529541015625" resizable="false" text="Unidades" />
                                             <TableColumn fx:id="columnaPrecio2" prefWidth="147.75653076171875" resizable="false" text="Precio" />
                                         </columns>
-                                 <padding>
+                                 <VBox.margin>
                                     <Insets left="20.0" />
-                                 </padding>
+                                 </VBox.margin>
                                     </TableView>
                                     <Button fx:id="botonEliminar" mnemonicParsing="false" text="Eliminar artículo">
                                         <VBox.margin>

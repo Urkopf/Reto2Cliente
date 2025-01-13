@@ -196,7 +196,7 @@ public class ControladorInicioSesion implements Initializable {
                 }
             });
 
-            configureMnemotecnicKeys();  // Configurar teclas mnemotécnicas
+            configurarTeclasMnemotecnicas();  // Configurar teclas mnemotécnicas
             stage.show();  // Mostrar el escenario
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al inicializar el stage", e);
@@ -207,7 +207,7 @@ public class ControladorInicioSesion implements Initializable {
      * Configura las teclas de acceso rápido para los botones de iniciar sesión
      * y registrar.
      */
-    private void configureMnemotecnicKeys() {
+    private void configurarTeclasMnemotecnicas() {
         stage.getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.isAltDown() && event.getCode() == KeyCode.I) {
                 botonIniciarSesion.fire();  // Simula el clic en el botón Iniciar sesión
@@ -280,7 +280,7 @@ public class ControladorInicioSesion implements Initializable {
 
         hasError = false;
         // Verificar si todos los campos están llenos
-        if (!areAllFieldsFilled()) {
+        if (!comprobarCamposCompletos()) {
             LOGGER.severe("Error: Todos los campos deben ser completados.");
             for (Node node : gridPane.getChildren()) {
                 if (node instanceof TextField || node instanceof PasswordField) {
@@ -324,7 +324,7 @@ public class ControladorInicioSesion implements Initializable {
      *
      * @param message El mensaje de respuesta del servidor.
      */
-    /*   private void messageManager(Message message) {
+    /*  private void messageManager(Message message) {
         switch (message.getType()) {
             case LOGIN_OK:
                 botonIniciarSesion.setDisable(true);  // Deshabilitar el botón de inicio de sesión
@@ -362,7 +362,7 @@ public class ControladorInicioSesion implements Initializable {
      *
      * @return true si todos los campos están llenos, false en caso contrario.
      */
-    private boolean areAllFieldsFilled() {
+    private boolean comprobarCamposCompletos() {
         for (Node node : gridPane.getChildren()) {
             if ((node instanceof TextField || node instanceof PasswordField) && (node != campoContrasenaVista)) {
                 if (((TextField) node).getText() == null || ((TextField) node).getText().isEmpty()) {
