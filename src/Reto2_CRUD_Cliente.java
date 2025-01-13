@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 
+import crud.negocio.FactoriaPedidos;
 import crud.negocio.FactoriaUsuarios;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -26,9 +27,11 @@ public class Reto2_CRUD_Cliente extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        FactoriaUsuarios factoria = FactoriaUsuarios.getInstance();
+        //FactoriaUsuarios factoria = FactoriaUsuarios.getInstance();
+        FactoriaPedidos factoriaPedidos = FactoriaPedidos.getInstance();
 
-        factoria.cargarInicioSesion(stage, "");
+        //factoria.cargarInicioSesion(stage, "");
+        factoriaPedidos.cargarPedidosPrincipal(stage);
     }
 
 }

@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="AnchorPane" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="crud.iu.controladores.PedidosPrincipalController">
+<AnchorPane fx:id="AnchorPane" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="crud.iu.controladores.ControladorPedidosPrincipal">
     <children>
         <BorderPane fx:id="BorderPane" prefHeight="768" prefWidth="1024">
             <top>
@@ -51,12 +51,12 @@
 
                     <TableView fx:id="tablaPedidos" prefHeight="636.0" prefWidth="1261.0">
                         <columns>
-                            <TableColumn fx:id="columna1" prefWidth="93.49563491344452" text="ID" />
-                            <TableColumn fx:id="columna2" prefWidth="166.12178802490234" text="ID Usuario" />
-                            <TableColumn fx:id="columna3" prefWidth="147.75653076171875" text="CIF" />
-                            <TableColumn fx:id="columna4" prefWidth="205.35665893554688" text="FECHA PEDIDO" />
-                            <TableColumn fx:id="columna5" prefWidth="177.80877685546875" text="ESTADO" />
-                            <TableColumn fx:id="columna6" minWidth="0.0" prefWidth="138.57391357421875" text="TOTAL" />
+                            <TableColumn fx:id="columnaId" prefWidth="93.49563491344452" text="ID" />
+                            <TableColumn fx:id="columnaUsuarioId" prefWidth="166.12178802490234" text="ID Usuario" />
+                            <TableColumn fx:id="columnaCif" prefWidth="147.75653076171875" text="CIF" />
+                            <TableColumn fx:id="columnaFecha" prefWidth="205.35665893554688" text="FECHA PEDIDO" />
+                            <TableColumn fx:id="columnaEstado" prefWidth="177.80877685546875" text="ESTADO" />
+                            <TableColumn fx:id="columnaTotal" minWidth="0.0" prefWidth="138.57391357421875" text="TOTAL" />
                         </columns>
                     </TableView>
                 </VBox>

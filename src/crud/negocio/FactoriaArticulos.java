@@ -5,13 +5,11 @@
  */
 package crud.negocio;
 
-import crud.objetosTransferibles.Articulo;
-import java.util.List;
 import java.util.logging.Logger;
 
 /**
  *
- * @author 2dam
+ * @author Sergio
  */
 public class FactoriaArticulos {
 
@@ -30,12 +28,7 @@ public class FactoriaArticulos {
         return instance;
     }
 
-    public List<Articulo> getAllArticulos() {
-        return (List<Articulo>) new ArticuloImpl().getAllArticulos();
+    public IArticulo acceso() {
+        return new ArticuloImpl();
     }
-
-    public void createArticulo(Articulo articulo) {
-        new ArticuloImpl().crearArticulo(articulo);
-    }
-
 }

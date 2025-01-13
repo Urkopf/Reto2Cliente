@@ -5,6 +5,7 @@
  */
 package crud.negocio;
 
+import crud.excepciones.LogicaNegocioException;
 import crud.objetosTransferibles.Articulo;
 import crud.rest.ArticulosRestFull;
 import java.util.Collection;
@@ -24,19 +25,41 @@ public class ArticuloImpl implements IArticulo {
     }
 
     @Override
-    public Collection<Articulo> getAllArticulos() {
+    public Collection<Articulo> getAllArticulos() throws LogicaNegocioException {
         List<Articulo> articulos = null;
         try {
             articulos = cliente.findAll_XML(new GenericType<List<Articulo>>() {
             });
         } catch (Exception e) {
+            throw new LogicaNegocioException("Error");
         }
         return articulos;
     }
 
     @Override
-    public void crearArticulo(Articulo articulo) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void crearArticulo(Articulo articulo) throws LogicaNegocioException {
+        try {
+            cliente.create_XML(articulo);
+        } catch (Exception e) {
+            throw new LogicaNegocioException("Error");
+        }
+    }
+
+    @Override
+    public void actualizarArticulo(Articulo articulo) throws LogicaNegocioException {
+        try {
+            cliente.edit_XML(articulo);
+        } catch (Exception e) {
+        }
+    }
+
+    @Override
+    public void borrarArticulo(Articulo articulo) throws LogicaNegocioException {
+        try {
+            cliente.remove(articulo.getId());
+        } catch (Exception e) {
+            throw new LogicaNegocioException("Error");
+        }
     }
 
 }

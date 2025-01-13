@@ -5,10 +5,14 @@
  */
 package crud.negocio;
 
+import crud.excepciones.LogicaNegocioException;
 import crud.objetosTransferibles.Pedido;
 import crud.rest.PedidosRestFull;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.core.GenericType;
 
 /**
@@ -17,26 +21,45 @@ import javax.ws.rs.core.GenericType;
  */
 public class PedidoImpl implements IPedido {
 
-    private PedidosRestFull cliente;
+    private PedidosRestFull cliente = new PedidosRestFull();
+
+    private Logger LOGGER = Logger.getLogger(PedidoImpl.class.getName());
 
     @Override
-    public Collection<Pedido> getAllPedidos() {
-        List<Pedido> pedidos = null;
+    public Collection<Pedido> getAllPedidos() throws LogicaNegocioException {
         try {
-            pedidos = cliente.findAll_XML(new GenericType<List<Pedido>>() {
+            return cliente.findAll_XML(new GenericType<List<Pedido>>() {
             });
         } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error al obtener los pedidos desde el servidor REST", e);
+            //throw new LogicaNegocioException("Error");
+            return new ArrayList<>(); // Devuelve una lista vacía si falla la conexión
+
         }
-        return pedidos;
+
     }
 
     @Override
-    public void crearPedido(Pedido pedido) {
+    public void crearPedido(Pedido pedido) throws LogicaNegocioException {
         try {
             cliente.create_XML(pedido);
-
         } catch (Exception e) {
+            throw new LogicaNegocioException("Error");
         }
+    }
+
+    @Override
+    public void actualizarPedido(Pedido pedido) throws LogicaNegocioException {
+        try {
+            cliente.edit_XML(pedido);
+        } catch (Exception e) {
+            throw new LogicaNegocioException("Error");
+        }
+    }
+
+    @Override
+    public void borrarPedido(Pedido pedido) throws LogicaNegocioException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }
