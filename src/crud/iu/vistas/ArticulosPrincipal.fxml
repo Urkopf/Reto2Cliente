@@ -5,8 +5,6 @@
 <?import javafx.scene.control.Pagination?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -24,17 +22,11 @@
 
             <center>
                 <VBox spacing="10">
-                    <HBox fx:id="HBoxSuperior" alignment="CENTER_LEFT" spacing="10">
-                        <GridPane fx:id="gridSuperior" prefHeight="35.0" prefWidth="983.0">
+                    <HBox fx:id="HBoxSuperior" alignment="CENTER_LEFT">
+                        <GridPane fx:id="gridSuperior" prefHeight="35.0">
                             <children>
                                 <Button fx:id="botonNuevo" minWidth="30" prefWidth="100.0" text="Nuevo" />
-                                <Button fx:id="botonReiniciar" minWidth="30" prefHeight="35.0" prefWidth="153.0" text="Reiniciar tabla" GridPane.columnIndex="2" GridPane.halignment="RIGHT">
-                                    <graphic>
-                                        <ImageView>
-                                            <Image url="@../resources/iconos/search.png" />
-                                        </ImageView>
-                                    </graphic>
-                                </Button>
+                                <Button fx:id="botonReiniciar" minWidth="30" prefHeight="35.0" prefWidth="153.0" text="Reiniciar tabla" GridPane.columnIndex="2" GridPane.halignment="RIGHT" />
                                 <Button fx:id="botonBusqueda" text="Búsqueda avanzada" GridPane.columnIndex="3" GridPane.halignment="RIGHT" />
                             </children>
                             <columnConstraints>
@@ -47,6 +39,9 @@
                                 <RowConstraints />
                             </rowConstraints>
                         </GridPane>
+                  <VBox.margin>
+                     <Insets bottom="10.0" left="20.0" top="20.0" />
+                  </VBox.margin>
                     </HBox>
 
                     <TableView fx:id="tablaPedidos" prefHeight="636.0" prefWidth="1261.0">
@@ -58,6 +53,9 @@
                             <TableColumn fx:id="columna5" prefWidth="177.80877685546875" text="ESTADO" />
                             <TableColumn fx:id="columna6" minWidth="0.0" prefWidth="138.57391357421875" text="TOTAL" />
                         </columns>
+                  <padding>
+                     <Insets left="20.0" right="20.0" />
+                  </padding>
                     </TableView>
                 </VBox>
             </center>
@@ -67,12 +65,12 @@
                     <!-- Botón Atrás -->
                     <Button fx:id="botonAtras" text="Atrás" GridPane.columnIndex="0" GridPane.halignment="LEFT" GridPane.hgrow="NEVER">
                         <GridPane.margin>
-                            <Insets bottom="29.0" left="20.0" />
+                            <Insets left="20.0" />
                         </GridPane.margin>
                     </Button>
 
                     <!-- Paginador en el centro -->
-                    <Pagination fx:id="paginador" maxPageIndicatorCount="3" pageCount="10" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.hgrow="NEVER" GridPane.valignment="CENTER">
+                    <Pagination fx:id="paginador" maxPageIndicatorCount="3" pageCount="10" translateY="15.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.hgrow="NEVER" GridPane.valignment="CENTER">
                         <GridPane.margin>
                             <Insets />
                         </GridPane.margin>
@@ -81,18 +79,18 @@
                     <!-- Botón Ver -->
                     <Button fx:id="botonEliminar" text="Eliminar" GridPane.columnIndex="2" GridPane.halignment="RIGHT">
                         <GridPane.margin>
-                            <Insets bottom="29.0" right="20.0" />
+                            <Insets right="20.0" />
                         </GridPane.margin>
                     </Button>
                     <!-- Botón Ver -->
                     <Button fx:id="botonDetalles" text="Detalles" GridPane.columnIndex="3" GridPane.halignment="RIGHT">
                         <GridPane.margin>
-                            <Insets bottom="29.0" right="20.0" />
+                            <Insets right="20.0" />
                         </GridPane.margin>
                     </Button>
                     <Button fx:id="botonGuardar" text="Guardar cambios" GridPane.columnIndex="4">
                         <GridPane.margin>
-                            <Insets bottom="29.0" right="20.0" />
+                            <Insets right="20.0" />
                         </GridPane.margin>
                     </Button>
 

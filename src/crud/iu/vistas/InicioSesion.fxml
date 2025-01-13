@@ -63,6 +63,9 @@
                      </children>
                   </HBox>
                     </children>
+               <BorderPane.margin>
+                  <Insets bottom="10.0" />
+               </BorderPane.margin>
                 </VBox>
             </bottom>
          <right>

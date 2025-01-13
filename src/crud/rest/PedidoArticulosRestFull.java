@@ -48,7 +48,9 @@ public class PedidoArticulosRestFull {
     }
 
     public void edit_JSON(Object requestEntity, String id) throws ClientErrorException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_JSON).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON));
+        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id}))
+                .request(javax.ws.rs.core.MediaType.APPLICATION_JSON)
+                .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON));
     }
 
     public <T> T find_XML(Class<T> responseType, String id) throws ClientErrorException {
