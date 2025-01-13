@@ -5,17 +5,18 @@
  */
 package crud.negocio;
 
-import crud.objetosTransferibles.Usuario;
-import java.util.Collection;
+import crud.rest.TrabajadorRestFull;
 
 /**
  *
- * @author Ser_090
+ * @author 2dam
  */
-public interface IUsuario<T> {
+public class TrabajadorImpl implements ITrabajador {
 
-    public Collection<Usuario> getAllUsers();
+    private TrabajadorRestFull cliente = new TrabajadorRestFull();
 
-    public void createUser(Usuario usuario);
+    public TrabajadorImpl() {
+
+    }
 
 }

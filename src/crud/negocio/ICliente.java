@@ -5,17 +5,10 @@
  */
 package crud.negocio;
 
-import crud.objetosTransferibles.Usuario;
-import java.util.Collection;
-
 /**
  *
- * @author Ser_090
+ * @author 2dam
  */
-public interface IUsuario<T> {
-
-    public Collection<Usuario> getAllUsers();
-
-    public void createUser(Usuario usuario);
+public interface ICliente {
 
 }

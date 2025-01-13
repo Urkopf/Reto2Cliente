@@ -5,7 +5,6 @@
  */
 package crud.rest;
 
-import crud.objetosTransferibles.Usuario;
 import java.util.ResourceBundle;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
@@ -33,9 +32,9 @@ public class UsuariosRestFull {
             = ResourceBundle.getBundle("crud.recursos.configCliente")
                     .getString("BASE_URI");
 
-    public UsuariosRestFull(String tipo, Usuario usuario) {
+    public UsuariosRestFull() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
-        webTarget = client.target(BASE_URI).path(tipo);
+        webTarget = client.target(BASE_URI).path("usuario");
     }
 
     public String countREST() throws WebApplicationException {
