@@ -8,10 +8,10 @@ package crud.rest;
 import crud.objetosTransferibles.Trabajador;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
-import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 /**
@@ -48,36 +48,38 @@ public class TrabajadorRestFull {
         return resource.request(javax.ws.rs.core.MediaType.TEXT_PLAIN).get(String.class);
     }
 
-    public Response edit_XML(Object requestEntity, String id) throws ClientErrorException {
-        return webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Response.class);
+    public void edit_XML(Object requestEntity) throws WebApplicationException {
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Trabajador.class);
     }
 
 
-    public <T> T find_XML(Class<T> responseType, String id) throws ClientErrorException {
+    public <T> T find_XML(Class<T> responseType, String id) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
 
-    public <T> T findRange_XML(Class<T> responseType, String from, String to) throws ClientErrorException {
+    public <T> T findRange_XML(Class<T> responseType, String from, String to) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}/{1}", new Object[]{from, to}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
 
-    public Response create_XML(Object requestEntity) throws ClientErrorException {
-        return webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Response.class);
+    public void create_XML(Object requestEntity) throws WebApplicationException {
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Response.class);
     }
 
-    public <T> T findAll_XML(Class<T> responseType) throws ClientErrorException {
+    public <T> T findAll_XML(GenericType<T> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
 
-    public void remove(Long id) throws ClientErrorException {
+    public void remove(Long id) throws WebApplicationException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete(Trabajador.class);
     }
 

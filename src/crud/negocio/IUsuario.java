@@ -16,6 +16,4 @@ public interface IUsuario<T> {
 
     public Collection<Usuario> getAllUsers();
 
-    public void createUser(Usuario usuario);
-
 }

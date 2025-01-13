@@ -49,14 +49,12 @@ public class ArticulosRestFull {
                 .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Articulo.class);
     }
 
-
     public <T> T find_XML(Class<T> responseType, String id) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
                 .get(responseType);
     }
-
 
     public <T> T findRange_XML(Class<T> responseType, String from, String to) throws WebApplicationException {
         WebTarget resource = webTarget;

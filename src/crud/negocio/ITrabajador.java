@@ -5,10 +5,22 @@
  */
 package crud.negocio;
 
+import crud.excepciones.LogicaNegocioException;
+import crud.objetosTransferibles.Trabajador;
+import java.util.Collection;
+
 /**
  *
  * @author 2dam
  */
 public interface ITrabajador {
+
+    public Collection<Trabajador> getAllClientes() throws LogicaNegocioException;
+
+    public void crearTrabajador(Trabajador trabajador) throws LogicaNegocioException;
+
+    public void actualizarTrabajador(Trabajador trabajador) throws LogicaNegocioException;
+
+    public void borrarTrabajador(Trabajador trabajador) throws LogicaNegocioException;
 
 }

@@ -5,6 +5,7 @@
  */
 package crud.rest;
 
+import crud.objetosTransferibles.Usuario;
 import java.util.ResourceBundle;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
@@ -43,8 +44,9 @@ public class UsuariosRestFull {
         return resource.request(javax.ws.rs.core.MediaType.TEXT_PLAIN).get(String.class);
     }
 
-    public void edit_XML(Object requestEntity, String id) throws WebApplicationException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+    public void edit_XML(Object requestEntity) throws WebApplicationException {
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Usuario.class);
     }
 
     public <T> T find_XML(Class<T> responseType, String id) throws WebApplicationException {
@@ -53,14 +55,9 @@ public class UsuariosRestFull {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-//    ///¿?¿?¿?¿?¿
-//    public <T> T inicio_XML(Class<T> responseType, String id) throws WebApplicationException {
-//        WebTarget resource = webTarget;
-//        resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
-//        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
-//    }
     public void create_XML(Object requestEntity) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Usuario.class);
     }
 
     public <T> T findAll_XML(GenericType<T> responseType) throws WebApplicationException {
@@ -69,7 +66,7 @@ public class UsuariosRestFull {
     }
 
     public void remove(String id) throws WebApplicationException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
+        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete(Usuario.class);
     }
 
     public void close() {

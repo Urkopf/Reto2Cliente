@@ -45,18 +45,6 @@ public class FactoriaUsuarios {
         return new TrabajadorImpl();
     }
 
-//    public static <T> IUsuario<T> getUsuarioService(String tipo, Usuario usuario) {
-//        switch (tipo.toUpperCase()) {
-//            case INICIO:
-//                return new UsuarioImpl<>(tipo.toLowerCase(), usuario);
-//            case CLIENTE:
-//                return new UsuarioImpl<>(tipo.toLowerCase(), null);
-//            case TRABAJADOR:
-//                return new UsuarioImpl<>(tipo.toLowerCase(), null);
-//            default:
-//                throw new IllegalArgumentException("Tipo de usuario no valido: " + tipo);
-//        }
-//    }
     /*
     //Ventanas
     public void cargarInicioSesion(Stage stage, String email) {
