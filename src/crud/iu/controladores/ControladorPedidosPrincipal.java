@@ -90,7 +90,7 @@ public class ControladorPedidosPrincipal implements Initializable {
     private void cargarDatosPedidos() {
         try {
             LOGGER.info("Cargando datos de pedidos...");
-            Collection<Pedido> pedidos = factoriaPedidos.getAllPedidos();
+            Collection<Pedido> pedidos = factoriaPedidos.acceso().getAllPedidos();
             if (pedidos == null || pedidos.isEmpty()) {
                 LOGGER.warning("No se encontraron pedidos.");
                 pedidos = new ArrayList<>();

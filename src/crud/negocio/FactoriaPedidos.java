@@ -38,12 +38,8 @@ public class FactoriaPedidos {
         return instance;
     }
 
-    public List<Pedido> getAllPedidos() {
-        return (List<Pedido>) new PedidoImpl().getAllPedidos();
-    }
-
-    public void crearPedido(Pedido pedido) {
-        new PedidoImpl().crearPedido(pedido);
+    public IPedido acceso() {
+        return new PedidoImpl();
     }
 
     //Ventanas
