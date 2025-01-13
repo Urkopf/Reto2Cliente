@@ -54,6 +54,80 @@ TextField, PasswordField {
     -fx-background-color: rgba(255, 255, 255, 0.5);
 }
 
+.btnRojo {
+   
+    -fx-font-weight: bold;
+    -fx-background-color: rgba(255, 0, 0, 0.5);
+}
+
+.btnAzul {
+   
+    -fx-font-weight: bold;
+    -fx-background-color: rgba(0, 0, 255, 0.5);
+}
+
+
+.btnVerde {
+    
+    -fx-font-weight: bold;
+    -fx-background-color: rgba(0, 255, 0, 0.5);
+}
+
+.btnMorado {
+   
+    -fx-font-weight: bold;
+    -fx-background-color: #4A148C;
+}
+
+.btnAmarillo{
+    
+    -fx-text-fill: rgba(58, 58, 58, 1);
+    -fx-font-weight: bold;
+    -fx-background-color: rgba(254,153,1,254);
+}
+
+/* Hover para los botones de colores */
+.btnRojo:hover {
+    -fx-background-color: rgba(255, 0, 0, 0.8); /* Más intenso */
+}
+
+.btnAzul:hover {
+    -fx-background-color: rgba(0, 0, 255, 0.8);
+}
+
+.btnVerde:hover {
+    -fx-background-color: rgba(0, 255, 0, 0.8);
+}
+
+.btnMorado:hover {
+    -fx-background-color: #6A1B9A;
+}
+
+.btnAmarillo:hover {
+    -fx-background-color: rgba(255, 193, 7, 1); 
+}
+
+/* Presionado (pressed) para los botones de colores */
+.btnRojo:pressed {
+    -fx-background-color: rgba(200, 0, 0, 1); 
+}
+
+.btnAzul:pressed {
+    -fx-background-color: rgba(0, 0, 200, 1);
+}
+
+.btnVerde:pressed {
+    -fx-background-color: rgba(0, 200, 0, 1);
+}
+
+.btnMorado:pressed {
+    -fx-background-color: #311B92;
+}
+
+.btnAmarillo:pressed {
+    -fx-background-color: rgba(255, 140, 0, 1);
+}
+
 TextField:focused, PasswordField:focused {
     -fx-border-color: #8A2BE2;
 }
@@ -68,11 +142,13 @@ Button {
 }
 
 Button:hover {
-    -fx-background-color: #8A2BE2;
+    -fx-text-fill: rgba(58, 58, 58, 1);
+    -fx-font-weight: bold;
+    -fx-background-color: rgba(254,153,1,254);
 }
 
 Button:pressed {
-    -fx-background-color: #4A148C;
+    -fx-background-color: rgba(255, 193, 7, 1); 
 }
 
 .left-checkbox {
@@ -215,18 +291,21 @@ MenuBar, Menu, MenuItem .label-text, .label{
 
 /* Efecto al pasar el cursor */
 .combo-box:hover, .spinner:hover, .date-picker:hover {
-    -fx-background-color: #8A2BE2; /* Fondo púrpura claro */
-    -fx-border-color: #8A2BE2;     /* Borde púrpura */
+    -fx-border-color: rgba(254,153,1,254);    /* Borde púrpura */
+    -fx-text-fill: rgba(58, 58, 58, 1);
+    -fx-font-weight: bold;
+    -fx-background-color: rgba(254,153,1,254);
 }
 
 /* Efecto al hacer clic */
 .combo-box:pressed, .spinner:pressed, .date-picker:pressed {
-    -fx-background-color: #4A148C; /* Fondo púrpura oscuro */
+    -fx-background-color: rgba(255, 193, 7, 1); 
 }
 
 /* Efecto cuando están enfocados */
 .combo-box:focused, .spinner:focused, .date-picker:focused {
-    -fx-border-color: #8A2BE2; /* Cambia el color del borde al enfocarse */
+    -fx-border-color: rgba(254,153,1,254);
+    
 }
 
 /* Estilo para los menús desplegables del ComboBox */
@@ -245,11 +324,15 @@ MenuBar, Menu, MenuItem .label-text, .label{
 }
 
 .combo-box .list-cell:hover, .date-picker .list-cell:hover {
-    -fx-background-color: #8A2BE2; /* Fondo púrpura al pasar el cursor */
+    -fx-text-fill: rgba(58, 58, 58, 1);
+    -fx-font-weight: bold;
+    -fx-background-color: rgba(254,153,1,254);
 }
 
 .combo-box .list-cell:focused, .date-picker .list-cell:focused {
-    -fx-background-color: #4A148C; /* Fondo púrpura oscuro al enfocarse */
+    -fx-text-fill: rgba(58, 58, 58, 1);
+    -fx-font-weight: bold;
+     -fx-background-color: rgba(255, 193, 7, 1); 
 }
 
 /* Estilo para CheckBox */
@@ -286,11 +369,11 @@ MenuBar, Menu, MenuItem .label-text, .label{
 }
 
 .date-picker .arrow-button:hover {
-    -fx-background-color: #8A2BE2; /* Fondo púrpura claro al pasar el cursor */
+    -fx-background-color: rgba(254,153,1,254); /* Fondo púrpura claro al pasar el cursor */
 }
 
 .date-picker .arrow-button:pressed {
-    -fx-background-color: #4A148C; /* Fondo púrpura oscuro al presionar */
+    -fx-background-color: rgba(255, 193, 7, 1);  /* Fondo púrpura oscuro al presionar */
 }
 
 /* Estilo general para Spinner */
@@ -477,7 +560,7 @@ MenuBar, Menu, MenuItem .label-text, .label{
 
 /* Estilo para las cabeceras de las columnas */
 .table-view .column-header .label {
-    -fx-text-fill: rgba(58, 58, 58, 0.8);; /* Texto blanco */
+    -fx-text-fill: rgba(58, 58, 58, 0.8); /* Texto blanco */
     -fx-font-family: 'Protest Strike'; /* Fuente personalizada */
     -fx-font-size: 18px; /* Tamaño de la fuente */
     -fx-font-weight: bold; /* Texto en negrita */
