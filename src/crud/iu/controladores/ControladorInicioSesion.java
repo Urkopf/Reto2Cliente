@@ -32,6 +32,9 @@ import static crud.utilidades.AlertUtilities.showErrorDialog;
 import static crud.utilidades.ValidateUtilities.isValid;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotAuthorizedException;
 
 /**
  * Controlador FXML para la vista de inicio de sesión (SignIn). Este controlador
@@ -102,7 +105,7 @@ public class ControladorInicioSesion implements Initializable {
                 + "-fx-background-color: transparent;"
                 + "-fx-max-width: 250px;"
                 + "-fx-wrap-text: true;");
-        clearFieldsItem.setOnAction(event -> handleClearFields());
+        clearFieldsItem.setOnAction(event -> controladordeLimpiezaDeCampos());
 
         // Opción "Salir" en el menú contextual
         MenuItem exitItem = new MenuItem("Salir");
@@ -113,14 +116,14 @@ public class ControladorInicioSesion implements Initializable {
                 + "-fx-background-color: transparent;"
                 + "-fx-max-width: 250px;"
                 + "-fx-wrap-text: true;");
-        exitItem.setOnAction(event -> handleExit());
+        exitItem.setOnAction(event -> controladorDeSalida());
 
         // Añadir las opciones personalizadas al menú contextual
         contextMenu.getItems().addAll(clearFieldsItem, exitItem);
 
         // Asignar el menú personalizado a cada campo de texto y eliminar el menú predeterminado
-        assignCustomContextMenu(campoEmail);
-        assignCustomContextMenu(campoContrasena);
+        asignarMenuContextualPersonalizado(campoEmail);
+        asignarMenuContextualPersonalizado(campoContrasena);
 
         // Asignar el menú contextual al GridPane
         gridPane.setOnMouseClicked(event -> {
@@ -131,7 +134,7 @@ public class ControladorInicioSesion implements Initializable {
         // Añadir listener a cada TextField o PasswordField en el GridPane
         for (Node node : gridPane.getChildren()) {
             if (node instanceof TextField || node instanceof PasswordField) {
-                node.setOnKeyTyped(event -> hideErrorImage(node));  // Ocultar error al escribir
+                node.setOnKeyTyped(event -> ocultarImagenError(node));  // Ocultar error al escribir
             }
         }
     }
@@ -139,7 +142,7 @@ public class ControladorInicioSesion implements Initializable {
     /**
      * Maneja la acción de salir de la aplicación.
      */
-    private void handleExit() {
+    private void controladorDeSalida() {
         Stage stage = (Stage) gridPane.getScene().getWindow();
         stage.close();  // Cierra la ventana
     }
@@ -147,7 +150,7 @@ public class ControladorInicioSesion implements Initializable {
     /**
      * Limpia los campos de inicio de sesión.
      */
-    private void handleClearFields() {
+    private void controladordeLimpiezaDeCampos() {
         campoEmail.clear();  // Limpiar el campo de nombre de usuario
         campoContrasena.clear();  // Limpiar el campo de contraseña
         label.requestFocus();  // Devuelve el foco al título
@@ -224,7 +227,7 @@ public class ControladorInicioSesion implements Initializable {
      *
      * @param login El nombre de usuario a establecer.
      */
-    public void setLogin(String login) {
+    public void setCorreo(String login) {
         if (login != null && !login.isEmpty()) {
             campoEmail.setText(login);
         }
@@ -236,7 +239,7 @@ public class ControladorInicioSesion implements Initializable {
      * @param textField El campo de texto al que se le asignará el menú
      * contextual.
      */
-    private void assignCustomContextMenu(TextField textField) {
+    private void asignarMenuContextualPersonalizado(TextField textField) {
         textField.setContextMenu(contextMenu);  // Asignar el menú contextual personalizado
     }
 
@@ -285,7 +288,7 @@ public class ControladorInicioSesion implements Initializable {
             for (Node node : gridPane.getChildren()) {
                 if (node instanceof TextField || node instanceof PasswordField) {
                     if (((TextField) node).getText().isEmpty()) {
-                        showErrorImage(node); // Mostrar error y marcar el campo
+                        mostrarImagenError(node); // Mostrar error y marcar el campo
                         hasError = true;
                     }
                 }
@@ -295,12 +298,12 @@ public class ControladorInicioSesion implements Initializable {
         // Validar campos específicos como contraseña y nombre de usuario
         campoContrasena.setText(campoContrasena.getText().trim());
         if (!isValid(campoContrasena.getText(), "pass")) {
-            showErrorImage(campoContrasena);
+            mostrarImagenError(campoContrasena);
             hasError = true;
         }
 
         if (!isValid(campoEmail.getText(), "email")) {
-            showErrorImage(campoEmail);
+            mostrarImagenError(campoEmail);
             hasError = true;
         }
 
@@ -314,8 +317,25 @@ public class ControladorInicioSesion implements Initializable {
             usuario.setCorreo(campoEmail.getText());
             usuario.setContrasena(campoContrasena.getText());
 
-//            Message response = factoria.getUsuarioService("inicioSesion", usuario);  // Enviar los datos de inicio de sesión al servidor
-//            messageManager(response);  // Manejar la respuesta del servidor
+            try {
+                factoria.getUsuarioService("inicioSesion", usuario);  // Nos tiene que devolver los datos del usuario salvo su contraseña
+                if (!actualizar) {
+
+                    factoria.cargarMenuPrincipal(stage, new Usuario());  // Cargar la ventana principal
+                } else {
+                    factoria.cargarRegistro(stage, new Usuario());  // Cargar el SignUP
+                }
+            } catch (ForbiddenException e) {
+                showErrorDialog(AlertType.ERROR, "Inicio de sesión fallido", "Su usuario está desactivado.");
+            } catch (NotAuthorizedException e) {
+                showErrorDialog(AlertType.ERROR, "Inicio de sesión fallido", "El correo electrónico (login) y/o la contraseña incorrect@/s.");
+            } catch (InternalServerErrorException e) {
+                showErrorDialog(AlertType.ERROR, "Inicio de sesión fallido", "Error en el servidor.");
+            } catch (Exception e) {
+                showErrorDialog(AlertType.ERROR, "Inicio de sesión fallido", "Error en el metaverso.");
+            }
+
+            //  messageManager(response);  // Manejar la respuesta del servidor
         }
     }
 
@@ -380,7 +400,7 @@ public class ControladorInicioSesion implements Initializable {
      *
      * @param node El nodo que representa el campo.
      */
-    private void showErrorImage(Node node) {
+    private void mostrarImagenError(Node node) {
         node.getStyleClass().add("error-field");  // Añadir clase CSS para marcar el error
         showErrorIcon(node);  // Mostrar icono de error
     }
@@ -390,7 +410,7 @@ public class ControladorInicioSesion implements Initializable {
      *
      * @param node El nodo que representa el campo.
      */
-    private void hideErrorImage(Node node) {
+    private void ocultarImagenError(Node node) {
         node.getStyleClass().remove("error-field");  // Eliminar clase CSS
         hideErrorIcon(node);  // Ocultar el icono de error
     }
