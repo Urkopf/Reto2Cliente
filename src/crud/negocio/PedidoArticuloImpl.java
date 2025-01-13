@@ -5,6 +5,7 @@
  */
 package crud.negocio;
 
+import crud.excepciones.LogicaNegocioException;
 import crud.objetosTransferibles.PedidoArticulo;
 import crud.rest.PedidoArticulosRestFull;
 import java.util.Collection;
@@ -24,19 +25,42 @@ public class PedidoArticuloImpl implements IPedidoArticulo {
     }
 
     @Override
-    public Collection<PedidoArticulo> getAllArticulos() {
+    public Collection<PedidoArticulo> getAllArticulos() throws LogicaNegocioException {
         List<PedidoArticulo> pedidoArticulos = null;
         try {
             pedidoArticulos = cliente.findAll_XML(new GenericType<List<PedidoArticulo>>() {
             });
         } catch (Exception e) {
+            throw new LogicaNegocioException("");
         }
         return pedidoArticulos;
     }
 
     @Override
-    public void crearArticulo(PedidoArticulo pedidoArticulo) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void crearArticulo(PedidoArticulo pedidoArticulo) throws LogicaNegocioException {
+        try {
+            cliente.create_XML(pedidoArticulo);
+        } catch (Exception e) {
+            throw new LogicaNegocioException("");
+        }
+    }
+
+    @Override
+    public void actualizarPPedidoArticulo(PedidoArticulo pedidoArticulo) throws LogicaNegocioException {
+        try {
+            cliente.edit_XML(pedidoArticulo);
+        } catch (Exception e) {
+            throw new LogicaNegocioException("");
+        }
+    }
+
+    @Override
+    public void borrarPedidoArticulo(PedidoArticulo pedidoArticulo) throws LogicaNegocioException {
+        try {
+            cliente.remove(pedidoArticulo.getId());
+        } catch (Exception e) {
+            throw new LogicaNegocioException("");
+        }
     }
 
 }

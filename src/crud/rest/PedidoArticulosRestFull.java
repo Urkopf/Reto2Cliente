@@ -5,6 +5,7 @@
  */
 package crud.rest;
 
+import crud.objetosTransferibles.PedidoArticulo;
 import java.util.ResourceBundle;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
@@ -43,8 +44,9 @@ public class PedidoArticulosRestFull {
         return resource.request(javax.ws.rs.core.MediaType.TEXT_PLAIN).get(String.class);
     }
 
-    public void edit_XML(Object requestEntity, String id) throws WebApplicationException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+    public void edit_XML(Object requestEntity) throws WebApplicationException {
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), PedidoArticulo.class);
     }
 
 
@@ -63,7 +65,8 @@ public class PedidoArticulosRestFull {
 
 
     public void create_XML(Object requestEntity) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), PedidoArticulo.class);
     }
 
 
@@ -73,8 +76,9 @@ public class PedidoArticulosRestFull {
     }
 
 
-    public void remove(String id) throws WebApplicationException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
+    public void remove(Long id) throws WebApplicationException {
+        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id}))
+                .request().delete(PedidoArticulo.class);
     }
 
     public void close() {
