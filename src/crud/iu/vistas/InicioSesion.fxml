@@ -69,7 +69,7 @@
                 </VBox>
             </bottom>
          <right>
-                <GridPane fx:id="gridPane" alignment="CENTER" gridLinesVisible="true" hgap="10" prefHeight="278.0" prefWidth="750.0" vgap="20" BorderPane.alignment="CENTER">
+                <GridPane fx:id="gridPane" alignment="CENTER" hgap="10" prefHeight="278.0" prefWidth="750.0" vgap="20" BorderPane.alignment="CENTER">
                     <!-- Definición de columnas para mejor alineación -->
                     <columnConstraints>
                         <ColumnConstraints />
@@ -152,7 +152,7 @@
                         <children>
                             <Button fx:id="botonRegistrar" maxWidth="Infinity" prefWidth="150.0" text="Registro" />
                             <!-- Botón de Iniciar Sesión -->
-                            <Button fx:id="botonIniciarSesion" maxWidth="Infinity" onAction="#handleButtonLoginButton" prefWidth="150.0" text="Iniciar Sesión" />
+                            <Button fx:id="botonIniciarSesion" maxWidth="Infinity" onAction="#handleButtonLoginButton" prefWidth="150.0" styleClass="btnAmarillo" text="Iniciar Sesión" />
                         </children>
                     </HBox>
 

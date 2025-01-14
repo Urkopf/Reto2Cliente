@@ -83,7 +83,7 @@
                     </HBox>
 
                     <!-- Botón Ver -->
-                    <Button fx:id="botonEliminar" text="Eliminar" GridPane.columnIndex="2" GridPane.halignment="RIGHT">
+                    <Button fx:id="botonEliminar" styleClass="btnRojo" text="Eliminar" GridPane.columnIndex="2" GridPane.halignment="RIGHT">
                         <GridPane.margin>
                             <Insets right="20.0" />
                         </GridPane.margin>

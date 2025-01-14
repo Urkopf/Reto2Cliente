@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="main" prefHeight="539.0" prefWidth="782.0" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.ApplicationClientMainUserController">
+<AnchorPane fx:id="main" prefHeight="539.0" prefWidth="782.0" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="crud.iu.controladores.ControladorMenuPrincipal">
     <children>
         <BorderPane prefHeight="539.0" prefWidth="782.0">
             <top>
