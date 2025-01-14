@@ -318,7 +318,7 @@ public class ControladorInicioSesion implements Initializable {
             usuario.setContrasena(campoContrasena.getText());
 
             try {
-                factoria.getUsuarioService("inicioSesion", usuario);  // Nos tiene que devolver los datos del usuario salvo su contraseña
+                factoria.inicioSesion(usuario);  // Nos tiene que devolver los datos del usuario salvo su contraseña
                 if (!actualizar) {
 
                     factoria.cargarMenuPrincipal(stage, new Usuario());  // Cargar la ventana principal

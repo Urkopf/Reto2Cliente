@@ -12,8 +12,13 @@ import crud.iu.controladores.ControladorInicioSesion;
 import crud.iu.controladores.ControladorMenuPrincipal;
 import crud.iu.controladores.ControladorRegistro;
 import crud.objetosTransferibles.Usuario;
+import static crud.utilidades.AlertUtilities.showErrorDialog;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.control.Alert.AlertType;
+import javafx.stage.Stage;
 
 /**
  *
@@ -46,7 +51,6 @@ public class FactoriaUsuarios {
     public ICliente accesoCliente() {
         return new ClienteImpl();
     }
-
 
     public ITrabajador accesoTrabajador() {
         return new TrabajadorImpl();
