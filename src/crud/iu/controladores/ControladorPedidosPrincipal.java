@@ -11,6 +11,7 @@ import crud.utilidades.AlertUtilities;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,6 +60,8 @@ public class ControladorPedidosPrincipal implements Initializable {
     @FXML
     private TableColumn<Pedido, String> columnaEstado;
     @FXML
+    private TableColumn<Pedido, Date> columnaFecha;
+    @FXML
     private TableColumn<Pedido, Double> columnaTotal;
     @FXML
     private Pagination paginador;
@@ -82,6 +85,7 @@ public class ControladorPedidosPrincipal implements Initializable {
         columnaId.setCellValueFactory(new PropertyValueFactory<>("id"));
         columnaUsuarioId.setCellValueFactory(new PropertyValueFactory<>("usuarioId"));
         columnaCif.setCellValueFactory(new PropertyValueFactory<>("cifCliente"));
+        columnaFecha.setCellValueFactory(new PropertyValueFactory<>("fechaPedido"));
         columnaEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
         columnaTotal.setCellValueFactory(new PropertyValueFactory<>("total"));
     }

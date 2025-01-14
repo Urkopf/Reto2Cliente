@@ -579,12 +579,12 @@ MenuBar, Menu, MenuItem .label-text, .label{
 }
 
 .table-row-cell:selected {
-    -fx-background-color: rgba(138, 43, 226, 0.5); /* Fondo púrpura semi-transparente para la fila seleccionada */
-    -fx-text-fill: #FFFFFF; /* Texto blanco */
+    -fx-background-color: rgba(254,153,1,254); /* Fondo púrpura semi-transparente para la fila seleccionada */
+    -fx-text-fill: rgba(58, 58, 58, 1); /* Texto blanco */
 }
 
 .table-row-cell:hover {
-    -fx-background-color: rgba(138, 43, 226, 0.3); /* Fondo púrpura claro al pasar el cursor */
+    -fx-background-color: rgba(254,153,1,254); /* Fondo sólido claro */ /* Fondo al pasar el cursor */
 }
 
 /* Estilo para las celdas de la tabla */
@@ -598,11 +598,11 @@ MenuBar, Menu, MenuItem .label-text, .label{
 }
 
 .table-cell:selected {
-    -fx-background-color: rgba(138, 43, 226, 0.5); /* Fondo púrpura para la celda seleccionada */
-    -fx-text-fill: #FFFFFF; /* Texto blanco */
+    -fx-background-color: rgba(254,153,1,254); /* Fondo púrpura para la celda seleccionada */
+    -fx-text-fill: rgba(58, 58, 58, 1); /* Texto blanco */
 }
 
 .table-cell:hover {
-    -fx-background-color: rgba(138, 43, 226, 0.3); /* Fondo púrpura claro al pasar el cursor */
+    -fx-background-color: rgba(254,153,1,254); /* Fondo sólido claro */ /* Fondo púrpura claro al pasar el cursor */
 }
 
