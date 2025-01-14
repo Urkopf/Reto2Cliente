@@ -15,36 +15,24 @@ import javax.ws.rs.core.GenericType;
  *
  * @author Ser_090
  */
-public class UsuarioImpl<T> implements IUsuario<T> {
+public class UsuarioImpl implements IUsuario {
 
     private UsuariosRestFull usuarioCliente;
-    private String tipo;
 
-    public UsuarioImpl(String tipo, Usuario usuario) {
-        this.tipo = tipo;
-        usuarioCliente = new UsuariosRestFull(tipo, usuario);
+    public UsuarioImpl() {
+        usuarioCliente = new UsuariosRestFull();
     }
 
     @Override
-    public Collection<T> getAllUsers() {
-        List<T> users = null;
+    public Collection<Usuario> getAllUsers() {
+        List<Usuario> users = null;
         try {
-            users = usuarioCliente.findAll_XML(new GenericType<List<T>>() {
+            users = usuarioCliente.findAll_XML(new GenericType<List<Usuario>>() {
             });
         } catch (Exception e) {
             //Falta implementar las excepciones
         }
         return users;
-    }
-
-    @Override
-    public void createUser(T usuario) {
-        try {
-            usuarioCliente.create_XML(usuario);
-        } catch (Exception e) {
-            //Falta implementar las excepciones
-        }
-
     }
 
 }

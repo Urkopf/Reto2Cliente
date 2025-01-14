@@ -5,6 +5,7 @@
  */
 package crud.negocio;
 
+import crud.objetosTransferibles.Usuario;
 import java.util.Collection;
 
 /**
@@ -13,8 +14,6 @@ import java.util.Collection;
  */
 public interface IUsuario<T> {
 
-    public Collection<T> getAllUsers();
-
-    public void createUser(T usuario);
+    public Collection<Usuario> getAllUsers();
 
 }

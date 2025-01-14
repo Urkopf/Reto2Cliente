@@ -5,19 +5,21 @@
  */
 package crud.rest;
 
-import crud.objetosTransferibles.Pedido;
+import crud.objetosTransferibles.Trabajador;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.Response;
 
 /**
- * Jersey REST client generated for REST resource:PedidoFacadeREST [pedido]<br>
+ * Jersey REST client generated for REST resource:TrabajadorFacadeREST
+ * [trabajador]<br>
  * USAGE:
  * <pre>
- *        PedidosRestFull client = new PedidosRestFull();
+ *        TrabajadorRestFull client = new TrabajadorRestFull();
  *        Object response = client.XXX(...);
  *        // do whatever with response
  *        client.close();
@@ -25,9 +27,9 @@ import javax.ws.rs.core.GenericType;
  *
  * @author 2dam
  */
-public class PedidosRestFull {
+public class TrabajadorRestFull {
 
-    private static final Logger LOGGER = Logger.getLogger(PedidosRestFull.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(TrabajadorRestFull.class.getName());
 
     private WebTarget webTarget;
     private Client client;
@@ -35,9 +37,9 @@ public class PedidosRestFull {
             = ResourceBundle.getBundle("recursos.configCliente")
                     .getString("BASE_URI");
 
-    public PedidosRestFull() {
+    public TrabajadorRestFull() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
-        webTarget = client.target(BASE_URI).path("pedido");
+        webTarget = client.target(BASE_URI).path("trabajador");
     }
 
     public String countREST() throws WebApplicationException {
@@ -48,7 +50,7 @@ public class PedidosRestFull {
 
     public void edit_XML(Object requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Pedido.class);
+                .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Trabajador.class);
     }
 
 
@@ -68,9 +70,8 @@ public class PedidosRestFull {
 
     public void create_XML(Object requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Pedido.class);
+                .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Response.class);
     }
-
 
     public <T> T findAll_XML(GenericType<T> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
@@ -79,8 +80,7 @@ public class PedidosRestFull {
 
 
     public void remove(Long id) throws WebApplicationException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id}))
-                .request().delete(Pedido.class);
+        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete(Trabajador.class);
     }
 
     public void close() {
