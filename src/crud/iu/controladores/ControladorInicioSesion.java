@@ -30,6 +30,7 @@ import crud.objetosTransferibles.Cliente;
 import crud.objetosTransferibles.Trabajador;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
 import static crud.utilidades.ValidateUtilities.isValid;
+import java.awt.Cursor;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javax.ws.rs.ForbiddenException;
@@ -46,7 +47,7 @@ import javax.ws.rs.NotAuthorizedException;
 public class ControladorInicioSesion implements Initializable {
 
     private static final Logger LOGGER = Logger.getLogger(ControladorInicioSesion.class.getName());
-    private Stage stage = new Stage();
+    private Stage stage;
     private FactoriaUsuarios factoria = FactoriaUsuarios.getInstance();
     private boolean hasError = false;  // Indica si hay errores en el formulario
     private Usuario usuario;  // Usuario que intenta iniciar sesión
@@ -460,6 +461,7 @@ public class ControladorInicioSesion implements Initializable {
         // Cambiar la imagen del botón a "mostrar"
         ImageView imageView = (ImageView) botonOjo.getGraphic();
         imageView.setImage(new Image("recursos/iconos/ocultar.png"));
+        campoContrasenaVisible.requestFocus();
     }
 
     /**
@@ -473,5 +475,6 @@ public class ControladorInicioSesion implements Initializable {
         // Cambiar la imagen del botón a "ocultar"
         ImageView imageView = (ImageView) botonOjo.getGraphic();
         imageView.setImage(new Image("recursos/iconos/visualizar.png"));
+        campoContrasena.requestFocus();
     }
 }

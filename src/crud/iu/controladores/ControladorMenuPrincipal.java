@@ -1,5 +1,8 @@
 package crud.iu.controladores;
 
+import crud.negocio.FactoriaArticulos;
+import crud.negocio.FactoriaPedidos;
+import crud.negocio.FactoriaUsuarios;
 import crud.objetosTransferibles.Cliente;
 import crud.objetosTransferibles.Trabajador;
 import crud.objetosTransferibles.Usuario;
@@ -19,7 +22,10 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.AnchorPane;
 
 /**
  * Controlador para la ventana del Menú Principal.
@@ -27,9 +33,13 @@ import javafx.scene.input.MouseButton;
 public class ControladorMenuPrincipal implements Initializable {
 
     private static final Logger LOGGER = Logger.getLogger(ControladorMenuPrincipal.class.getName());
-
+    private FactoriaUsuarios factoriaUsuarios = FactoriaUsuarios.getInstance();
+    private FactoriaPedidos factoriaPedidos = FactoriaPedidos.getInstance();
+    private FactoriaArticulos factoriaArticulos = FactoriaArticulos.getInstance();
     private Stage stage;
     private Usuario usuario;
+
+    private ContextMenu contextMenu;
 
     // Elementos FXML
     @FXML
@@ -44,13 +54,70 @@ public class ControladorMenuPrincipal implements Initializable {
     private Button botonPedido;
     @FXML
     private Button botonArticulo;
+    @FXML
+    private AnchorPane panel;
 
     /**
      * Inicializa el controlador.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        LOGGER.info("Inicializando controlador del Menú Principal");
+        contextMenu = new ContextMenu();
+
+        // Aplicar estilo personalizado al menú contextual
+        contextMenu.getStyleClass().add("context-menu");
+        contextMenu.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8);"
+                + "-fx-text-fill: #FFFFFF;"
+                + "-fx-font-size: 18px;"
+                + "-fx-font-weight: bold;"
+                + "-fx-font-family: 'Protest Strike';"
+                + "-fx-max-width: 250px;"
+                + "-fx-wrap-text: true;"
+                + "-fx-padding: 10px;"
+                + "-fx-border-width: 1;"
+                + "-fx-border-radius: 5;"
+                + "-fx-background-radius: 5;");
+
+        // Configurar y añadir opción de cerrar sesión al menú contextual
+        MenuItem closeSesion = new MenuItem("Cerrar sesión");
+        closeSesion.setStyle("-fx-font-size: 18px;"
+                + "-fx-font-weight: bold;"
+                + "-fx-font-family: 'Protest Strike';"
+                + "-fx-text-fill: #FFFFFF;"
+                + "-fx-background-color: transparent;"
+                + "-fx-max-width: 250px;"
+                + "-fx-wrap-text: true;");
+        closeSesion.setOnAction(event -> cerrarSesion());
+
+        // Configurar y añadir opción de salir al menú contextual
+        MenuItem exitItem = new MenuItem("Salir");
+        exitItem.setStyle("-fx-font-size: 18px;"
+                + "-fx-font-weight: bold;"
+                + "-fx-font-family: 'Protest Strike';"
+                + "-fx-text-fill: #FFFFFF;"
+                + "-fx-background-color: transparent;"
+                + "-fx-max-width: 250px;"
+                + "-fx-wrap-text: true;");
+        exitItem.setOnAction(event -> salir());
+
+        contextMenu.getItems().addAll(closeSesion, exitItem);
+
+        // Configurar menú contextual para mostrar al hacer clic derecho
+        panel.setOnMouseClicked(event -> {
+            if (event.getButton() == MouseButton.SECONDARY) {
+                contextMenu.show(panel, event.getScreenX(), event.getScreenY());
+            } else {
+                contextMenu.hide();
+            }
+        });
+        if (usuario != null) {
+            if (usuario instanceof Cliente) {
+                botonArticulo.setVisible(false);
+
+            } else {
+                botonArticulo.setVisible(true);
+            }
+        }
     }
 
     public void initStage(Parent root) {
@@ -61,18 +128,19 @@ public class ControladorMenuPrincipal implements Initializable {
             stage.setTitle("Menú");
             stage.setResizable(false);
             botonPedido.setOnAction(null);
-            botonPedido.addEventHandler(ActionEvent.ACTION, this::handleBotonPedido);
+            botonPedido.addEventHandler(ActionEvent.ACTION, this::manejarBotonPedido);
             botonArticulo.setOnAction(null);
-            botonArticulo.addEventHandler(ActionEvent.ACTION, this::handleBotonArticulo);
+            botonArticulo.addEventHandler(ActionEvent.ACTION, this::manejarBotonArticulo);
             botonCambiarContrasena.setOnAction(null);
-            botonCambiarContrasena.addEventHandler(ActionEvent.ACTION, this::handleBotonCambiarContrasena);
+            botonCambiarContrasena.addEventHandler(ActionEvent.ACTION, this::manejarBotonCambiarContrasena);
             botonCerrarSesion.setOnAction(null);
-            botonCerrarSesion.addEventHandler(ActionEvent.ACTION, this::handleBotonCerrarSesion);
+            botonCerrarSesion.addEventHandler(ActionEvent.ACTION, this::manejarBotonCerrarSesion);
             botonSalir.setOnAction(null);
-            botonSalir.addEventHandler(ActionEvent.ACTION, this::handleBotonSalir);
+            botonSalir.addEventHandler(ActionEvent.ACTION, this::manejarBotonSalir);
 
             //configurarTeclasMnemotecnicas();  // Configurar teclas mnemotécnicas
             stage.show();  // Mostrar el escenario
+
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al inicializar el stage", e);
         }
@@ -88,11 +156,12 @@ public class ControladorMenuPrincipal implements Initializable {
             if (user instanceof Cliente) {
                 this.usuario = new Cliente();
                 this.usuario = (Cliente) user;
+
             } else {
                 this.usuario = new Trabajador();
                 this.usuario = (Trabajador) user;
             }
-            labelTitulo.setText("Bienvenido, " + usuario.getNombre() + "!");
+            labelTitulo.setText("Bienvenid@, " + usuario.getNombre() + "!");
             LOGGER.info("Usuario asignado: " + usuario.getNombre());
         }
     }
@@ -113,10 +182,10 @@ public class ControladorMenuPrincipal implements Initializable {
      * @param event Evento de acción.
      */
     @FXML
-    private void handleBotonSalir(ActionEvent event) {
+    private void manejarBotonSalir(ActionEvent event) {
         try {
             LOGGER.info("Botón 'Salir' presionado.");
-            stage.close();
+            salir();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al salir", e);
             showErrorDialog(AlertType.ERROR, "No se pudo salir de la aplicación", "Inténtelo de nuevo más tarde.");
@@ -129,11 +198,11 @@ public class ControladorMenuPrincipal implements Initializable {
      * @param event Evento de acción.
      */
     @FXML
-    private void handleBotonCerrarSesion(ActionEvent event) {
+    private void manejarBotonCerrarSesion(ActionEvent event) {
         try {
             LOGGER.info("Botón 'Cerrar Sesión' presionado.");
             // Lógica para cerrar sesión y volver a la pantalla de inicio de sesión
-            stage.close();
+            cerrarSesion();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cerrar sesión", e);
             showErrorDialog(AlertType.ERROR, "No se pudo cerrar la sesión", "Inténtelo de nuevo más tarde.");
@@ -146,7 +215,7 @@ public class ControladorMenuPrincipal implements Initializable {
      * @param event Evento de acción.
      */
     @FXML
-    private void handleBotonCambiarContrasena(ActionEvent event) {
+    private void manejarBotonCambiarContrasena(ActionEvent event) {
         try {
             LOGGER.info("Botón 'Cambiar Contraseña' presionado.");
             showErrorDialog(AlertType.ERROR, "Funcionalidad en desarrollo", "Próximamente estará disponible.");
@@ -162,10 +231,10 @@ public class ControladorMenuPrincipal implements Initializable {
      * @param event Evento de acción.
      */
     @FXML
-    private void handleBotonPedido(ActionEvent event) {
+    private void manejarBotonPedido(ActionEvent event) {
         try {
             LOGGER.info("Botón 'Gestión de Pedidos' presionado.");
-            showErrorDialog(AlertType.ERROR, "Funcionalidad en desarrollo", "Próximamente estará disponible.");
+            factoriaPedidos.cargarPedidosPrincipal(stage, usuario);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al gestionar pedidos", e);
             showErrorDialog(AlertType.ERROR, "No se pudo gestionar los pedidos", "Inténtelo de nuevo más tarde.");
@@ -178,13 +247,22 @@ public class ControladorMenuPrincipal implements Initializable {
      * @param event Evento de acción.
      */
     @FXML
-    private void handleBotonArticulo(ActionEvent event) {
+    private void manejarBotonArticulo(ActionEvent event) {
         try {
+
             LOGGER.info("Botón 'Gestión de Artículos' presionado.");
             showErrorDialog(AlertType.ERROR, "Funcionalidad en desarrollo", "Próximamente estará disponible.");
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al gestionar artículos", e);
             showErrorDialog(AlertType.ERROR, "No se pudo gestionar los artículos", "Inténtelo de nuevo más tarde.");
         }
+    }
+
+    private void cerrarSesion() {
+        factoriaUsuarios.cargarInicioSesion(stage, "");
+    }
+
+    private void salir() {
+        stage.close();
     }
 }

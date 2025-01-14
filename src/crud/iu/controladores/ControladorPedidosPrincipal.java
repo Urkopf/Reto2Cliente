@@ -3,7 +3,9 @@ package crud.iu.controladores;
 import crud.negocio.FactoriaPedidos;
 import crud.negocio.IPedido;
 import crud.negocio.PedidoImpl;
+import crud.objetosTransferibles.Cliente;
 import crud.objetosTransferibles.Pedido;
+import crud.objetosTransferibles.Trabajador;
 import crud.objetosTransferibles.Usuario;
 import crud.utilidades.AlertUtilities;
 import java.net.URL;
@@ -108,9 +110,17 @@ public class ControladorPedidosPrincipal implements Initializable {
      *
      * @param usuario Usuario activo.
      */
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-        LOGGER.info("Usuario asignado: " + usuario.getNombre());
+    public void setUser(Object user) {
+        if (user != null) {
+            if (user instanceof Cliente) {
+                this.usuario = new Cliente();
+                this.usuario = (Cliente) user;
+            } else {
+                this.usuario = new Trabajador();
+                this.usuario = (Trabajador) user;
+            }
+            LOGGER.info("Usuario asignado: " + usuario.getNombre());
+        }
     }
 
     public void setStage(Stage stage) {

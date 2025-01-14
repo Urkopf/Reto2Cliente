@@ -7,6 +7,7 @@ package crud.negocio;
 
 import crud.iu.controladores.ControladorPedidosPrincipal;
 import crud.objetosTransferibles.Pedido;
+import crud.objetosTransferibles.Usuario;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
 import java.util.List;
 import java.util.logging.Level;
@@ -43,12 +44,13 @@ public class FactoriaPedidos {
     }
 
     //Ventanas
-    public void cargarPedidosPrincipal(Stage stage) {
+    public void cargarPedidosPrincipal(Stage stage, Object user) {
         try {
             FXMLLoader cargador = new FXMLLoader(getClass().getResource("/crud/iu/vistas/PedidosPrincipal.fxml"));
             Parent root = cargador.load();
             ControladorPedidosPrincipal controlador = cargador.getController();
             controlador.setStage(stage);
+            controlador.setUser(user);
             controlador.initStage(root);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al abrir la ventnaa de PedidosPrincipal: {0}", e.getMessage());

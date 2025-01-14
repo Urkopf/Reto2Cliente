@@ -144,7 +144,7 @@ TextField, PasswordField {
 }
 
 TextField:focused, PasswordField:focused {
-    -fx-border-color: #8A2BE2;
+    -fx-border-color: rgba(254,153,1,254);
 }
 
 Button {
@@ -172,9 +172,6 @@ Button:pressed {
 }
 
 VBox,HBox {
-    -fx-padding: 0;
-    -fx-border-radius: 10;
-    -fx-background-radius: 10;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 10, 0, 0, 5);
 }
 
@@ -220,29 +217,15 @@ Tooltip,.tooltip {
 
 Button.mostrarPass {
     -fx-background-color: transparent; /* Fondo transparente */
-    -fx-pref-width: 30; /* Ancho automático para adaptarse al contenido */
-    -fx-pref-height: 30; /* Alto automático */
+    -fx-pref-width: 25; /* Ancho automático para adaptarse al contenido */
+    -fx-pref-height: 25; /* Alto automático */
     -fx-padding: 0; /* Sin padding para el botón */
     -fx-cursor: hand; /* El cursor sigue siendo la mano al pasar por encima */
 }
 
 /* Opcional: puedes agregar un estilo específico para cuando los botones 'mostrarPass' se presionan o al pasar el cursor */
-Button.mostrarPass:hover {
-    -fx-pref-width: 30;
-    -fx-pref-height: 30;
-    -fx-background-color: rgba(0, 0, 0, 0.1); /* Un pequeño cambio de color al pasar el cursor */
-}
 
-Button.mostrarPass:pressed {
-    -fx-pref-width: 30; /* Ancho automático para adaptarse al contenido */
-    -fx-pref-height: 30; /* Alto automático */
-    -fx-background-color: rgba(0, 0, 0, 0.2); /* Un pequeño cambio de color al presionar */
-}
 
-.mostrarPassImage{
-    -fx-pref-width: 30;
-    -fx-pref-height: 30;
-}
 
 /* Estilo general para MenuBar */
 MenuBar {
