@@ -255,8 +255,12 @@ public class ControladorRegistro implements Initializable {
         this.stage = stage;
     }
 
-    public void setUser(Usuario user) {
-        this.user = user;
+    public void setUser(Object user) {
+        if (user instanceof Cliente) {
+            this.user = (Cliente) user;
+        } else {
+            this.user = (Trabajador) user;
+        }
     }
 
     public void setModoActualizar(boolean modo) {
@@ -282,10 +286,9 @@ public class ControladorRegistro implements Initializable {
             botonCancelar.setOnAction(null); // Eliminar cualquier manejador anterior
 
             // Asignar manejadores de eventos a los botones
-            botonRegistrar.addEventHandler(ActionEvent.ACTION, this::handleButtonRegister);
+            //  botonRegistrar.addEventHandler(ActionEvent.ACTION, this::handleButtonRegister);
 //            botonCancelar.addEventHandler(ActionEvent.ACTION, this::handleButtonCancel);
             //           checkActivo.addEventHandler(ActionEvent.ACTION, this::handleActiveCheckBoxChange);
-
             // Configurar la visibilidad de las contraseñas
             botonOjoContrasena.setOnMousePressed(event -> {
                 if (event.getButton() == MouseButton.PRIMARY) {
@@ -348,13 +351,14 @@ public class ControladorRegistro implements Initializable {
         gridPane.requestFocus();  // Establecer el foco en el GridPane
     }
 
+    /*
     /**
      * Maneja la acción del botón de registro.
      *
      * @param event El evento de acción.
      * @author Sergio
      */
-    @FXML
+ /*   @FXML
     private void handleButtonRegister(ActionEvent event) {
         LOGGER.info("Botón Aceptar presionado");
         hasError = false;
@@ -393,7 +397,7 @@ public class ControladorRegistro implements Initializable {
             showErrorImage(campoCodigoPostal);
             hasError = true;
         }
-        /*
+
         // Si hay errores, no continuar
         if (hasError) {
             LOGGER.severe("Hay errores en el formulario.");
@@ -420,15 +424,15 @@ public class ControladorRegistro implements Initializable {
 
         }
     }
-
+     */
     /**
      * Maneja la acción del botón de cancelar.
      *
      * @param event El evento de acción.
      *
      * @author Urko
-         */
- /*   @FXML
+     */
+    /*   @FXML
     private void handleButtonCancel(ActionEvent event) {
         // Crear la alerta de confirmación
 
@@ -437,15 +441,15 @@ public class ControladorRegistro implements Initializable {
             factoria.loadSignInWindow(stage, "");
         }
     }
-         */
-        /**
-         * Metodo para visualizar una alerta de confirmacion de registro.
-         *
-         * @return true si pulsa aceptar o false si pulsa cancelar.
-         *
-         * @author Urko
-         */
-        /*    private boolean confirmNoActiveUserRegister() {
+     */
+    /**
+     * Metodo para visualizar una alerta de confirmacion de registro.
+     *
+     * @return true si pulsa aceptar o false si pulsa cancelar.
+     *
+     * @author Urko
+     */
+    /*    private boolean confirmNoActiveUserRegister() {
         // Crear la alerta de confirmación
         return showConfirmationDialog("Confirmación de Registro", "Si el usuario esta 'No Activo', no podrá iniciar sesión ¿Desea continuar el registro?");
 
@@ -456,39 +460,19 @@ public class ControladorRegistro implements Initializable {
      *
      * @param event El evento de acción.
      * @author Sergio
-         */
-        @FXML
-        private void handleActiveCheckBoxChange
-        (ActionEvent event
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            ) {
+     */
+    @FXML
+    private void handleActiveCheckBoxChange(ActionEvent event) {
         avisoNoActivo.setVisible(!checkActivo.isSelected());  // Mostrar/ocultar la advertencia
-        }
-        /**
-         * Muestra el icono de error en un campo que contiene un error de
-         * validación.
-         *
-         * @param node El nodo que representa el campo.
-         * @author Urko
-         */
+    }
+
+    /**
+     * Muestra el icono de error en un campo que contiene un error de
+     * validación.
+     *
+     * @param node El nodo que representa el campo.
+     * @author Urko
+     */
     private void showErrorImage(Node node) {
         node.getStyleClass().add("error-field");  // Añadir clase CSS para marcar el error
         showErrorIcon(node);  // Mostrar icono de error
@@ -579,7 +563,7 @@ public class ControladorRegistro implements Initializable {
      * @param message El mensaje de respuesta del servidor.
      * @author Sergio
      */
-    private void messageManager(Message message) {
+    /*  private void messageManager(Message message) {
         switch (message.getType()) {
             case OK_RESPONSE:
                 botonRegistrar.setDisable(true);

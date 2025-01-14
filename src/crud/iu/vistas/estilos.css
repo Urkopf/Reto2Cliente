@@ -54,33 +54,48 @@ TextField, PasswordField {
     -fx-background-color: rgba(255, 255, 255, 0.5);
 }
 
+/* Hover para botonGrande */
+.botonGrande:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.8); /* Fondo más claro */
+    -fx-text-fill: rgba(58, 58, 58, 1); /* Texto ligeramente más oscuro */
+    -fx-border-color: rgba(255, 255, 255, 0.8); /* Borde más definido */
+}
+
+/* Presionado para botonGrande */
+.botonGrande:pressed {
+    -fx-background-color: rgba(240, 240, 240, 1); /* Fondo sólido claro */
+    -fx-text-fill: rgba(74, 74, 74, 1); /* Texto sin cambios */
+    -fx-border-color: rgba(240, 240, 240, 1); /* Borde más oscuro */
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.5), 5, 0, 0, 2); /* Sombra más intensa */
+}
+
 .btnRojo {
-   
+
     -fx-font-weight: bold;
     -fx-background-color: rgba(255, 0, 0, 0.5);
 }
 
 .btnAzul {
-   
+
     -fx-font-weight: bold;
     -fx-background-color: rgba(0, 0, 255, 0.5);
 }
 
 
 .btnVerde {
-    
+
     -fx-font-weight: bold;
     -fx-background-color: rgba(0, 255, 0, 0.5);
 }
 
 .btnMorado {
-   
+
     -fx-font-weight: bold;
     -fx-background-color: #4A148C;
 }
 
 .btnAmarillo{
-    
+
     -fx-text-fill: rgba(58, 58, 58, 1);
     -fx-font-weight: bold;
     -fx-background-color: rgba(254,153,1,254);
@@ -104,12 +119,12 @@ TextField, PasswordField {
 }
 
 .btnAmarillo:hover {
-    -fx-background-color: rgba(255, 193, 7, 1); 
+    -fx-background-color: rgba(255, 193, 7, 1);
 }
 
 /* Presionado (pressed) para los botones de colores */
 .btnRojo:pressed {
-    -fx-background-color: rgba(200, 0, 0, 1); 
+    -fx-background-color: rgba(200, 0, 0, 1);
 }
 
 .btnAzul:pressed {
@@ -148,7 +163,7 @@ Button:hover {
 }
 
 Button:pressed {
-    -fx-background-color: rgba(255, 193, 7, 1); 
+    -fx-background-color: rgba(255, 193, 7, 1);
 }
 
 .left-checkbox {
@@ -299,13 +314,13 @@ MenuBar, Menu, MenuItem .label-text, .label{
 
 /* Efecto al hacer clic */
 .combo-box:pressed, .spinner:pressed, .date-picker:pressed {
-    -fx-background-color: rgba(255, 193, 7, 1); 
+    -fx-background-color: rgba(255, 193, 7, 1);
 }
 
 /* Efecto cuando están enfocados */
 .combo-box:focused, .spinner:focused, .date-picker:focused {
     -fx-border-color: rgba(254,153,1,254);
-    
+
 }
 
 /* Estilo para los menús desplegables del ComboBox */
@@ -332,7 +347,7 @@ MenuBar, Menu, MenuItem .label-text, .label{
 .combo-box .list-cell:focused, .date-picker .list-cell:focused {
     -fx-text-fill: rgba(58, 58, 58, 1);
     -fx-font-weight: bold;
-     -fx-background-color: rgba(255, 193, 7, 1); 
+    -fx-background-color: rgba(255, 193, 7, 1);
 }
 
 /* Estilo para CheckBox */
@@ -594,7 +609,6 @@ MenuBar, Menu, MenuItem .label-text, .label{
     -fx-text-fill: #FFFFFF; /* Texto blanco */
     -fx-font-family: 'Protest Strike'; /* Fuente personalizada */
     -fx-font-size: 16px; /* Tamaño de fuente */
-    -fx-font-weight: Regular;
     -fx-alignment: center; /* Alineación del texto */
     -fx-border-color: transparent; /* Sin bordes */
     -fx-padding: 10 0 5 0;

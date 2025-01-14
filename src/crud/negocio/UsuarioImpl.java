@@ -35,4 +35,15 @@ public class UsuarioImpl implements IUsuario {
         return users;
     }
 
+    @Override
+    public Object getInicioSesion(Usuario usuario) {
+        Object user = null;
+        try {
+            user = usuarioCliente.inicioSesion_XML(usuario);
+        } catch (Exception e) {
+            //Falta implementar las excepciones
+        }
+        return user;
+    }
+
 }

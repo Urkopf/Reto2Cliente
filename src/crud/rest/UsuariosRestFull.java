@@ -5,12 +5,19 @@
  */
 package crud.rest;
 
+import crud.objetosTransferibles.Cliente;
 import crud.objetosTransferibles.Usuario;
+import crud.utilidades.Utilidades;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
+import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * Jersey REST client generated for REST resource:UsuarioFacadeREST
@@ -27,10 +34,11 @@ import javax.ws.rs.core.GenericType;
  */
 public class UsuariosRestFull {
 
+    private Logger LOGGER = Logger.getLogger(UsuariosRestFull.class.getName());
     private WebTarget webTarget;
     private Client client;
     private static final String BASE_URI
-            = ResourceBundle.getBundle("crud.recursos.configCliente")
+            = ResourceBundle.getBundle("recursos.configCliente")
                     .getString("BASE_URI");
 
     public UsuariosRestFull() {
@@ -42,6 +50,24 @@ public class UsuariosRestFull {
         WebTarget resource = webTarget;
         resource = resource.path("count");
         return resource.request(javax.ws.rs.core.MediaType.TEXT_PLAIN).get(String.class);
+    }
+
+    public Usuario inicioSesion_XML(Object usuario) throws WebApplicationException {
+        Usuario cliente = null;
+        WebTarget resource = webTarget.path("sesion");
+        LOGGER.info("Enviando solicitud a: " + resource.getUri());
+        // Enviar el objeto Usuario como entidad
+        Response response = resource.request(MediaType.APPLICATION_XML)
+                .post(Entity.entity(usuario, MediaType.APPLICATION_XML));
+        LOGGER.info("Estado de la respuesta: " + response.getStatus());
+        if (response.getStatus() == 200) {
+            cliente = response.readEntity(Cliente.class);
+            System.out.println("Cliente recibido: " + cliente.getNombre());
+        } else {
+            System.out.println("Error: " + response.getStatus());
+        }
+        return cliente;
+
     }
 
     public void edit_XML(Object requestEntity) throws WebApplicationException {

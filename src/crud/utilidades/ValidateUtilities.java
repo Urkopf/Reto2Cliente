@@ -37,7 +37,7 @@ public class ValidateUtilities {
      * `false` en caso contrario.
      */
     public static Boolean isValid(String validacion, String type) {
-        ResourceBundle bundle = ResourceBundle.getBundle("utilities.pattern");
+        ResourceBundle bundle = ResourceBundle.getBundle("crud.utilidades.pattern");
         String patternType = "";
         switch (type) {
             case "telefono":

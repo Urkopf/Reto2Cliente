@@ -45,11 +45,12 @@ import javax.ws.rs.NotAuthorizedException;
  */
 public class ControladorInicioSesion implements Initializable {
 
-    private static final Logger LOGGER = Logger.getLogger(ApplicationClientSignInController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ControladorInicioSesion.class.getName());
     private Stage stage = new Stage();
     private FactoriaUsuarios factoria = FactoriaUsuarios.getInstance();
     private boolean hasError = false;  // Indica si hay errores en el formulario
     private Usuario usuario;  // Usuario que intenta iniciar sesión
+    private Object respuesta;
 
     // Elementos de la interfaz FXML
     @FXML
@@ -59,15 +60,15 @@ public class ControladorInicioSesion implements Initializable {
     @FXML
     private PasswordField campoContrasena;  // Campo de contraseña
     @FXML
-    private TextField campoContrasenaVista;  // Campo de texto visual para la contraseña
+    private TextField campoContrasenaVisible;  // Campo de texto visual para la contraseña
     @FXML
     private Button botonIniciarSesion;  // Botón para iniciar sesión
     @FXML
-    private Button botonRegistro;  // Hipervínculo para ir a la página de registro
+    private Button botonRegistrar;  // Hipervínculo para ir a la página de registro
     @FXML
     private GridPane gridPane;  // Contenedor de todos los campos del formulario
     @FXML
-    private ImageView errorCorreo;  // Icono de error para el campo de inicio de sesión
+    private ImageView errorEmail;  // Icono de error para el campo de inicio de sesión
     @FXML
     private ImageView errorContrasena;  // Icono de error para el campo de contraseña
     @FXML
@@ -180,7 +181,7 @@ public class ControladorInicioSesion implements Initializable {
             stage.setOnShowing(this::handleWindowShowing);
             botonIniciarSesion.setOnAction(null);
             botonIniciarSesion.addEventHandler(ActionEvent.ACTION, this::handleButtonLoginButton);
-            botonRegistro.setOnAction(this::handleHyperLinkRegistry);  // Manejar clic en el hipervínculo de registro
+            botonRegistrar.addEventHandler(ActionEvent.ACTION, this::handleButtonRegistro);  // Manejar clic en el hipervínculo de registro
 
             if (!campoEmail.getText().equals("")) {
                 campoContrasena.requestFocus();  // Establece el foco en el campo de contraseña
@@ -216,7 +217,7 @@ public class ControladorInicioSesion implements Initializable {
                 botonIniciarSesion.fire();  // Simula el clic en el botón Iniciar sesión
                 event.consume();  // Evita la propagación adicional del evento
             } else if (event.isAltDown() && event.getCode() == KeyCode.R) {
-                botonRegistro.fire();  // Simula el clic en el hipervínculo Registrar
+                botonRegistrar.fire();  // Simula el clic en el hipervínculo Registrar
                 event.consume();  // Evita la propagación adicional del evento
             }
         });
@@ -258,7 +259,7 @@ public class ControladorInicioSesion implements Initializable {
      * @param event El evento de acción.
      */
     @FXML
-    private void handleHyperLinkRegistry(ActionEvent event) {
+    private void handleButtonRegistro(ActionEvent event) {
         factoria.cargarRegistro(stage, null);  // Cargar la ventana de registro
     }
 
@@ -318,12 +319,19 @@ public class ControladorInicioSesion implements Initializable {
             usuario.setContrasena(campoContrasena.getText());
 
             try {
-                factoria.inicioSesion(usuario);  // Nos tiene que devolver los datos del usuario salvo su contraseña
+                respuesta = factoria.inicioSesion().getInicioSesion(usuario); // Nos tiene que devolver los datos del usuario salvo su contraseña
+                if (respuesta instanceof Cliente) {
+                    System.out.println("Cliente recibido: " + ((Cliente) respuesta).getNombre());
+                } else if (respuesta instanceof Trabajador) {
+                    System.out.println("Trabajador recibido: " + ((Trabajador) respuesta).getNombre());
+                } else {
+                    throw new Exception("Tipo de respuesta desconocido.");
+                }
                 if (!actualizar) {
 
-                    factoria.cargarMenuPrincipal(stage, new Usuario());  // Cargar la ventana principal
+                    factoria.cargarMenuPrincipal(stage, respuesta);  // Cargar la ventana principal
                 } else {
-                    factoria.cargarRegistro(stage, new Usuario());  // Cargar el SignUP
+                    factoria.cargarRegistro(stage, respuesta);  // Cargar el SignUP
                 }
             } catch (ForbiddenException e) {
                 showErrorDialog(AlertType.ERROR, "Inicio de sesión fallido", "Su usuario está desactivado.");
@@ -332,7 +340,7 @@ public class ControladorInicioSesion implements Initializable {
             } catch (InternalServerErrorException e) {
                 showErrorDialog(AlertType.ERROR, "Inicio de sesión fallido", "Error en el servidor.");
             } catch (Exception e) {
-                showErrorDialog(AlertType.ERROR, "Inicio de sesión fallido", "Error en el metaverso.");
+                showErrorDialog(AlertType.ERROR, "Inicio de sesión fallido", "Error en el metaverso." + e);
             }
 
             //  messageManager(response);  // Manejar la respuesta del servidor
@@ -384,7 +392,7 @@ public class ControladorInicioSesion implements Initializable {
      */
     private boolean comprobarCamposCompletos() {
         for (Node node : gridPane.getChildren()) {
-            if ((node instanceof TextField || node instanceof PasswordField) && (node != campoContrasenaVista)) {
+            if ((node instanceof TextField || node instanceof PasswordField) && (node != campoContrasenaVisible)) {
                 if (((TextField) node).getText() == null || ((TextField) node).getText().isEmpty()) {
                     LOGGER.severe("Error: El campo " + ((TextField) node).getPromptText() + " está vacío.");
                     return false;
@@ -422,7 +430,7 @@ public class ControladorInicioSesion implements Initializable {
      */
     private void showErrorIcon(Node node) {
         if (node == campoEmail) {
-            errorCorreo.setVisible(true);
+            errorEmail.setVisible(true);
         } else if (node == campoContrasena) {
             errorContrasena.setVisible(true);
         }
@@ -435,7 +443,7 @@ public class ControladorInicioSesion implements Initializable {
      */
     private void hideErrorIcon(Node node) {
         if (node == campoEmail) {
-            errorCorreo.setVisible(false);
+            errorEmail.setVisible(false);
         } else if (node == campoContrasena) {
             errorContrasena.setVisible(false);
         }
@@ -445,25 +453,25 @@ public class ControladorInicioSesion implements Initializable {
      * Muestra el campo de contraseña en texto plano y oculta el PasswordField.
      */
     private void togglePasswordVisibility() {
-        campoContrasenaVista.setText(campoContrasena.getText());  // Copiar contenido del PasswordField al TextField
+        campoContrasenaVisible.setText(campoContrasena.getText());  // Copiar contenido del PasswordField al TextField
         campoContrasena.setVisible(false);
-        campoContrasenaVista.setVisible(true);
+        campoContrasenaVisible.setVisible(true);
 
         // Cambiar la imagen del botón a "mostrar"
         ImageView imageView = (ImageView) botonOjo.getGraphic();
-        imageView.setImage(new Image("resources/iconos/ocultar.png"));
+        imageView.setImage(new Image("recursos/iconos/ocultar.png"));
     }
 
     /**
      * Oculta el campo de texto plano y muestra el PasswordField.
      */
     private void togglePasswordVisibilityReleased() {
-        campoContrasena.setText(campoContrasenaVista.getText());  // Copiar contenido del TextField al PasswordField
+        campoContrasena.setText(campoContrasenaVisible.getText());  // Copiar contenido del TextField al PasswordField
         campoContrasena.setVisible(true);
-        campoContrasenaVista.setVisible(false);
+        campoContrasenaVisible.setVisible(false);
 
         // Cambiar la imagen del botón a "ocultar"
         ImageView imageView = (ImageView) botonOjo.getGraphic();
-        imageView.setImage(new Image("resources/iconos/visualizar.png"));
+        imageView.setImage(new Image("recursos/iconos/visualizar.png"));
     }
 }

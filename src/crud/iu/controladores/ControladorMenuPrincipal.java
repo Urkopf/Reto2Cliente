@@ -1,5 +1,7 @@
 package crud.iu.controladores;
 
+import crud.objetosTransferibles.Cliente;
+import crud.objetosTransferibles.Trabajador;
 import crud.objetosTransferibles.Usuario;
 import crud.utilidades.AlertUtilities;
 import java.net.URL;
@@ -51,14 +53,6 @@ public class ControladorMenuPrincipal implements Initializable {
         LOGGER.info("Inicializando controlador del Menú Principal");
     }
 
-    public void setStage(Stage stage) {
-        this.stage = stage;
-    }
-
-    public void setUser(Usuario user) {
-        this.usuario = user;
-    }
-
     public void initStage(Parent root) {
         try {
             LOGGER.info("Inicializando la carga del stage");
@@ -89,10 +83,18 @@ public class ControladorMenuPrincipal implements Initializable {
      *
      * @param usuario Usuario activo.
      */
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-        labelTitulo.setText("Bienvenido, " + usuario.getNombre() + "!");
-        LOGGER.info("Usuario asignado: " + usuario.getNombre());
+    public void setUser(Object user) {
+        if (user != null) {
+            if (user instanceof Cliente) {
+                this.usuario = new Cliente();
+                this.usuario = (Cliente) user;
+            } else {
+                this.usuario = new Trabajador();
+                this.usuario = (Trabajador) user;
+            }
+            labelTitulo.setText("Bienvenido, " + usuario.getNombre() + "!");
+            LOGGER.info("Usuario asignado: " + usuario.getNombre());
+        }
     }
 
     /**
