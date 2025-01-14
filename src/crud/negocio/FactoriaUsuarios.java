@@ -5,8 +5,14 @@
  */
 package crud.negocio;
 
-//import crud.iu.controladores.ControladorInicioSesion;
-//import crud.iu.controladores.ControladorRegistro;
+import crud.iu.controladores.ControladorInicioSesion;
+import crud.iu.controladores.ControladorRegistro;
+
+import crud.iu.controladores.ControladorInicioSesion;
+import crud.iu.controladores.ControladorMenuPrincipal;
+import crud.iu.controladores.ControladorRegistro;
+import crud.objetosTransferibles.Usuario;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -41,11 +47,11 @@ public class FactoriaUsuarios {
         return new ClienteImpl();
     }
 
+
     public ITrabajador accesoTrabajador() {
         return new TrabajadorImpl();
     }
 
-    /*
     //Ventanas
     public void cargarInicioSesion(Stage stage, String email) {
         try {
@@ -53,7 +59,7 @@ public class FactoriaUsuarios {
             Parent root = cargador.load();
             ControladorInicioSesion controlador = cargador.getController();
             controlador.setStage(stage);
-            controlador.setLogin(email);
+            controlador.setCorreo(email);
             controlador.initStage(root);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al abrir la ventnaa de InicioSesion: {0}", e.getMessage());
@@ -71,9 +77,23 @@ public class FactoriaUsuarios {
             controlador.setModoActualizar(usuario != null);
             controlador.initStage(root);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al abrir la ventnaa de InicioSesion: {0}", e.getMessage());
-            showErrorDialog(AlertType.ERROR, "Error", "No se puede cargar la ventana de Inicio de sesión");
+            LOGGER.log(Level.SEVERE, "Error al abrir la ventnaa de Registro: {0}", e.getMessage());
+            showErrorDialog(AlertType.ERROR, "Error", "No se puede cargar la ventana de Registro");
         }
     }
-     */
+
+    public void cargarMenuPrincipal(Stage stage, Usuario usuario) {
+        try {
+            FXMLLoader cargador = new FXMLLoader(getClass().getResource("/crud/iu/vistas/MenuPrincipal.fxml"));
+            Parent root = cargador.load();
+            ControladorMenuPrincipal controlador = cargador.getController();
+            controlador.setStage(stage);
+            controlador.setUser(usuario);
+            controlador.initStage(root);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error al abrir la ventnaa de  Menú principal: {0}", e.getMessage());
+            showErrorDialog(AlertType.ERROR, "Error", "No se puede cargar la ventana de Menú principal");
+        }
+    }
+
 }

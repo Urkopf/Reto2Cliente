@@ -40,6 +40,15 @@ public class ValidateUtilities {
         ResourceBundle bundle = ResourceBundle.getBundle("utilities.pattern");
         String patternType = "";
         switch (type) {
+            case "telefono":
+                patternType = bundle.getString("EMAILPATTERN");
+                break;
+            case "cif":
+                patternType = bundle.getString("EMAILPATTERN");
+                break;
+            case "nif":
+                patternType = bundle.getString("EMAILPATTERN");
+                break;
             case "email":
                 patternType = bundle.getString("EMAILPATTERN");
                 break;
@@ -56,7 +65,11 @@ public class ValidateUtilities {
 
         Pattern patron = Pattern.compile(patternType);
         Matcher matcher = patron.matcher(validacion);
-        return matcher.matches();
+        boolean respuesta = matcher.matches();
+        if (type.equalsIgnoreCase("cif") && !respuesta) {
+            respuesta = isValid(validacion, "nif");
+        }
+        return respuesta;
     }
 
 }

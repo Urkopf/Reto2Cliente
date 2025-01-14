@@ -3,6 +3,7 @@
 <?import javafx.scene.Group?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.RadioButton?>
@@ -17,7 +18,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane id="signUp" minHeight="768.0" minWidth="900.0" prefHeight="768.0" prefWidth="875.0" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.ApplicationClientSignUpController">
+<AnchorPane id="signUp" minHeight="768.0" minWidth="900.0" prefHeight="768.0" prefWidth="875.0" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="crud.iu.controladores.ControladorRegistro">
     <children>
         <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <center>
@@ -230,21 +231,31 @@
                                         <Image url="@../../../recursos/iconos/sector.png" />
                                     </image>
                                 </ImageView>
-                                <TextField id="cityField" fx:id="campoSector" promptText="Sector" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="5">
-                                    <tooltip>
-                                        <Tooltip text="Ingrese su sector/departamento" />
-                                    </tooltip>
-                                </TextField>
+                        <Group GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="5">
+                           <children>
+                              <ComboBox fx:id="comboDepartamento" prefHeight="38.0" prefWidth="323.0" visible="false" />
+                                      <TextField id="cityField" fx:id="campoSector" prefHeight="38.0" prefWidth="323.0" promptText="Sector">
+                                          <tooltip>
+                                              <Tooltip text="Ingrese su sector/departamento" />
+                                          </tooltip>
+                                      </TextField>
+                           </children>
+                        </Group>
                                 <ImageView fitHeight="40" fitWidth="40" GridPane.rowIndex="6">
                                     <image>
                                         <Image url="@../../../recursos/iconos/telefono.png" />
                                     </image>
                                 </ImageView>
-                                <TextField id="zipField" fx:id="campoTelefono" promptText="Teléfono" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="6">
-                                    <tooltip>
-                                        <Tooltip text="Ingrese su telefono, mínimo 6 digitos." />
-                                    </tooltip>
-                                </TextField>
+                        <Group GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="6">
+                           <children>
+                              <ComboBox fx:id="comboCategoria" prefHeight="38.0" prefWidth="323.0" visible="false" />
+                                      <TextField id="zipField" fx:id="campoTelefono" prefHeight="38.0" prefWidth="323.0" promptText="Teléfono">
+                                          <tooltip>
+                                              <Tooltip text="Ingrese su telefono, mínimo 6 digitos." />
+                                          </tooltip>
+                                      </TextField>
+                           </children>
+                        </Group>
                                 <HBox alignment="CENTER_LEFT" spacing="10" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="7">
                                     <children>
                                         <Label text="Activo:" GridPane.columnIndex="1" GridPane.rowIndex="10" />

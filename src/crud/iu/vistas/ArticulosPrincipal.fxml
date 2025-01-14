@@ -53,9 +53,9 @@
                             <TableColumn fx:id="columna5" prefWidth="177.80877685546875" text="ESTADO" />
                             <TableColumn fx:id="columna6" minWidth="0.0" prefWidth="138.57391357421875" text="TOTAL" />
                         </columns>
-                  <padding>
+                  <VBox.margin>
                      <Insets left="20.0" right="20.0" />
-                  </padding>
+                  </VBox.margin>
                     </TableView>
                 </VBox>
             </center>
