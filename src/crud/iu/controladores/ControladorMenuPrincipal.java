@@ -37,7 +37,6 @@ public class ControladorMenuPrincipal implements Initializable {
     private FactoriaPedidos factoriaPedidos = FactoriaPedidos.getInstance();
     private FactoriaArticulos factoriaArticulos = FactoriaArticulos.getInstance();
     private Stage stage;
-    private Usuario usuario;
 
     private ContextMenu contextMenu;
 
@@ -56,6 +55,8 @@ public class ControladorMenuPrincipal implements Initializable {
     private Button botonArticulo;
     @FXML
     private AnchorPane panel;
+    private Cliente userCliente;
+    private Trabajador userTrabajador;
 
     /**
      * Inicializa el controlador.
@@ -110,14 +111,7 @@ public class ControladorMenuPrincipal implements Initializable {
                 contextMenu.hide();
             }
         });
-        if (usuario != null) {
-            if (usuario instanceof Cliente) {
-                botonArticulo.setVisible(false);
 
-            } else {
-                botonArticulo.setVisible(true);
-            }
-        }
     }
 
     public void initStage(Parent root) {
@@ -154,15 +148,20 @@ public class ControladorMenuPrincipal implements Initializable {
     public void setUser(Object user) {
         if (user != null) {
             if (user instanceof Cliente) {
-                this.usuario = new Cliente();
-                this.usuario = (Cliente) user;
+                this.userCliente = new Cliente();
+                this.userCliente = (Cliente) user;
+                labelTitulo.setText("Bienvenid@, " + userCliente.getNombre() + "!");
+                LOGGER.info("Cliente asignado: " + userCliente.getNombre());
+                botonArticulo.setVisible(false);
 
             } else {
-                this.usuario = new Trabajador();
-                this.usuario = (Trabajador) user;
+                this.userTrabajador = new Trabajador();
+                this.userTrabajador = (Trabajador) user;
+                labelTitulo.setText("Bienvenid@, " + userTrabajador.getNombre() + "!");
+                botonArticulo.setVisible(true);
+                LOGGER.info("Trabajador asignado: " + userTrabajador.getNombre());
             }
-            labelTitulo.setText("Bienvenid@, " + usuario.getNombre() + "!");
-            LOGGER.info("Usuario asignado: " + usuario.getNombre());
+
         }
     }
 
@@ -234,7 +233,9 @@ public class ControladorMenuPrincipal implements Initializable {
     private void manejarBotonPedido(ActionEvent event) {
         try {
             LOGGER.info("Botón 'Gestión de Pedidos' presionado.");
-            factoriaPedidos.cargarPedidosPrincipal(stage, usuario);
+
+            factoriaPedidos.cargarPedidosPrincipal(stage, (userCliente != null) ? userCliente : userTrabajador);
+
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al gestionar pedidos", e);
             showErrorDialog(AlertType.ERROR, "No se pudo gestionar los pedidos", "Inténtelo de nuevo más tarde.");

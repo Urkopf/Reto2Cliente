@@ -67,6 +67,8 @@ public class ControladorPedidosPrincipal implements Initializable {
     private Pagination paginador;
     @FXML
     private MenuItem opcionIrPedidos;
+    private Cliente userCliente;
+    private Trabajador userTrabajador;
 
     /**
      * Inicializa el controlador.
@@ -117,13 +119,15 @@ public class ControladorPedidosPrincipal implements Initializable {
     public void setUser(Object user) {
         if (user != null) {
             if (user instanceof Cliente) {
-                this.usuario = new Cliente();
-                this.usuario = (Cliente) user;
+                this.userCliente = new Cliente();
+                this.userCliente = (Cliente) user;
+                LOGGER.info("Usuario asignado: " + userCliente.getNombre());
+
             } else {
-                this.usuario = new Trabajador();
-                this.usuario = (Trabajador) user;
+                this.userTrabajador = new Trabajador();
+                this.userTrabajador = (Trabajador) user;
+                LOGGER.info("Usuario asignado: " + userTrabajador.getNombre());
             }
-            LOGGER.info("Usuario asignado: " + usuario.getNombre());
         }
     }
 
