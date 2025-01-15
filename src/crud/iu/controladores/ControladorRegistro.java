@@ -132,7 +132,10 @@ public class ControladorRegistro implements Initializable {
     private ComboBox<Departamento> comboDepartamento = new ComboBox();
     @FXML
     private ComboBox<Categoria> comboCategoria = new ComboBox();
-    ;
+    @FXML
+    private Label labelCategoria;
+    @FXML
+    private Label labelDepartamento;
     @FXML
     private HBox avisoNoActivo;  // Caja de advertencia para mostrar información adicional
     @FXML
@@ -885,12 +888,18 @@ public class ControladorRegistro implements Initializable {
 
             comboDepartamento.setVisible(false);
             comboCategoria.setVisible(false);
+
+            labelDepartamento.setVisible(false);
+            labelCategoria.setVisible(false);
         } else if (radioTrabajador.isSelected()) {
             campoSector.setVisible(false);
             campoTelefono.setVisible(false);
 
             comboDepartamento.setVisible(true);
             comboCategoria.setVisible(true);
+            labelDepartamento.setVisible(true);
+            labelCategoria.setVisible(true);
+
         }
     }
 
