@@ -37,6 +37,8 @@ import crud.objetosTransferibles.Trabajador;
 import static crud.utilidades.AlertUtilities.showConfirmationDialog;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
 import static crud.utilidades.ValidateUtilities.isValid;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
@@ -127,15 +129,16 @@ public class ControladorRegistro implements Initializable {
     @FXML
     private ImageView errorTelefono;
     @FXML
-    private ComboBox<Departamento> comboDepartamento;
+    private ComboBox<Departamento> comboDepartamento = new ComboBox();
     @FXML
-    private ComboBox<Categoria> comboCategoria;
+    private ComboBox<Categoria> comboCategoria = new ComboBox();
+    ;
     @FXML
     private HBox avisoNoActivo;  // Caja de advertencia para mostrar información adicional
     @FXML
     private Button botonOjoContrasena;  // Botón para alternar la visibilidad de la contraseña
     @FXML
-    private Button botonOjoRepiteContrasena;  // Botón para alternar la visibilidad de la confirmación de la contraseña
+    private Button botonOjoRepite;  // Botón para alternar la visibilidad de la confirmación de la contraseña
 
     private ContextMenu contextMenu;  // Menú contextual personalizado
     private boolean actualizar;
@@ -249,6 +252,41 @@ public class ControladorRegistro implements Initializable {
         radioCliente.setSelected(true);
         // Configuración inicial
         handleRadioChange(); // Ajusta visibilidad inicial según el estado de los botones
+
+        comboDepartamento.setItems(FXCollections.observableArrayList(Departamento.values()));
+
+        // Añade un listener para el ComboBox de Departamento
+        comboDepartamento.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                actualizarCategorias(newValue);
+            }
+        });
+
+        // Configuración inicial del ComboBox de Categorías
+        if (!comboDepartamento.getItems().isEmpty()) {
+            comboDepartamento.setValue(comboDepartamento.getItems().get(0)); // Selecciona el primer departamento por defecto
+            actualizarCategorias(comboDepartamento.getValue());
+        }
+    }
+
+    private void actualizarCategorias(Departamento departamento) {
+        // Filtra las categorías según el departamento
+        ObservableList<Categoria> categoriasFiltradas = FXCollections.observableArrayList();
+        for (Categoria categoria : Categoria.values()) {
+            if (categoria.getDepartamento() == departamento) {
+                categoriasFiltradas.add(categoria);
+            }
+        }
+
+        // Actualiza las categorías en el ComboBox de Categorías
+        comboCategoria.setItems(categoriasFiltradas);
+
+        // Selecciona el primer valor por defecto si hay categorías disponibles
+        if (!categoriasFiltradas.isEmpty()) {
+            comboCategoria.setValue(categoriasFiltradas.get(0));
+        } else {
+            comboCategoria.setValue(null); // Limpia la selección si no hay categorías
+        }
     }
 
     /**
@@ -323,7 +361,7 @@ public class ControladorRegistro implements Initializable {
                     utilidadVisibilidadContrasena(campoContrasena, campoContrasenaVista);
                 }
             });
-            botonOjoRepiteContrasena.setOnMousePressed(event -> {
+            botonOjoRepite.setOnMousePressed(event -> {
                 if (event.getButton() == MouseButton.PRIMARY) {
                     utilidadVisibilidadContrasena(campoRepiteContrasena, campoRepiteContrasenaVista);
                 }
@@ -334,7 +372,7 @@ public class ControladorRegistro implements Initializable {
                     utilidadOcultacionContrasena(campoContrasena, campoContrasenaVista);
                 }
             });
-            botonOjoRepiteContrasena.setOnMouseReleased(event -> {
+            botonOjoRepite.setOnMouseReleased(event -> {
                 if (event.getButton() == MouseButton.PRIMARY) {
                     utilidadOcultacionContrasena(campoRepiteContrasena, campoRepiteContrasenaVista);
                 }
@@ -463,24 +501,27 @@ public class ControladorRegistro implements Initializable {
             // Si no hay errores, proceder con el registro
 
             if (checkActivo.isSelected() || (!checkActivo.isSelected() && confirmNoActiveUserRegister())) {
-                if (actualizar) {
-                    if (radioCliente.isSelected()) {
-                        userCliente.setId(userClienteOriginal.getId());
-                        response = factoria.accesoCliente().actualizarCliente(userCliente);
-                    } else {
-                        userTrabajador.setId(userTrabajadorOriginal.getId());
-                        response = factoria.accesoTrabajador().actualizarTrabajador(userTrabajador);
-                    }
+                try {
+                    if (actualizar) {
+                        if (radioCliente.isSelected()) {
+                            userCliente.setId(userClienteOriginal.getId());
+                            factoria.accesoCliente().actualizarCliente(userCliente);
+                        } else {
+                            userTrabajador.setId(userTrabajadorOriginal.getId());
+                            factoria.accesoTrabajador().actualizarTrabajador(userTrabajador);
+                        }
 
-                } else {
-                    if (radioCliente.isSelected()) {
-                        response = factoria.accesoCliente().crearCliente(userCliente);
                     } else {
-                        response = factoria.accesoTrabajador().crearTrabajador(userTrabajador);
+                        if (radioCliente.isSelected()) {
+                            factoria.accesoCliente().crearCliente(userCliente);
+                        } else {
+                            factoria.accesoTrabajador().crearTrabajador(userTrabajador);
+                        }
                     }
+                } catch (Exception e) {
                 }
 
-                messageManager(response);
+                //  messageManager(response);
             }
 
         }
@@ -748,7 +789,7 @@ public class ControladorRegistro implements Initializable {
             ImageView imageView = (ImageView) botonOjoContrasena.getGraphic();
             imageView.setImage(new Image("resources/iconos/ocultar.png"));
         } else if (passwordFieldParam == campoRepiteContrasena) {
-            ImageView imageView = (ImageView) botonOjoRepiteContrasena.getGraphic();
+            ImageView imageView = (ImageView) botonOjoRepite.getGraphic();
             imageView.setImage(new Image("resources/iconos/ocultar.png"));
         }
         // Recuperar el foco y colocar el cursor al final del texto sin seleccionar todo
@@ -774,7 +815,7 @@ public class ControladorRegistro implements Initializable {
             ImageView imageView = (ImageView) botonOjoContrasena.getGraphic();
             imageView.setImage(new Image("resources/iconos/visualizar.png"));
         } else if (passwordFieldParam == campoRepiteContrasena) {
-            ImageView imageView = (ImageView) botonOjoRepiteContrasena.getGraphic();
+            ImageView imageView = (ImageView) botonOjoRepite.getGraphic();
             imageView.setImage(new Image("resources/iconos/visualizar.png"));
         }
         // Recuperar el foco y colocar el cursor al final del texto sin seleccionar todo
@@ -829,7 +870,7 @@ public class ControladorRegistro implements Initializable {
         botonRegistrar.setText("Actualizar Datos");
 
         botonOjoContrasena.setVisible(false);
-        botonOjoRepiteContrasena.setVisible(false);;
+        botonOjoRepite.setVisible(false);;
 
     }
 
