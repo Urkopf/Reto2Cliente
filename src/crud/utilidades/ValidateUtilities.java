@@ -1,5 +1,6 @@
 package crud.utilidades;
 
+import static crud.utilidades.ValidacionCifNif.validarCifONif;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -39,16 +40,12 @@ public class ValidateUtilities {
     public static Boolean isValid(String validacion, String type) {
         ResourceBundle bundle = ResourceBundle.getBundle("crud.utilidades.pattern");
         String patternType = "";
-        switch (type) {
+        switch (type.toLowerCase()) {
             case "telefono":
                 patternType = bundle.getString("PATRONTELEFONO");
                 break;
             case "cif":
-                patternType = bundle.getString("PATRONDECIF");
-                break;
-            case "nif":
-                patternType = bundle.getString("PATRONDENIF");
-                break;
+                return validarCifONif(validacion);
             case "email":
                 patternType = bundle.getString("EMAILPATTERN");
                 break;
@@ -59,16 +56,14 @@ public class ValidateUtilities {
                 patternType = bundle.getString("ZIPPATTERN");
                 break;
             default:
-                LOGGER.severe("Tipo no encontrado");
+                LOGGER.severe("Tipo no encontrado: " + type);
                 return false;
         }
 
         Pattern patron = Pattern.compile(patternType);
         Matcher matcher = patron.matcher(validacion);
         boolean respuesta = matcher.matches();
-        if (type.equalsIgnoreCase("cif") && !respuesta) {
-            respuesta = isValid(validacion, "nif");
-        }
+
         return respuesta;
     }
 
