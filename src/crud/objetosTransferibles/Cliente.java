@@ -25,6 +25,13 @@ public class Cliente extends Usuario {
     public Cliente() {
     }
 
+    public Cliente(String sector, String telefono, String correo, String contrasena, String nombre, String calle, String ciudad, String codPostal, String cif, Boolean activo) {
+        super(correo, contrasena, nombre, calle, ciudad, codPostal, cif, activo);
+        this.sector = sector;
+        this.descuento = 5;
+        this.telefono = telefono;
+    }
+
     public String getSector() {
         return sector;
     }

@@ -37,6 +37,17 @@ public class Usuario implements Serializable {
     public Usuario() {
     }
 
+    public Usuario(String correo, String contrasena, String nombre, String calle, String ciudad, String codPostal, String cif, Boolean activo) {
+        this.correo = correo;
+        this.contrasena = contrasena;
+        this.nombre = nombre;
+        this.calle = calle;
+        this.ciudad = ciudad;
+        this.codPostal = codPostal;
+        this.cif = cif;
+        this.activo = activo;
+    }
+
     // Getters y Setters
     public Long getId() {
         return id;

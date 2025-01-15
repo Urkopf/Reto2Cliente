@@ -41,13 +41,13 @@ public class ValidateUtilities {
         String patternType = "";
         switch (type) {
             case "telefono":
-                patternType = bundle.getString("EMAILPATTERN");
+                patternType = bundle.getString("PATRONTELEFONO");
                 break;
             case "cif":
-                patternType = bundle.getString("EMAILPATTERN");
+                patternType = bundle.getString("PATRONDECIF");
                 break;
             case "nif":
-                patternType = bundle.getString("EMAILPATTERN");
+                patternType = bundle.getString("PATRONDENIF");
                 break;
             case "email":
                 patternType = bundle.getString("EMAILPATTERN");
