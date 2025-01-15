@@ -1,6 +1,7 @@
 package crud.iu.controladores;
 
 import crud.negocio.FactoriaUsuarios;
+import crud.objetosTransferibles.Categoria;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -31,11 +32,16 @@ import javafx.stage.Stage;
 //import utilidades.Message;
 import crud.objetosTransferibles.Usuario;
 import crud.objetosTransferibles.Cliente;
+import crud.objetosTransferibles.Departamento;
 import crud.objetosTransferibles.Trabajador;
 import static crud.utilidades.AlertUtilities.showConfirmationDialog;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
 import static crud.utilidades.ValidateUtilities.isValid;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 
 /**
  * Controlador FXML para la vista de registro (SignUp). Este controlador
@@ -49,8 +55,10 @@ public class ControladorRegistro implements Initializable {
     private static final Logger LOGGER = Logger.getLogger(ControladorRegistro.class.getName());
     private Stage stage = new Stage();
     private FactoriaUsuarios factoria = FactoriaUsuarios.getInstance();
-    private Usuario user;
-    private Usuario user2;
+    private Cliente userClienteOriginal;
+    private Trabajador userTrabajadorOriginal;
+    private Cliente userCliente;
+    private Trabajador userTrabajador;
     private boolean hasError = false;  // Indica si hay errores en el formulario
 
     // Elementos de la interfaz FXML
@@ -85,7 +93,9 @@ public class ControladorRegistro implements Initializable {
     @FXML
     private TextField campoTelefono;
     @FXML
-    private Group grupoRadio; // Por defecto Cliente pero si cambia a trabajador hay que cambiar el promp text a Departamento
+    private RadioButton radioCliente;
+    @FXML
+    private RadioButton radioTrabajador;
     @FXML
     private CheckBox checkActivo;
     @FXML
@@ -113,23 +123,32 @@ public class ControladorRegistro implements Initializable {
     @FXML
     private ImageView errorCodigoPostal;
     @FXML
+    private ImageView errorCIF;
+    @FXML
     private ImageView errorSector;
     @FXML
     private ImageView errorTelefono;
     @FXML
-    private ComboBox comboDepartamento;
+    private ComboBox<Departamento> comboDepartamento = new ComboBox();
     @FXML
-    private ComboBox comboCategoria;
+    private ComboBox<Categoria> comboCategoria = new ComboBox();
+    @FXML
+    private Label labelCategoria;
+    @FXML
+    private Label labelDepartamento;
     @FXML
     private HBox avisoNoActivo;  // Caja de advertencia para mostrar información adicional
     @FXML
     private Button botonOjoContrasena;  // Botón para alternar la visibilidad de la contraseña
     @FXML
-    private Button botonOjoRepiteContrasena;  // Botón para alternar la visibilidad de la confirmación de la contraseña
+    private Button botonOjoRepite;  // Botón para alternar la visibilidad de la confirmación de la contraseña
 
     private ContextMenu contextMenu;  // Menú contextual personalizado
     private boolean actualizar;
     private boolean esCliente;
+
+    // Crea un ToggleGroup desde Java
+    private ToggleGroup grupoRadio = new ToggleGroup();
 
     /**
      * Inicializa el controlador y configura el menú contextual, los eventos de
@@ -223,9 +242,54 @@ public class ControladorRegistro implements Initializable {
         campoRepiteContrasena.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.TAB) {
                 event.consume();  // Evita la acción por defecto de la tecla TAB
-                grupoRadio.requestFocus();  // Mover el foco al siguiente campo
+                radioCliente.requestFocus();  // Mover el foco al siguiente campo
             }
         });
+
+        // Añade los botones de radio al ToggleGroup
+        radioCliente.setToggleGroup(grupoRadio);
+        radioTrabajador.setToggleGroup(grupoRadio);
+
+        // Añade un listener para los cambios en la selección
+        grupoRadio.selectedToggleProperty().addListener((observable, oldValue, newValue) -> handleRadioChange());
+        radioCliente.setSelected(true);
+        // Configuración inicial
+        handleRadioChange(); // Ajusta visibilidad inicial según el estado de los botones
+
+        comboDepartamento.setItems(FXCollections.observableArrayList(Departamento.values()));
+
+        // Añade un listener para el ComboBox de Departamento
+        comboDepartamento.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                actualizarCategorias(newValue);
+            }
+        });
+
+        // Configuración inicial del ComboBox de Categorías
+        if (!comboDepartamento.getItems().isEmpty()) {
+            comboDepartamento.setValue(comboDepartamento.getItems().get(0)); // Selecciona el primer departamento por defecto
+            actualizarCategorias(comboDepartamento.getValue());
+        }
+    }
+
+    private void actualizarCategorias(Departamento departamento) {
+        // Filtra las categorías según el departamento
+        ObservableList<Categoria> categoriasFiltradas = FXCollections.observableArrayList();
+        for (Categoria categoria : Categoria.values()) {
+            if (categoria.getDepartamento() == departamento) {
+                categoriasFiltradas.add(categoria);
+            }
+        }
+
+        // Actualiza las categorías en el ComboBox de Categorías
+        comboCategoria.setItems(categoriasFiltradas);
+
+        // Selecciona el primer valor por defecto si hay categorías disponibles
+        if (!categoriasFiltradas.isEmpty()) {
+            comboCategoria.setValue(categoriasFiltradas.get(0));
+        } else {
+            comboCategoria.setValue(null); // Limpia la selección si no hay categorías
+        }
     }
 
     /**
@@ -255,8 +319,17 @@ public class ControladorRegistro implements Initializable {
         this.stage = stage;
     }
 
-    public void setUser(Usuario user) {
-        this.user = user;
+    public void setUser(Object user) {
+        if (user != null) {
+            if (user instanceof Cliente) {
+                this.userClienteOriginal = new Cliente();
+                this.userClienteOriginal = (Cliente) user;
+
+            } else {
+                this.userTrabajadorOriginal = new Trabajador();
+                this.userTrabajadorOriginal = (Trabajador) user;
+            }
+        }
     }
 
     public void setModoActualizar(boolean modo) {
@@ -282,17 +355,16 @@ public class ControladorRegistro implements Initializable {
             botonCancelar.setOnAction(null); // Eliminar cualquier manejador anterior
 
             // Asignar manejadores de eventos a los botones
-            botonRegistrar.addEventHandler(ActionEvent.ACTION, this::handleButtonRegister);
+            //  botonRegistrar.addEventHandler(ActionEvent.ACTION, this::handleButtonRegister);
 //            botonCancelar.addEventHandler(ActionEvent.ACTION, this::handleButtonCancel);
             //           checkActivo.addEventHandler(ActionEvent.ACTION, this::handleActiveCheckBoxChange);
-
             // Configurar la visibilidad de las contraseñas
             botonOjoContrasena.setOnMousePressed(event -> {
                 if (event.getButton() == MouseButton.PRIMARY) {
                     utilidadVisibilidadContrasena(campoContrasena, campoContrasenaVista);
                 }
             });
-            botonOjoRepiteContrasena.setOnMousePressed(event -> {
+            botonOjoRepite.setOnMousePressed(event -> {
                 if (event.getButton() == MouseButton.PRIMARY) {
                     utilidadVisibilidadContrasena(campoRepiteContrasena, campoRepiteContrasenaVista);
                 }
@@ -303,7 +375,7 @@ public class ControladorRegistro implements Initializable {
                     utilidadOcultacionContrasena(campoContrasena, campoContrasenaVista);
                 }
             });
-            botonOjoRepiteContrasena.setOnMouseReleased(event -> {
+            botonOjoRepite.setOnMouseReleased(event -> {
                 if (event.getButton() == MouseButton.PRIMARY) {
                     utilidadOcultacionContrasena(campoRepiteContrasena, campoRepiteContrasenaVista);
                 }
@@ -348,6 +420,7 @@ public class ControladorRegistro implements Initializable {
         gridPane.requestFocus();  // Establecer el foco en el GridPane
     }
 
+    /*
     /**
      * Maneja la acción del botón de registro.
      *
@@ -393,32 +466,74 @@ public class ControladorRegistro implements Initializable {
             showErrorImage(campoCodigoPostal);
             hasError = true;
         }
-        /*
+
+        if (!isValid(campoCIF.getText(), "cif")) {
+            showErrorImage(campoCIF);
+            hasError = true;
+        }
+
+        if (!isValid(campoTelefono.getText(), "telefono")) {
+            showErrorImage(campoTelefono);
+            hasError = true;
+        }
+
         // Si hay errores, no continuar
         if (hasError) {
             LOGGER.severe("Hay errores en el formulario.");
             showErrorDialog(AlertType.ERROR, "Error", "Uno o varios campos incorrectos o vacíos. Mantenga el cursor encima de los campos para más información.");
             botonRegistrar.setDisable(false);
         } else {
-            // Si no hay errores, proceder con el registro
-            user2 = new User(campoEmail.getText(), campoContrasena.getText(),
-                    campoNombre.getText() + " " + campoApellido1.getText() + " " + campoApellido2.getText(),
-                    campoDireccion.getText(), campoCodigoPostal.getText(), campoCiudad.getText(), checkActivo.isSelected());
-
             LOGGER.info("Validación de campos correcta.");
-            Message response;
+
+            if (radioCliente.isSelected()) {
+                userCliente = new Cliente(campoSector.getText(), campoTelefono.getText(), campoEmail.getText(), campoContrasena.getText(),
+                        campoNombre.getText() + " " + campoApellido1.getText() + " " + campoApellido2.getText(),
+                        campoDireccion.getText(), campoCodigoPostal.getText(), campoCiudad.getText(), campoCIF.getText(), checkActivo.isSelected());
+            } else {
+                userTrabajador = new Trabajador(comboDepartamento.getSelectionModel().getSelectedItem(), comboCategoria.getSelectionModel().getSelectedItem(),
+                        campoEmail.getText(),
+                        campoContrasena.getText(),
+                        campoNombre.getText() + " " + campoApellido1.getText() + " " + campoApellido2.getText(),
+                        campoDireccion.getText(),
+                        campoCodigoPostal.getText(),
+                        campoCiudad.getText(),
+                        campoCIF.getText(),
+                        checkActivo.isSelected()
+                );
+            }
+            // Si no hay errores, proceder con el registro
+
             if (checkActivo.isSelected() || (!checkActivo.isSelected() && confirmNoActiveUserRegister())) {
-                if (actualizar) {
-                    user2.setId(user.getId());
-                    response = factoria.access().actualizar(user2);
-                } else {
-                    response = factoria.access().signUp(user2);
+                try {
+                    if (actualizar) {
+                        if (radioCliente.isSelected()) {
+                            userCliente.setId(userClienteOriginal.getId());
+                            factoria.accesoCliente().actualizarCliente(userCliente);
+                        } else {
+                            userTrabajador.setId(userTrabajadorOriginal.getId());
+                            factoria.accesoTrabajador().actualizarTrabajador(userTrabajador);
+                        }
+
+                    } else {
+                        if (radioCliente.isSelected()) {
+                            factoria.accesoCliente().crearCliente(userCliente);
+                        } else {
+                            factoria.accesoTrabajador().crearTrabajador(userTrabajador);
+                        }
+                    }
+                } catch (Exception e) {
                 }
 
-                messageManager(response);
+                //  messageManager(response);
             }
 
         }
+    }
+
+    private boolean confirmNoActiveUserRegister() {
+        // Crear la alerta de confirmación
+        return showConfirmationDialog("Confirmación de Registro", "Si el usuario esta 'No Activo', no podrá iniciar sesión ¿Desea continuar el registro?");
+
     }
 
     /**
@@ -427,25 +542,25 @@ public class ControladorRegistro implements Initializable {
      * @param event El evento de acción.
      *
      * @author Urko
-         */
- /*   @FXML
+     */
+    @FXML
     private void handleButtonCancel(ActionEvent event) {
         // Crear la alerta de confirmación
 
         if (showConfirmationDialog("Confirmación", "¿Estás seguro de que deseas cancelar?")) {
             // Si el usuario confirma, realizar la acción de cancelar
-            factoria.loadSignInWindow(stage, "");
+            factoria.cargarInicioSesion(stage, "");
         }
     }
-         */
-        /**
-         * Metodo para visualizar una alerta de confirmacion de registro.
-         *
-         * @return true si pulsa aceptar o false si pulsa cancelar.
-         *
-         * @author Urko
-         */
-        /*    private boolean confirmNoActiveUserRegister() {
+
+    /**
+     * Metodo para visualizar una alerta de confirmacion de registro.
+     *
+     * @return true si pulsa aceptar o false si pulsa cancelar.
+     *
+     * @author Urko
+     */
+    /*    private boolean confirmNoActiveUserRegister() {
         // Crear la alerta de confirmación
         return showConfirmationDialog("Confirmación de Registro", "Si el usuario esta 'No Activo', no podrá iniciar sesión ¿Desea continuar el registro?");
 
@@ -456,39 +571,19 @@ public class ControladorRegistro implements Initializable {
      *
      * @param event El evento de acción.
      * @author Sergio
-         */
-        @FXML
-        private void handleActiveCheckBoxChange
-        (ActionEvent event
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            ) {
+     */
+    @FXML
+    private void handleActiveCheckBoxChange(ActionEvent event) {
         avisoNoActivo.setVisible(!checkActivo.isSelected());  // Mostrar/ocultar la advertencia
-        }
-        /**
-         * Muestra el icono de error en un campo que contiene un error de
-         * validación.
-         *
-         * @param node El nodo que representa el campo.
-         * @author Urko
-         */
+    }
+
+    /**
+     * Muestra el icono de error en un campo que contiene un error de
+     * validación.
+     *
+     * @param node El nodo que representa el campo.
+     * @author Urko
+     */
     private void showErrorImage(Node node) {
         node.getStyleClass().add("error-field");  // Añadir clase CSS para marcar el error
         showErrorIcon(node);  // Mostrar icono de error
@@ -534,6 +629,12 @@ public class ControladorRegistro implements Initializable {
             errorSector.setVisible(true);
         } else if (node == campoTelefono) {
             errorTelefono.setVisible(true);
+        } else if (node == campoCIF) {
+            errorCIF.setVisible(true);
+        } else if (node == comboDepartamento) {
+            errorSector.setVisible(true);
+        } else if (node == comboCategoria) {
+            errorTelefono.setVisible(true);
         }
     }
 
@@ -566,6 +667,8 @@ public class ControladorRegistro implements Initializable {
             errorSector.setVisible(false);
         } else if (node == campoTelefono) {
             errorTelefono.setVisible(false);
+        } else if (node == campoCIF) {
+            errorCIF.setVisible(false);
         } else if (node == comboDepartamento) {
             errorSector.setVisible(false);
         } else if (node == comboCategoria) {
@@ -579,7 +682,7 @@ public class ControladorRegistro implements Initializable {
      * @param message El mensaje de respuesta del servidor.
      * @author Sergio
      */
-    private void messageManager(Message message) {
+    /*  private void messageManager(Message message) {
         switch (message.getType()) {
             case OK_RESPONSE:
                 botonRegistrar.setDisable(true);
@@ -689,7 +792,7 @@ public class ControladorRegistro implements Initializable {
             ImageView imageView = (ImageView) botonOjoContrasena.getGraphic();
             imageView.setImage(new Image("resources/iconos/ocultar.png"));
         } else if (passwordFieldParam == campoRepiteContrasena) {
-            ImageView imageView = (ImageView) botonOjoRepiteContrasena.getGraphic();
+            ImageView imageView = (ImageView) botonOjoRepite.getGraphic();
             imageView.setImage(new Image("resources/iconos/ocultar.png"));
         }
         // Recuperar el foco y colocar el cursor al final del texto sin seleccionar todo
@@ -715,7 +818,7 @@ public class ControladorRegistro implements Initializable {
             ImageView imageView = (ImageView) botonOjoContrasena.getGraphic();
             imageView.setImage(new Image("resources/iconos/visualizar.png"));
         } else if (passwordFieldParam == campoRepiteContrasena) {
-            ImageView imageView = (ImageView) botonOjoRepiteContrasena.getGraphic();
+            ImageView imageView = (ImageView) botonOjoRepite.getGraphic();
             imageView.setImage(new Image("resources/iconos/visualizar.png"));
         }
         // Recuperar el foco y colocar el cursor al final del texto sin seleccionar todo
@@ -725,37 +828,79 @@ public class ControladorRegistro implements Initializable {
 
     private void actualizarInit() {
         labelTitulo.setText("Actualizar Datos");
-        String[] nombreCompleto = user.getNombre().split(" ");
 
-        campoNombre.setText(nombreCompleto[0]);
-        campoApellido1.setText(nombreCompleto[1]);
-        campoApellido2.setText(nombreCompleto[2]);
-        campoEmail.setText(user.getCorreo());
-        campoEmail.setDisable(true);
-        campoContrasena.setDisable(true);
-        campoRepiteContrasena.setVisible(false);
-        campoContrasenaVista.setVisible(false);
-        campoRepiteContrasenaVista.setVisible(false);
-        campoDireccion.setText(user.getCalle());
-        campoCiudad.setText(user.getCiudad());
-        campoCodigoPostal.setText(user.getCodPostal());
-        if (user instanceof Cliente) {
-            campoSector.setText(((Cliente) user).getSector());
-            campoTelefono.setText(((Cliente) user).getTelefono());
+        if (userClienteOriginal != null) {
+            String[] nombreCompleto = userClienteOriginal.getNombre().split(" ");
+
+            campoNombre.setText(nombreCompleto[0]);
+            campoApellido1.setText(nombreCompleto[1]);
+            campoApellido2.setText(nombreCompleto[2]);
+            campoEmail.setText(userClienteOriginal.getCorreo());
+            campoEmail.setDisable(true);
+            campoContrasena.setDisable(true);
+            campoRepiteContrasena.setVisible(false);
+            campoContrasenaVista.setVisible(false);
+            campoRepiteContrasenaVista.setVisible(false);
+            campoDireccion.setText(userClienteOriginal.getCalle());
+            campoCiudad.setText(userClienteOriginal.getCiudad());
+            campoCodigoPostal.setText(userClienteOriginal.getCodPostal());
+            campoCIF.setText(userClienteOriginal.getCif());
+            checkActivo.setSelected(userClienteOriginal.getActivo());
+            campoSector.setText((userClienteOriginal).getSector());
+            campoTelefono.setText((userClienteOriginal).getTelefono());
         } else {
-            comboDepartamento.getSelectionModel().select(((Trabajador) user).getDepartamento());
-            comboCategoria.getSelectionModel().select(((Trabajador) user).getCategoria());
+            String[] nombreCompleto = userTrabajadorOriginal.getNombre().split(" ");
+
+            campoNombre.setText(nombreCompleto[0]);
+            campoApellido1.setText(nombreCompleto[1]);
+            campoApellido2.setText(nombreCompleto[2]);
+            campoEmail.setText(userTrabajadorOriginal.getCorreo());
+            campoEmail.setDisable(true);
+            campoContrasena.setDisable(true);
+            campoRepiteContrasena.setVisible(false);
+            campoContrasenaVista.setVisible(false);
+            campoRepiteContrasenaVista.setVisible(false);
+            campoDireccion.setText(userTrabajadorOriginal.getCalle());
+            campoCiudad.setText(userTrabajadorOriginal.getCiudad());
+            campoCodigoPostal.setText(userTrabajadorOriginal.getCodPostal());
+            campoCIF.setText(userTrabajadorOriginal.getCif());
+            checkActivo.setSelected(userTrabajadorOriginal.getActivo());
+            comboDepartamento.getSelectionModel().select(userTrabajadorOriginal.getDepartamento());
+            comboCategoria.getSelectionModel().select(userTrabajadorOriginal.getCategoria());
         }
-        campoCIF.setText(user.getCif());
 
-        checkActivo.setSelected(user.getActivo());
         //Faltan campos
-
         botonRegistrar.setText("Actualizar Datos");
 
         botonOjoContrasena.setVisible(false);
-        botonOjoRepiteContrasena.setVisible(false);;
+        botonOjoRepite.setVisible(false);;
 
+    }
+
+    /**
+     * Método para manejar los cambios en los botones de radio.
+     */
+    @FXML
+    private void handleRadioChange() {
+        if (radioCliente.isSelected()) {
+            campoSector.setVisible(true);
+            campoTelefono.setVisible(true);
+
+            comboDepartamento.setVisible(false);
+            comboCategoria.setVisible(false);
+
+            labelDepartamento.setVisible(false);
+            labelCategoria.setVisible(false);
+        } else if (radioTrabajador.isSelected()) {
+            campoSector.setVisible(false);
+            campoTelefono.setVisible(false);
+
+            comboDepartamento.setVisible(true);
+            comboCategoria.setVisible(true);
+            labelDepartamento.setVisible(true);
+            labelCategoria.setVisible(true);
+
+        }
     }
 
 }

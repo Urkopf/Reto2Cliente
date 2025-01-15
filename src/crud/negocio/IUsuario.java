@@ -16,4 +16,6 @@ public interface IUsuario<T> {
 
     public Collection<Usuario> getAllUsers();
 
+    public Object getInicioSesion(Usuario usuario);
+
 }

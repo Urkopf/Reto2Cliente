@@ -37,17 +37,17 @@ public class ValidateUtilities {
      * `false` en caso contrario.
      */
     public static Boolean isValid(String validacion, String type) {
-        ResourceBundle bundle = ResourceBundle.getBundle("utilities.pattern");
+        ResourceBundle bundle = ResourceBundle.getBundle("crud.utilidades.pattern");
         String patternType = "";
         switch (type) {
             case "telefono":
-                patternType = bundle.getString("EMAILPATTERN");
+                patternType = bundle.getString("PATRONTELEFONO");
                 break;
             case "cif":
-                patternType = bundle.getString("EMAILPATTERN");
+                patternType = bundle.getString("PATRONDECIF");
                 break;
             case "nif":
-                patternType = bundle.getString("EMAILPATTERN");
+                patternType = bundle.getString("PATRONDENIF");
                 break;
             case "email":
                 patternType = bundle.getString("EMAILPATTERN");

@@ -47,8 +47,9 @@ public class ClienteRestFull {
         return resource.request(javax.ws.rs.core.MediaType.TEXT_PLAIN).get(String.class);
     }
 
-    public void edit_XML(Object requestEntity, String id) throws WebApplicationException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+    public void edit_XML(Object requestEntity) throws WebApplicationException {
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Cliente.class);
     }
 
     public void edit_JSON(Object requestEntity, String id) throws WebApplicationException {

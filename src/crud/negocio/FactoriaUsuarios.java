@@ -71,7 +71,7 @@ public class FactoriaUsuarios {
         }
     }
 
-    public void cargarRegistro(Stage stage, Usuario usuario) {
+    public void cargarRegistro(Stage stage, Object usuario) {
         try {
             FXMLLoader cargador = new FXMLLoader(getClass().getResource("/crud/iu/vistas/Registro.fxml"));
             Parent root = cargador.load();
@@ -86,7 +86,7 @@ public class FactoriaUsuarios {
         }
     }
 
-    public void cargarMenuPrincipal(Stage stage, Usuario usuario) {
+    public void cargarMenuPrincipal(Stage stage, Object usuario) {
         try {
             FXMLLoader cargador = new FXMLLoader(getClass().getResource("/crud/iu/vistas/MenuPrincipal.fxml"));
             Parent root = cargador.load();

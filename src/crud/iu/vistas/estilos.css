@@ -54,33 +54,48 @@ TextField, PasswordField {
     -fx-background-color: rgba(255, 255, 255, 0.5);
 }
 
+/* Hover para botonGrande */
+.botonGrande:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.8); /* Fondo más claro */
+    -fx-text-fill: rgba(58, 58, 58, 1); /* Texto ligeramente más oscuro */
+    -fx-border-color: rgba(255, 255, 255, 0.8); /* Borde más definido */
+}
+
+/* Presionado para botonGrande */
+.botonGrande:pressed {
+    -fx-background-color: rgba(240, 240, 240, 1); /* Fondo sólido claro */
+    -fx-text-fill: rgba(74, 74, 74, 1); /* Texto sin cambios */
+    -fx-border-color: rgba(240, 240, 240, 1); /* Borde más oscuro */
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.5), 5, 0, 0, 2); /* Sombra más intensa */
+}
+
 .btnRojo {
-   
+
     -fx-font-weight: bold;
     -fx-background-color: rgba(255, 0, 0, 0.5);
 }
 
 .btnAzul {
-   
+
     -fx-font-weight: bold;
     -fx-background-color: rgba(0, 0, 255, 0.5);
 }
 
 
 .btnVerde {
-    
+
     -fx-font-weight: bold;
     -fx-background-color: rgba(0, 255, 0, 0.5);
 }
 
 .btnMorado {
-   
+
     -fx-font-weight: bold;
     -fx-background-color: #4A148C;
 }
 
 .btnAmarillo{
-    
+
     -fx-text-fill: rgba(58, 58, 58, 1);
     -fx-font-weight: bold;
     -fx-background-color: rgba(254,153,1,254);
@@ -104,12 +119,12 @@ TextField, PasswordField {
 }
 
 .btnAmarillo:hover {
-    -fx-background-color: rgba(255, 193, 7, 1); 
+    -fx-background-color: rgba(255, 193, 7, 1);
 }
 
 /* Presionado (pressed) para los botones de colores */
 .btnRojo:pressed {
-    -fx-background-color: rgba(200, 0, 0, 1); 
+    -fx-background-color: rgba(200, 0, 0, 1);
 }
 
 .btnAzul:pressed {
@@ -129,7 +144,7 @@ TextField, PasswordField {
 }
 
 TextField:focused, PasswordField:focused {
-    -fx-border-color: #8A2BE2;
+    -fx-border-color: rgba(254,153,1,254);
 }
 
 Button {
@@ -148,7 +163,7 @@ Button:hover {
 }
 
 Button:pressed {
-    -fx-background-color: rgba(255, 193, 7, 1); 
+    -fx-background-color: rgba(255, 193, 7, 1);
 }
 
 .left-checkbox {
@@ -157,9 +172,6 @@ Button:pressed {
 }
 
 VBox,HBox {
-    -fx-padding: 0;
-    -fx-border-radius: 10;
-    -fx-background-radius: 10;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 10, 0, 0, 5);
 }
 
@@ -205,29 +217,15 @@ Tooltip,.tooltip {
 
 Button.mostrarPass {
     -fx-background-color: transparent; /* Fondo transparente */
-    -fx-pref-width: 30; /* Ancho automático para adaptarse al contenido */
-    -fx-pref-height: 30; /* Alto automático */
+    -fx-pref-width: 25; /* Ancho automático para adaptarse al contenido */
+    -fx-pref-height: 25; /* Alto automático */
     -fx-padding: 0; /* Sin padding para el botón */
     -fx-cursor: hand; /* El cursor sigue siendo la mano al pasar por encima */
 }
 
 /* Opcional: puedes agregar un estilo específico para cuando los botones 'mostrarPass' se presionan o al pasar el cursor */
-Button.mostrarPass:hover {
-    -fx-pref-width: 30;
-    -fx-pref-height: 30;
-    -fx-background-color: rgba(0, 0, 0, 0.1); /* Un pequeño cambio de color al pasar el cursor */
-}
 
-Button.mostrarPass:pressed {
-    -fx-pref-width: 30; /* Ancho automático para adaptarse al contenido */
-    -fx-pref-height: 30; /* Alto automático */
-    -fx-background-color: rgba(0, 0, 0, 0.2); /* Un pequeño cambio de color al presionar */
-}
 
-.mostrarPassImage{
-    -fx-pref-width: 30;
-    -fx-pref-height: 30;
-}
 
 /* Estilo general para MenuBar */
 MenuBar {
@@ -277,7 +275,7 @@ MenuBar, Menu, MenuItem .label-text, .label{
 }
 
 /* Estilo general para ComboBox, Spinner y DatePicker */
-.combo-box, .spinner, .date-picker {
+.spinner, .date-picker {
     -fx-background-color: rgba(74, 74, 74, 0.8); /* Fondo oscuro semi-transparente */
     -fx-border-color: #666;                     /* Borde gris */
     -fx-border-width: 1px;                      /* Ancho del borde */
@@ -290,7 +288,7 @@ MenuBar, Menu, MenuItem .label-text, .label{
 }
 
 /* Efecto al pasar el cursor */
-.combo-box:hover, .spinner:hover, .date-picker:hover {
+.spinner:hover, .date-picker:hover {
     -fx-border-color: rgba(254,153,1,254);    /* Borde púrpura */
     -fx-text-fill: rgba(58, 58, 58, 1);
     -fx-font-weight: bold;
@@ -298,18 +296,18 @@ MenuBar, Menu, MenuItem .label-text, .label{
 }
 
 /* Efecto al hacer clic */
-.combo-box:pressed, .spinner:pressed, .date-picker:pressed {
-    -fx-background-color: rgba(255, 193, 7, 1); 
+.spinner:pressed, .date-picker:pressed {
+    -fx-background-color: rgba(255, 193, 7, 1);
 }
 
 /* Efecto cuando están enfocados */
-.combo-box:focused, .spinner:focused, .date-picker:focused {
+.spinner:focused, .date-picker:focused {
     -fx-border-color: rgba(254,153,1,254);
-    
+
 }
 
 /* Estilo para los menús desplegables del ComboBox */
-.combo-box-popup, .date-picker-popup {
+.date-picker-popup {
     -fx-background-color: rgba(74, 74, 74, 0.9); /* Fondo oscuro */
     -fx-text-fill: #FFFFFF;                      /* Texto blanco */
     -fx-font-family: "Protest Strike";          /* Fuente personalizada */
@@ -318,21 +316,21 @@ MenuBar, Menu, MenuItem .label-text, .label{
 }
 
 /* Estilo para los elementos del menú desplegable */
-.combo-box .list-cell, .date-picker .list-cell {
+.list-cell, .date-picker .list-cell {
     -fx-background-color: transparent; /* Fondo transparente por defecto */
     -fx-text-fill: #FFFFFF;            /* Texto blanco */
 }
 
-.combo-box .list-cell:hover, .date-picker .list-cell:hover {
+.list-cell:hover, .date-picker .list-cell:hover {
     -fx-text-fill: rgba(58, 58, 58, 1);
     -fx-font-weight: bold;
     -fx-background-color: rgba(254,153,1,254);
 }
 
-.combo-box .list-cell:focused, .date-picker .list-cell:focused {
+.list-cell:focused, .date-picker .list-cell:focused {
     -fx-text-fill: rgba(58, 58, 58, 1);
     -fx-font-weight: bold;
-     -fx-background-color: rgba(255, 193, 7, 1); 
+    -fx-background-color: rgba(255, 193, 7, 1);
 }
 
 /* Estilo para CheckBox */
@@ -581,12 +579,12 @@ MenuBar, Menu, MenuItem .label-text, .label{
 }
 
 .table-row-cell:selected {
-    -fx-background-color: rgba(138, 43, 226, 0.5); /* Fondo púrpura semi-transparente para la fila seleccionada */
-    -fx-text-fill: #FFFFFF; /* Texto blanco */
+    -fx-background-color: rgba(254,153,1,254); /* Fondo púrpura semi-transparente para la fila seleccionada */
+    -fx-text-fill: rgba(58, 58, 58, 1); /* Texto blanco */
 }
 
 .table-row-cell:hover {
-    -fx-background-color: rgba(138, 43, 226, 0.3); /* Fondo púrpura claro al pasar el cursor */
+    -fx-background-color: rgba(254,153,1,254); /* Fondo sólido claro */ /* Fondo al pasar el cursor */
 }
 
 /* Estilo para las celdas de la tabla */
@@ -594,18 +592,103 @@ MenuBar, Menu, MenuItem .label-text, .label{
     -fx-text-fill: #FFFFFF; /* Texto blanco */
     -fx-font-family: 'Protest Strike'; /* Fuente personalizada */
     -fx-font-size: 16px; /* Tamaño de fuente */
-    -fx-font-weight: Regular;
     -fx-alignment: center; /* Alineación del texto */
     -fx-border-color: transparent; /* Sin bordes */
     -fx-padding: 10 0 5 0;
 }
 
 .table-cell:selected {
-    -fx-background-color: rgba(138, 43, 226, 0.5); /* Fondo púrpura para la celda seleccionada */
-    -fx-text-fill: #FFFFFF; /* Texto blanco */
+    -fx-background-color: rgba(254,153,1,254); /* Fondo púrpura para la celda seleccionada */
+    -fx-text-fill: rgba(58, 58, 58, 1); /* Texto blanco */
 }
 
 .table-cell:hover {
-    -fx-background-color: rgba(138, 43, 226, 0.3); /* Fondo púrpura claro al pasar el cursor */
+    -fx-background-color: rgba(254,153,1,254); /* Fondo sólido claro */ /* Fondo púrpura claro al pasar el cursor */
 }
 
+
+/* Estilo general para el ComboBox */
+.combo-box {
+    -fx-background-color: rgba(74, 74, 74, 0.9); /* Fondo oscuro */
+    -fx-border-color: #666;                     /* Borde gris */
+    -fx-border-radius: 5;                       /* Bordes redondeados */
+    -fx-background-radius: 5;                   /* Bordes redondeados para el fondo */
+    -fx-font-family: "Protest Strike";          /* Fuente personalizada */
+    -fx-font-size: 16px;                        /* Tamaño de fuente */
+    -fx-text-fill: #FFFFFF;                     /* Texto blanco */
+}
+
+/* Campo de texto dentro del ComboBox */
+.combo-box .text-field {
+    -fx-background-color: transparent; /* Sin fondo */
+    -fx-text-fill: #FFFFFF;            /* Texto blanco */
+    -fx-border-color: transparent;     /* Sin bordes visibles */
+    -fx-font-family: "Protest Strike"; /* Fuente personalizada */
+    -fx-font-size: 16px;               /* Tamaño de fuente */
+}
+
+/* Botón desplegable del ComboBox */
+.combo-box .arrow-button {
+    -fx-background-color: rgba(58, 58, 58, 0.8); /* Fondo oscuro */
+    -fx-border-radius: 5;                       /* Bordes redondeados */
+    -fx-cursor: hand;                           /* Cambia el cursor a mano */
+}
+
+.combo-box .arrow-button:hover {
+    -fx-background-color: rgba(254,153,1,254); /* Fondo naranja claro al pasar el cursor */
+}
+
+.combo-box .arrow-button:pressed {
+    -fx-background-color: rgba(255, 193, 7, 1);  /* Fondo amarillo al presionar */
+}
+
+/* Menú desplegable del ComboBox */
+.combo-box-popup {
+    -fx-background-color: rgba(74, 74, 74, 0.9); /* Fondo oscuro */
+    -fx-border-color: #666;                     /* Borde gris */
+    -fx-border-radius: 5;                       /* Bordes redondeados */
+}
+
+/* Cuando el popup tiene foco */
+.combo-box:focused .combo-box-popup,
+.combo-box-popup:focused {
+    -fx-background-color: rgba(74, 74, 74, 0.9); /* Fondo oscuro */
+    -fx-text-fill: #FFFFFF;                      /* Texto blanco */
+}
+
+/* Estilo para las celdas de la lista desplegable */
+.combo-box .list-cell {
+    -fx-background-color: rgba(74, 74, 74, 0.9); /* Fondo oscuro, igual que el ComboBox */
+    -fx-text-fill: #FFFFFF;                      /* Texto blanco */
+}
+
+/* Hover sobre las celdas */
+.combo-box .list-cell:hover {
+    -fx-background-color: rgba(254,153,1,254); /* Fondo naranja al pasar el cursor */
+    -fx-text-fill: rgba(58, 58, 58, 1);        /* Texto oscuro */
+    -fx-font-weight: bold;
+}
+
+/* Celda seleccionada */
+.combo-box:selected {
+    -fx-background-color: rgba(74, 74, 74, 0.9); /* Fondo amarillo para la celda seleccionada */
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+}
+
+.list-cell:selected {
+    -fx-background-color: rgba(255, 193, 7, 1); /* Fondo amarillo para la celda seleccionada */
+    -fx-text-fill: rgba(58, 58, 58, 1);        /* Texto oscuro */
+    -fx-font-weight: bold;
+}
+
+/* Celda en foco dentro del popup */
+.combo-box-popup:focused .list-cell {
+    -fx-background-color: rgba(74, 74, 74, 0.9); /* Fondo oscuro */
+    -fx-text-fill: #FFFFFF;                      /* Texto blanco */
+}
+
+.combo-box-popup:focused .list-cell:hover {
+    -fx-background-color: rgba(254,153,1,254); /* Fondo naranja al pasar el cursor */
+    -fx-text-fill: rgba(58, 58, 58, 1);        /* Texto oscuro */
+}

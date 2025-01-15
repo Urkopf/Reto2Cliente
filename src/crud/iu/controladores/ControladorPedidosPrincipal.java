@@ -3,12 +3,15 @@ package crud.iu.controladores;
 import crud.negocio.FactoriaPedidos;
 import crud.negocio.IPedido;
 import crud.negocio.PedidoImpl;
+import crud.objetosTransferibles.Cliente;
 import crud.objetosTransferibles.Pedido;
+import crud.objetosTransferibles.Trabajador;
 import crud.objetosTransferibles.Usuario;
 import crud.utilidades.AlertUtilities;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,6 +60,8 @@ public class ControladorPedidosPrincipal implements Initializable {
     @FXML
     private TableColumn<Pedido, String> columnaEstado;
     @FXML
+    private TableColumn<Pedido, Date> columnaFecha;
+    @FXML
     private TableColumn<Pedido, Double> columnaTotal;
     @FXML
     private Pagination paginador;
@@ -80,6 +85,7 @@ public class ControladorPedidosPrincipal implements Initializable {
         columnaId.setCellValueFactory(new PropertyValueFactory<>("id"));
         columnaUsuarioId.setCellValueFactory(new PropertyValueFactory<>("usuarioId"));
         columnaCif.setCellValueFactory(new PropertyValueFactory<>("cifCliente"));
+        columnaFecha.setCellValueFactory(new PropertyValueFactory<>("fechaPedido"));
         columnaEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
         columnaTotal.setCellValueFactory(new PropertyValueFactory<>("total"));
     }
@@ -108,9 +114,17 @@ public class ControladorPedidosPrincipal implements Initializable {
      *
      * @param usuario Usuario activo.
      */
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-        LOGGER.info("Usuario asignado: " + usuario.getNombre());
+    public void setUser(Object user) {
+        if (user != null) {
+            if (user instanceof Cliente) {
+                this.usuario = new Cliente();
+                this.usuario = (Cliente) user;
+            } else {
+                this.usuario = new Trabajador();
+                this.usuario = (Trabajador) user;
+            }
+            LOGGER.info("Usuario asignado: " + usuario.getNombre());
+        }
     }
 
     public void setStage(Stage stage) {

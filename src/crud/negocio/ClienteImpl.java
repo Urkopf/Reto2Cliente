@@ -18,17 +18,17 @@ import javax.ws.rs.core.GenericType;
  */
 public class ClienteImpl implements ICliente {
 
-    private ClienteRestFull cliente;
+    private ClienteRestFull clienteRest;
 
     public ClienteImpl() {
-        cliente = new ClienteRestFull();
+        clienteRest = new ClienteRestFull();
     }
 
     @Override
     public Collection<Cliente> getAllClientes() throws LogicaNegocioException {
         List<Cliente> clientes = null;
         try {
-            clientes = cliente.findAll_XML(new GenericType<List<Cliente>>() {
+            clientes = clienteRest.findAll_XML(new GenericType<List<Cliente>>() {
             });
         } catch (Exception e) {
             throw new LogicaNegocioException("Error");
@@ -38,17 +38,29 @@ public class ClienteImpl implements ICliente {
 
     @Override
     public void crearCliente(Cliente cliente) throws LogicaNegocioException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            clienteRest.create_XML(cliente);
+        } catch (Exception e) {
+            throw new LogicaNegocioException("Error");
+        }
     }
 
     @Override
     public void actualizarCliente(Cliente cliente) throws LogicaNegocioException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            clienteRest.edit_XML(cliente);
+        } catch (Exception e) {
+            throw new LogicaNegocioException("Error");
+        }
     }
 
     @Override
     public void borrarCliente(Cliente cliente) throws LogicaNegocioException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            clienteRest.remove(cliente.getId());
+        } catch (Exception e) {
+            throw new LogicaNegocioException("Error");
+        }
     }
 
 }

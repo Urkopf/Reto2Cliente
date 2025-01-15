@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="main" prefHeight="539.0" prefWidth="782.0" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="crud.iu.controladores.ControladorMenuPrincipal">
+<AnchorPane fx:id="panel" prefHeight="539.0" prefWidth="782.0" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="crud.iu.controladores.ControladorMenuPrincipal">
     <children>
         <BorderPane prefHeight="539.0" prefWidth="782.0">
             <top>
@@ -39,20 +39,20 @@
             <center>
                 <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0" BorderPane.alignment="CENTER">
                     <children>
-                        <Button fx:id="botonPedido" mnemonicParsing="false" prefHeight="100.0" prefWidth="200.0" styleClass="botonGrande" text="Gestión de pedidos" textAlignment="CENTER" wrapText="true" />
-                        <Button fx:id="botonArticulo" mnemonicParsing="false" prefHeight="100.0" prefWidth="200.0" styleClass="botonGrande" text="Gestión de artículos" textAlignment="CENTER" wrapText="true" />
+                        <Button fx:id="botonPedido" prefHeight="100.0" prefWidth="200.0" styleClass="botonGrande" text="Gestión de pedidos" textAlignment="CENTER" wrapText="true" />
+                        <Button fx:id="botonArticulo" prefHeight="100.0" prefWidth="200.0" styleClass="botonGrande" text="Gestión de artículos" textAlignment="CENTER" wrapText="true" />
                     </children>
                 </VBox>
             </center>
         </BorderPane>
         <ImageView fitHeight="101.0" fitWidth="130.0" layoutX="626.0" layoutY="442.4124435182516" preserveRatio="true" AnchorPane.bottomAnchor="9.0" AnchorPane.rightAnchor="9.0">
             <image>
-                <Image url="@../../../../../../../../Downloads/logo_lite_clear.png" />
+                <Image url="@../../../recursos/logo_lite_clear.png" />
             </image>
         </ImageView>
-        <ImageView fx:id="botonAyuda" fitHeight="43.0" fitWidth="43.0" layoutX="859.0" layoutY="18.0" pickOnBounds="true" preserveRatio="true" styleClass="mostrarPassImage" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="8.0">
+        <ImageView fx:id="botonAyuda" fitHeight="43.0" fitWidth="43.0" layoutX="859.0" layoutY="18.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="8.0">
             <image>
-                <Image fx:id="imagePass11" url="@../../../recursos/iconos/ayuda.png" />
+                <Image url="@../../../recursos/iconos/ayuda.png" />
             </image>
         </ImageView>
     </children>

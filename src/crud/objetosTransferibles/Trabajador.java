@@ -22,6 +22,12 @@ public class Trabajador extends Usuario {
     public Trabajador() {
     }
 
+    public Trabajador(Departamento departamento, Categoria categoria, String correo, String contrasena, String nombre, String calle, String ciudad, String codPostal, String cif, Boolean activo) {
+        super(correo, contrasena, nombre, calle, ciudad, codPostal, cif, activo);
+        this.departamento = departamento;
+        this.categoria = categoria;
+    }
+
     public Departamento getDepartamento() {
         return departamento;
     }
