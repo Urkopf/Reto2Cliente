@@ -5,7 +5,14 @@
  */
 package crud.negocio;
 
+import crud.iu.controladores.ControladorArticulosPrincipal;
+import static crud.utilidades.AlertUtilities.showErrorDialog;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.control.Alert;
+import javafx.stage.Stage;
 
 /**
  *
@@ -30,5 +37,20 @@ public class FactoriaArticulos {
 
     public IArticulo acceso() {
         return new ArticuloImpl();
+    }
+
+    //Ventanas
+    public void cargarArticulosPrincipal(Stage stage, Object user) {
+        try {
+            FXMLLoader cargador = new FXMLLoader(getClass().getResource("/crud/iu/vistas/ArticulosPrincipal.fxml"));
+            Parent root = cargador.load();
+            ControladorArticulosPrincipal controlador = cargador.getController();
+            controlador.setStage(stage);
+            controlador.setUser(user);
+            controlador.initStage(root);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error al abrir la ventana de ArticulosPrincipal: {0}", e.getMessage());
+            showErrorDialog(Alert.AlertType.ERROR, "Error", "No se puede cargar la ventana de Articulos principal.");
+        }
     }
 }
