@@ -38,17 +38,29 @@ public class TrabajadorImpl implements ITrabajador {
 
     @Override
     public void crearTrabajador(Trabajador trabajador) throws LogicaNegocioException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            cliente.create_XML(trabajador);
+        } catch (Exception e) {
+            throw new LogicaNegocioException("Error");
+        }
     }
 
     @Override
     public void actualizarTrabajador(Trabajador trabajador) throws LogicaNegocioException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            cliente.edit_XML(trabajador);
+        } catch (Exception e) {
+            throw new LogicaNegocioException("Error");
+        }
     }
 
     @Override
     public void borrarTrabajador(Trabajador trabajador) throws LogicaNegocioException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            cliente.remove(trabajador.getId());
+        } catch (Exception e) {
+            throw new LogicaNegocioException("Error");
+        }
     }
 
 
