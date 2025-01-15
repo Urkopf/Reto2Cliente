@@ -7,9 +7,7 @@ package crud.iu.controladores;
 
 import crud.negocio.FactoriaArticulos;
 import crud.objetosTransferibles.Articulo;
-import crud.objetosTransferibles.Cliente;
 import crud.objetosTransferibles.Trabajador;
-import crud.objetosTransferibles.Usuario;
 import crud.utilidades.AlertUtilities;
 import java.net.URL;
 import java.util.ArrayList;
@@ -40,7 +38,7 @@ public class ControladorArticulosPrincipal implements Initializable {
     private static final Logger LOGGER = Logger.getLogger(ControladorArticulosPrincipal.class.getName());
     private FactoriaArticulos factoriaArticulos = FactoriaArticulos.getInstance();
     private Stage stage = new Stage();
-    private Usuario usuario;
+    private Trabajador userTrabajador;
     private ObservableList<Articulo> ArticulosObservableList;
 
     @FXML
@@ -109,14 +107,9 @@ public class ControladorArticulosPrincipal implements Initializable {
 
     public void setUser(Object user) {
         if (user != null) {
-            if (user instanceof Cliente) {
-                this.usuario = new Cliente();
-                this.usuario = (Cliente) user;
-            } else {
-                //this.usuario = new Trabajador();
-                this.usuario = (Trabajador) user;
-            }
-            LOGGER.info("Usuario asignado: " + usuario.getNombre());
+            this.userTrabajador = new Trabajador();
+            this.userTrabajador = (Trabajador) user;
+            LOGGER.info("Usuario asignado: " + userTrabajador.getNombre());
         }
     }
 
