@@ -113,7 +113,7 @@ public class ControladorArticulosPrincipal implements Initializable {
                 this.usuario = new Cliente();
                 this.usuario = (Cliente) user;
             } else {
-                this.usuario = new Trabajador();
+                //this.usuario = new Trabajador();
                 this.usuario = (Trabajador) user;
             }
             LOGGER.info("Usuario asignado: " + usuario.getNombre());
