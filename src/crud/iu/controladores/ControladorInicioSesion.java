@@ -332,7 +332,7 @@ public class ControladorInicioSesion implements Initializable {
                 } else {
                     throw new Exception("Tipo de respuesta desconocido.");
                 }
-                if ((cliente != null) ? cliente.getActivo() : trabajador.getActivo()) {
+                if ((cliente != null) ? !cliente.getActivo() : !trabajador.getActivo()) {
                     showErrorDialog(AlertType.ERROR, "Usuario no activo", "Su usuario está desactivado. ACtualice su estado antes de iniciar sesión.");
                 } else {
                     if (!actualizar) {

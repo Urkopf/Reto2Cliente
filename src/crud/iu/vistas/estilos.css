@@ -366,13 +366,7 @@ MenuBar, Menu, MenuItem .label-text, .label{
     -fx-padding: 5;                             /* Relleno interno */
 }
 
-.date-picker .arrow-button:hover {
-    -fx-background-color: rgba(254,153,1,254); /* Fondo púrpura claro al pasar el cursor */
-}
 
-.date-picker .arrow-button:pressed {
-    -fx-background-color: rgba(255, 193, 7, 1);  /* Fondo púrpura oscuro al presionar */
-}
 
 /* Estilo general para Spinner */
 .spinner {
