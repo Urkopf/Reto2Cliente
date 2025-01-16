@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Urko
  */
 @XmlRootElement
-public class Pedido implements Serializable {
+public class Pedido implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 1L;
 
@@ -122,6 +122,18 @@ public class Pedido implements Serializable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public Pedido clone() {
+        Pedido copia = new Pedido();
+        copia.setId(this.getId());
+        copia.setCliente(this.getCliente());
+        copia.setCifCliente(this.getCifCliente());
+        copia.setEstado(this.getEstado());
+        copia.setFechaPedido(new Date(this.getFechaPedido().getTime())); // Copiar fecha
+        copia.setTotal(this.getTotal());
+        return copia;
     }
 
     @Override

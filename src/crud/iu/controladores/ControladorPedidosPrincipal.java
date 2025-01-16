@@ -16,9 +16,11 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -114,6 +116,26 @@ public class ControladorPedidosPrincipal implements Initializable {
         LOGGER.info("Inicializando controlador PedidosPrincipal");
         configurarTabla();
         cargarDatosPedidos();
+    }
+
+    public void setUser(Object user) {
+        if (user != null) {
+            if (user instanceof Cliente) {
+                this.userCliente = new Cliente();
+                this.userCliente = (Cliente) user;
+                LOGGER.info("Usuario asignado: " + userCliente.getNombre() + userCliente.getId());
+
+            } else {
+                this.userTrabajador = new Trabajador();
+                this.userTrabajador = (Trabajador) user;
+                LOGGER.info("Usuario asignado: " + userTrabajador.getNombre());
+            }
+        }
+    }
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
+        LOGGER.info("Stage asignado.");
     }
 
     /**
@@ -317,26 +339,6 @@ public class ControladorPedidosPrincipal implements Initializable {
      *
      * @param usuario Usuario activo.
      */
-    public void setUser(Object user) {
-        if (user != null) {
-            if (user instanceof Cliente) {
-                this.userCliente = new Cliente();
-                this.userCliente = (Cliente) user;
-                LOGGER.info("Usuario asignado: " + userCliente.getNombre());
-
-            } else {
-                this.userTrabajador = new Trabajador();
-                this.userTrabajador = (Trabajador) user;
-                LOGGER.info("Usuario asignado: " + userTrabajador.getNombre());
-            }
-        }
-    }
-
-    public void setStage(Stage stage) {
-        this.stage = stage;
-        LOGGER.info("Stage asignado.");
-    }
-
     /**
      * Inicializa la ventana principal.
      *
@@ -349,8 +351,15 @@ public class ControladorPedidosPrincipal implements Initializable {
             if (pedidos == null || pedidos.isEmpty()) {
                 pedidos = new ArrayList<>();
             }
+
+            // Crear copias independientes de los pedidos
             pedidosObservableList = FXCollections.observableArrayList(pedidos);
-            pedidosOriginales = FXCollections.observableArrayList(pedidos); // Guardar copia original
+            pedidosOriginales = FXCollections.observableArrayList(
+                    pedidos.stream()
+                            .map(Pedido::clone)
+                            .collect(Collectors.toList())
+            );
+
             tablaPedidos.setItems(pedidosObservableList);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cargar los datos de pedidos", e);
@@ -373,8 +382,13 @@ public class ControladorPedidosPrincipal implements Initializable {
     @FXML
     private void handleReiniciarTabla(ActionEvent event) {
         LOGGER.info("Botón Reiniciar Tabla presionado");
-        pedidosObservableList.setAll(pedidosOriginales);
+        reiniciar();
         LOGGER.info("Tabla reiniciada a los datos originales.");
+    }
+
+    private void reiniciar() {
+        cargarDatosPedidos();
+        pedidosObservableList.setAll(pedidosOriginales);
     }
 
     @FXML
@@ -395,11 +409,17 @@ public class ControladorPedidosPrincipal implements Initializable {
 
         try {
             for (Pedido pedido : pedidosObservableList) {
+                LOGGER.info("Revisando pedidos." + pedido.getId());
+                Pedido pedidoOriginal = pedidosOriginales.stream()
+                        .filter(p -> p.getId().equals(pedido.getId()))
+                        .findFirst()
+                        .orElse(null);
+
                 if (pedido.getId() == null) {
-                    factoriaPedidos.acceso().crearPedido(pedido); // Crear nuevo
                     LOGGER.info("Creando pedido.");
-                } else if (!pedidosOriginales.contains(pedido)) {
-                    LOGGER.info("Actualizando pedido.");
+                    factoriaPedidos.acceso().crearPedido(pedido); // Crear nuevo
+                } else if (pedidoOriginal != null && haCambiado(pedidoOriginal, pedido)) {
+                    LOGGER.info("Actualizando pedido: " + pedido);
                     factoriaPedidos.acceso().actualizarPedido(pedido); // Actualizar existente
                 }
             }
@@ -413,23 +433,34 @@ public class ControladorPedidosPrincipal implements Initializable {
 
             pedidosOriginales.setAll(pedidosObservableList);
             LOGGER.info("Cambios guardados exitosamente.");
+            reiniciar();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al guardar cambios", e);
             AlertUtilities.showErrorDialog(Alert.AlertType.ERROR, "Error", "No se pudieron guardar los cambios. Intente nuevamente.");
         }
     }
 
+    public boolean haCambiado(Pedido original, Pedido modificado) {
+        if (original == null || modificado == null) {
+            return false;
+        }
+        return !original.getEstado().equals(modificado.getEstado())
+                || !original.getFechaPedido().equals(modificado.getFechaPedido())
+                || !original.getCifCliente().equals(modificado.getCifCliente())
+                || Double.compare(original.getTotal(), modificado.getTotal()) != 0;
+    }
+
     @FXML
     private void handleNuevoPedido(ActionEvent event) {
         LOGGER.info("Botón Nuevo Pedido presionado");
-
+        
         Pedido nuevoPedido = new Pedido();
+        nuevoPedido.setCifCliente(userCliente.getCif());
         nuevoPedido.setEstado(Estado.PREPARACION);
         nuevoPedido.setFechaPedido(new Date());
 
         if (userCliente != null) {
-            nuevoPedido.setCifCliente(userCliente.getCif());
-            nuevoPedido.setUsuarioId(userCliente.getId());
+            nuevoPedido.setCliente(userCliente);
         } else if (userTrabajador != null) {
             // Buscar ID del cliente asociado al CIF (simulación)
             //nuevoPedido.setUsuarioId(factoriaUsuarios.accesoCliente().getIdPorCIF(nuevoPedido.getCifCliente()));
