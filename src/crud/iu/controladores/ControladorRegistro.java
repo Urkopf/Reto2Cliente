@@ -477,18 +477,18 @@ public class ControladorRegistro implements Initializable {
 
         // Validar el formato de los campos
         campoContrasena.setText(campoContrasena.getText().trim());
-        if (!isValid(campoContrasena.getText(), "pass")) {
+        if (!actualizar && !isValid(campoContrasena.getText(), "pass")) {
             showErrorImage(campoContrasena);
             hasError = true;
         }
 
         campoRepiteContrasena.setText(campoRepiteContrasena.getText().trim());
-        if (!campoContrasena.getText().equals(campoRepiteContrasena.getText())) {
+        if (!actualizar && !campoContrasena.getText().equals(campoRepiteContrasena.getText())) {
             showErrorImage(campoRepiteContrasena);
             hasError = true;
         }
 
-        if (!isValid(campoEmail.getText(), "email")) {
+        if (!actualizar && !isValid(campoEmail.getText(), "email")) {
             showErrorImage(campoEmail);
             hasError = true;
         }
@@ -519,15 +519,15 @@ public class ControladorRegistro implements Initializable {
             if (radioCliente.isSelected()) {
                 userCliente = new Cliente(campoSector.getText(), campoTelefono.getText(), campoEmail.getText(), campoContrasena.getText(),
                         campoNombre.getText() + " " + campoApellido1.getText() + " " + campoApellido2.getText(),
-                        campoDireccion.getText(), campoCodigoPostal.getText(), campoCiudad.getText(), campoCIF.getText(), checkActivo.isSelected());
+                        campoDireccion.getText(), campoCiudad.getText(), campoCodigoPostal.getText(), campoCIF.getText(), checkActivo.isSelected());
             } else {
                 userTrabajador = new Trabajador(comboDepartamento.getSelectionModel().getSelectedItem(), comboCategoria.getSelectionModel().getSelectedItem(),
                         campoEmail.getText(),
                         campoContrasena.getText(),
                         campoNombre.getText() + " " + campoApellido1.getText() + " " + campoApellido2.getText(),
                         campoDireccion.getText(),
-                        campoCodigoPostal.getText(),
                         campoCiudad.getText(),
+                        campoCodigoPostal.getText(),
                         campoCIF.getText(),
                         checkActivo.isSelected()
                 );
@@ -540,19 +540,24 @@ public class ControladorRegistro implements Initializable {
                         if (radioCliente.isSelected()) {
                             userCliente.setId(userClienteOriginal.getId());
                             factoria.accesoCliente().actualizarCliente(userCliente);
+                            factoria.cargarInicioSesion(stage, userCliente.getCorreo());
                         } else {
                             userTrabajador.setId(userTrabajadorOriginal.getId());
                             factoria.accesoTrabajador().actualizarTrabajador(userTrabajador);
+                            factoria.cargarInicioSesion(stage, userTrabajador.getCorreo());
                         }
 
                     } else {
                         if (radioCliente.isSelected()) {
                             factoria.accesoCliente().crearCliente(userCliente);
+                            factoria.cargarInicioSesion(stage, userCliente.getCorreo());
                         } else {
                             factoria.accesoTrabajador().crearTrabajador(userTrabajador);
+                            factoria.cargarInicioSesion(stage, userTrabajador.getCorreo());
                         }
                     }
                 } catch (Exception e) {
+                    showErrorDialog(AlertType.ERROR, "Error", "Error alguno.");
                 }
 
                 //  messageManager(response);
@@ -885,7 +890,7 @@ public class ControladorRegistro implements Initializable {
             campoEmail.setText(userClienteOriginal.getCorreo());
             campoEmail.setDisable(true);
             campoContrasena.setDisable(true);
-            campoRepiteContrasena.setVisible(false);
+            campoRepiteContrasena.setDisable(true);
             campoContrasenaVista.setVisible(false);
             campoRepiteContrasenaVista.setVisible(false);
             campoDireccion.setText(userClienteOriginal.getCalle());
@@ -904,7 +909,7 @@ public class ControladorRegistro implements Initializable {
             campoEmail.setText(userTrabajadorOriginal.getCorreo());
             campoEmail.setDisable(true);
             campoContrasena.setDisable(true);
-            campoRepiteContrasena.setVisible(false);
+            campoRepiteContrasena.setDisable(true);
             campoContrasenaVista.setVisible(false);
             campoRepiteContrasenaVista.setVisible(false);
             campoDireccion.setText(userTrabajadorOriginal.getCalle());
