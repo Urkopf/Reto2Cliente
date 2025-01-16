@@ -1,6 +1,7 @@
 package crud.iu.controladores;
 
 import crud.negocio.FactoriaPedidos;
+import crud.negocio.FactoriaUsuarios;
 import crud.negocio.IPedido;
 import crud.negocio.PedidoImpl;
 import crud.objetosTransferibles.Cliente;
@@ -10,6 +11,7 @@ import crud.objetosTransferibles.Trabajador;
 import crud.objetosTransferibles.Usuario;
 import crud.utilidades.AlertUtilities;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,6 +24,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -32,6 +35,8 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TablePosition;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -44,6 +49,7 @@ public class ControladorPedidosPrincipal implements Initializable {
 
     private static final Logger LOGGER = Logger.getLogger(ControladorPedidosPrincipal.class.getName());
     private FactoriaPedidos factoriaPedidos = FactoriaPedidos.getInstance();
+    private FactoriaUsuarios factoriaUsuarios = FactoriaUsuarios.getInstance();
     private Stage stage;
     private Usuario usuario;
     private ObservableList<Pedido> pedidosObservableList;
@@ -56,6 +62,14 @@ public class ControladorPedidosPrincipal implements Initializable {
     @FXML
     private Button botonBusqueda;
     @FXML
+    private Button botonEliminar;
+    @FXML
+    private Button botonGuardar;
+    @FXML
+    private Button botonDetalles;
+    @FXML
+    private Button botonAtras;
+    @FXML
     private TableView<Pedido> tablaPedidos;
     @FXML
     private TableColumn<Pedido, Long> columnaId;
@@ -64,7 +78,7 @@ public class ControladorPedidosPrincipal implements Initializable {
     @FXML
     private TableColumn<Pedido, String> columnaCif;
     @FXML
-    private TableColumn<Pedido, String> columnaEstado;
+    private TableColumn<Pedido, Estado> columnaEstado;
     @FXML
     private TableColumn<Pedido, Date> columnaFecha;
     @FXML
@@ -78,6 +92,22 @@ public class ControladorPedidosPrincipal implements Initializable {
 
     // Copia de seguridad de los datos originales
     private ObservableList<Pedido> pedidosOriginales;
+
+    public void initStage(Parent root) {
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        // Configurar la escena y mostrar la ventana
+        LOGGER.info("Inicializando la escena principal");
+
+        botonNuevo.addEventHandler(ActionEvent.ACTION, this::handleNuevoPedido);
+        botonReiniciar.addEventHandler(ActionEvent.ACTION, this::handleReiniciarTabla);
+        //botonBusqueda
+        botonEliminar.addEventHandler(ActionEvent.ACTION, this::handleEliminar);
+        botonGuardar.addEventHandler(ActionEvent.ACTION, this::handleGuardarCambios);
+        botonAtras.addEventHandler(ActionEvent.ACTION, this::handleAtras);
+        configurarEventoSalirEdicion(); // Configurar el evento para salir del modo edición
+        stage.show();  // Mostrar el escenario
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -141,10 +171,11 @@ public class ControladorPedidosPrincipal implements Initializable {
             }
         });
 
-        // Columna Fecha (Editable con DatePicker al hacer doble clic)
+        // Columna Fecha (Editable con DatePicker al hacer doble clic y formato dd/MM/yyyy)
         columnaFecha.setCellValueFactory(new PropertyValueFactory<>("fechaPedido"));
         columnaFecha.setCellFactory(tc -> new TableCell<Pedido, Date>() {
             private final DatePicker datePicker = new DatePicker();
+            private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
             @Override
             public void startEdit() {
@@ -154,16 +185,32 @@ public class ControladorPedidosPrincipal implements Initializable {
                     datePicker.setValue(item.toInstant()
                             .atZone(ZoneId.systemDefault())
                             .toLocalDate());
-                    setGraphic(datePicker);
-                    setText(null);
+                } else {
+                    datePicker.setValue(null);
                 }
+                setGraphic(datePicker);
+                setText(null);
+
+                datePicker.setOnAction(event -> {
+                    Date newDate = Date.from(datePicker.getValue()
+                            .atStartOfDay(ZoneId.systemDefault())
+                            .toInstant());
+                    commitEdit(newDate);
+                });
             }
 
             @Override
             public void cancelEdit() {
                 super.cancelEdit();
-                setText(getItem() != null ? getItem().toString() : null);
+                setText(getItem() != null ? dateFormat.format(getItem()) : null);
                 setGraphic(null);
+            }
+
+            @Override
+            public void commitEdit(Date newValue) {
+                super.commitEdit(newValue);
+                Pedido pedido = getTableView().getItems().get(getIndex());
+                pedido.setFechaPedido(newValue); // Sincroniza el modelo
             }
 
             @Override
@@ -177,45 +224,58 @@ public class ControladorPedidosPrincipal implements Initializable {
                         setGraphic(datePicker);
                         setText(null);
                     } else {
-                        setText(item.toString());
+                        setText(dateFormat.format(item));
                         setGraphic(null);
                     }
                 }
             }
         });
 
-        // Columna Estado (Editable con ComboBox al hacer doble clic)
+        //Combo ESTADO
         columnaEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
-        columnaEstado.setCellFactory(tc -> new TableCell<Pedido, String>() {
+        columnaEstado.setCellFactory(tc -> new TableCell<Pedido, Estado>() {
             private final ComboBox<Estado> comboBox = new ComboBox<>(FXCollections.observableArrayList(Estado.values()));
 
             @Override
             public void startEdit() {
                 super.startEdit();
-                comboBox.setValue(Estado.valueOf(getItem()));
+                if (getItem() != null) {
+                    comboBox.setValue(getItem()); // Usamos directamente el valor del enum
+                }
                 setGraphic(comboBox);
                 setText(null);
+
+                // Registrar cambios al seleccionar un nuevo valor en el ComboBox
+                comboBox.setOnAction(event -> commitEdit(comboBox.getValue()));
             }
 
             @Override
             public void cancelEdit() {
                 super.cancelEdit();
-                setText(getItem());
+                setText(getItem() != null ? getItem().name() : null); // Mostrar el nombre del enum
                 setGraphic(null);
             }
 
             @Override
-            public void updateItem(String item, boolean empty) {
+            public void commitEdit(Estado newValue) {
+                super.commitEdit(newValue);
+                Pedido pedido = getTableView().getItems().get(getIndex());
+                pedido.setEstado(newValue); // Actualizar el valor del enum en el modelo
+            }
+
+            @Override
+            protected void updateItem(Estado item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
                     setGraphic(null);
                 } else {
                     if (isEditing()) {
+                        comboBox.setValue(item); // Establecer el valor actual en el ComboBox
                         setGraphic(comboBox);
                         setText(null);
                     } else {
-                        setText(item);
+                        setText(item.name()); // Mostrar el nombre del enum en la celda
                         setGraphic(null);
                     }
                 }
@@ -282,24 +342,15 @@ public class ControladorPedidosPrincipal implements Initializable {
      *
      * @param root Nodo raíz de la escena.
      */
-    public void initStage(Parent root) {
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        // Configurar la escena y mostrar la ventana
-        LOGGER.info("Inicializando la escena principal");
-        stage.show();  // Mostrar el escenario
-    }
-
     private void cargarDatosPedidos() {
         try {
             LOGGER.info("Cargando datos de pedidos...");
             Collection<Pedido> pedidos = factoriaPedidos.acceso().getAllPedidos();
             if (pedidos == null || pedidos.isEmpty()) {
-                LOGGER.warning("No se encontraron pedidos.");
                 pedidos = new ArrayList<>();
             }
             pedidosObservableList = FXCollections.observableArrayList(pedidos);
-            pedidosOriginales = FXCollections.observableArrayList(pedidos); // Copia original
+            pedidosOriginales = FXCollections.observableArrayList(pedidos); // Guardar copia original
             tablaPedidos.setItems(pedidosObservableList);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cargar los datos de pedidos", e);
@@ -330,7 +381,6 @@ public class ControladorPedidosPrincipal implements Initializable {
     private void handleGuardarCambios(ActionEvent event) {
         LOGGER.info("Botón Guardar Cambios presionado");
 
-        // Validar campos
         boolean hayErrores = false;
         for (Pedido pedido : pedidosObservableList) {
             if (!validarPedido(pedido)) {
@@ -343,37 +393,51 @@ public class ControladorPedidosPrincipal implements Initializable {
             return;
         }
 
-        // Procesar cambios
         try {
             for (Pedido pedido : pedidosObservableList) {
-                if (!pedidosOriginales.contains(pedido)) {
-                    // Nuevo registro
-                    factoriaPedidos.acceso().crearPedido(pedido);
-                } else if (!pedidosOriginales.containsAll(pedidosObservableList)) {
-                    // Actualización
-                    factoriaPedidos.acceso().actualizarPedido(pedido);
+                if (pedido.getId() == null) {
+                    factoriaPedidos.acceso().crearPedido(pedido); // Crear nuevo
+                    LOGGER.info("Creando pedido.");
+                } else if (!pedidosOriginales.contains(pedido)) {
+                    LOGGER.info("Actualizando pedido.");
+                    factoriaPedidos.acceso().actualizarPedido(pedido); // Actualizar existente
                 }
             }
-            // Procesar eliminaciones
+
             for (Pedido pedidoOriginal : pedidosOriginales) {
                 if (!pedidosObservableList.contains(pedidoOriginal)) {
-                    factoriaPedidos.acceso().borrarPedido(pedidoOriginal);
+                    LOGGER.info("Eliminando pedido.");
+                    factoriaPedidos.acceso().borrarPedido(pedidoOriginal); // Eliminar
                 }
             }
+
             pedidosOriginales.setAll(pedidosObservableList);
-            LOGGER.info("Cambios guardados exitosamente en la base de datos.");
+            LOGGER.info("Cambios guardados exitosamente.");
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al guardar cambios", e);
-            AlertUtilities.showErrorDialog(Alert.AlertType.ERROR, "Guardar Cambios", "No se pudieron guardar los cambios. Intente nuevamente.");
+            AlertUtilities.showErrorDialog(Alert.AlertType.ERROR, "Error", "No se pudieron guardar los cambios. Intente nuevamente.");
         }
     }
 
     @FXML
     private void handleNuevoPedido(ActionEvent event) {
         LOGGER.info("Botón Nuevo Pedido presionado");
-        Pedido nuevoPedido = new Pedido(); // Crear un nuevo pedido vacío
+
+        Pedido nuevoPedido = new Pedido();
+        nuevoPedido.setEstado(Estado.PREPARACION);
+        nuevoPedido.setFechaPedido(new Date());
+
+        if (userCliente != null) {
+            nuevoPedido.setCifCliente(userCliente.getCif());
+            nuevoPedido.setUsuarioId(userCliente.getId());
+        } else if (userTrabajador != null) {
+            // Buscar ID del cliente asociado al CIF (simulación)
+            //nuevoPedido.setUsuarioId(factoriaUsuarios.accesoCliente().getIdPorCIF(nuevoPedido.getCifCliente()));
+        }
+
         pedidosObservableList.add(nuevoPedido);
         tablaPedidos.scrollTo(nuevoPedido);
+        LOGGER.info("Nuevo pedido añadido con valores predeterminados.");
     }
 
     private boolean validarPedido(Pedido pedido) {
@@ -387,7 +451,7 @@ public class ControladorPedidosPrincipal implements Initializable {
             pintarCeldaInvalida(columnaFecha, pedido);
             valido = false;
         }
-        if (pedido.getEstado() == null || pedido.getEstado().isEmpty()) {
+        if (pedido.getEstado() == null) {
             pintarCeldaInvalida(columnaEstado, pedido);
             valido = false;
         }
@@ -408,6 +472,32 @@ public class ControladorPedidosPrincipal implements Initializable {
                     }
                 }
             };
+        });
+    }
+
+    @FXML
+    private void handleAtras(ActionEvent event) {
+        factoriaUsuarios.cargarMenuPrincipal(stage, userCliente);
+    }
+
+    private void configurarEventoSalirEdicion() {
+        tablaPedidos.getScene().addEventFilter(javafx.scene.input.MouseEvent.MOUSE_PRESSED, event -> {
+            // Verificar si hay una celda en edición
+            TablePosition<?, ?> pos = tablaPedidos.getEditingCell();
+            if (pos != null) {
+                // Obtener el nodo donde ocurrió el clic
+                Node nodo = event.getPickResult().getIntersectedNode();
+
+                // Verificar si el clic ocurrió dentro de la tabla y en la celda activa
+                while (nodo != null && nodo != tablaPedidos && !(nodo instanceof TableRow)) {
+                    nodo = nodo.getParent();
+                }
+
+                if (nodo == null || !(nodo instanceof TableRow)) {
+                    // Si el clic ocurrió fuera de la tabla o en otra celda, cancelar la edición
+                    tablaPedidos.edit(-1, null);
+                }
+            }
         });
     }
 

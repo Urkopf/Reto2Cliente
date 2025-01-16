@@ -25,7 +25,7 @@ public class Pedido implements Serializable {
 
     private Date fechaPedido;
 
-    private String estado;
+    private Estado estado;
 
     private double total;
 
@@ -55,11 +55,11 @@ public class Pedido implements Serializable {
         this.fechaPedido = fechaPedido;
     }
 
-    public String getEstado() {
+    public Estado getEstado() {
         return estado;
     }
 
-    public void setEstado(String estado) {
+    public void setEstado(Estado estado) {
         this.estado = estado;
     }
 
