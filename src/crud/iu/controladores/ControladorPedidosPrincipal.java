@@ -107,7 +107,7 @@ public class ControladorPedidosPrincipal implements Initializable {
         botonEliminar.addEventHandler(ActionEvent.ACTION, this::handleEliminar);
         botonGuardar.addEventHandler(ActionEvent.ACTION, this::handleGuardarCambios);
         botonAtras.addEventHandler(ActionEvent.ACTION, this::handleAtras);
-        configurarEventoSalirEdicion(); // Configurar el evento para salir del modo edición
+
         stage.show();  // Mostrar el escenario
     }
 
@@ -217,7 +217,15 @@ public class ControladorPedidosPrincipal implements Initializable {
                     Date newDate = Date.from(datePicker.getValue()
                             .atStartOfDay(ZoneId.systemDefault())
                             .toInstant());
-                    commitEdit(newDate);
+
+                    // Verificar si la fecha seleccionada es anterior a hoy
+                    if (newDate.before(new Date()) && !newDate.equals(getItem())) {
+                        // Mostrar error si la fecha es anterior y no coincide con la original
+                        AlertUtilities.showErrorDialog(Alert.AlertType.ERROR, "Fecha inválida", "No se permiten fechas anteriores al día actual.");
+                        cancelEdit(); // Cancela la edición
+                    } else {
+                        commitEdit(newDate); // Fecha válida
+                    }
                 });
             }
 
@@ -361,6 +369,7 @@ public class ControladorPedidosPrincipal implements Initializable {
             );
 
             tablaPedidos.setItems(pedidosObservableList);
+            configurarSalidaEdicion(); // Configurar el evento para salir del modo edición
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cargar los datos de pedidos", e);
             AlertUtilities.showErrorDialog(Alert.AlertType.ERROR, "Error al cargar pedidos", "No se pudieron cargar los pedidos. Intente nuevamente más tarde.");
@@ -384,11 +393,13 @@ public class ControladorPedidosPrincipal implements Initializable {
         LOGGER.info("Botón Reiniciar Tabla presionado");
         reiniciar();
         LOGGER.info("Tabla reiniciada a los datos originales.");
+
     }
 
     private void reiniciar() {
+
         cargarDatosPedidos();
-        pedidosObservableList.setAll(pedidosOriginales);
+
     }
 
     @FXML
@@ -453,7 +464,7 @@ public class ControladorPedidosPrincipal implements Initializable {
     @FXML
     private void handleNuevoPedido(ActionEvent event) {
         LOGGER.info("Botón Nuevo Pedido presionado");
-        
+
         Pedido nuevoPedido = new Pedido();
         nuevoPedido.setCifCliente(userCliente.getCif());
         nuevoPedido.setEstado(Estado.PREPARACION);
@@ -469,6 +480,7 @@ public class ControladorPedidosPrincipal implements Initializable {
         pedidosObservableList.add(nuevoPedido);
         tablaPedidos.scrollTo(nuevoPedido);
         LOGGER.info("Nuevo pedido añadido con valores predeterminados.");
+
     }
 
     private boolean validarPedido(Pedido pedido) {
@@ -511,23 +523,14 @@ public class ControladorPedidosPrincipal implements Initializable {
         factoriaUsuarios.cargarMenuPrincipal(stage, userCliente);
     }
 
-    private void configurarEventoSalirEdicion() {
-        tablaPedidos.getScene().addEventFilter(javafx.scene.input.MouseEvent.MOUSE_PRESSED, event -> {
-            // Verificar si hay una celda en edición
-            TablePosition<?, ?> pos = tablaPedidos.getEditingCell();
-            if (pos != null) {
-                // Obtener el nodo donde ocurrió el clic
-                Node nodo = event.getPickResult().getIntersectedNode();
-
-                // Verificar si el clic ocurrió dentro de la tabla y en la celda activa
-                while (nodo != null && nodo != tablaPedidos && !(nodo instanceof TableRow)) {
-                    nodo = nodo.getParent();
-                }
-
-                if (nodo == null || !(nodo instanceof TableRow)) {
-                    // Si el clic ocurrió fuera de la tabla o en otra celda, cancelar la edición
-                    tablaPedidos.edit(-1, null);
-                }
+    private void configurarSalidaEdicion() {
+        tablaPedidos.sceneProperty().addListener((observable, oldScene, newScene) -> {
+            if (newScene != null) {
+                newScene.focusOwnerProperty().addListener((focusObservable, oldNode, newNode) -> {
+                    if (oldNode instanceof TableCell) {
+                        ((TableCell) oldNode).setEditable(false);
+                    }
+                });
             }
         });
     }

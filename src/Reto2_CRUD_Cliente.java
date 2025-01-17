@@ -6,6 +6,7 @@
 
 import crud.negocio.FactoriaPedidos;
 import crud.negocio.FactoriaUsuarios;
+import crud.objetosTransferibles.Cliente;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -27,11 +28,15 @@ public class Reto2_CRUD_Cliente extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        FactoriaUsuarios factoria = FactoriaUsuarios.getInstance();
-        //FactoriaPedidos factoriaPedidos = FactoriaPedidos.getInstance();
+        //FactoriaUsuarios factoria = FactoriaUsuarios.getInstance();
+        FactoriaPedidos factoriaPedidos = FactoriaPedidos.getInstance();
+        Cliente cliente = new Cliente();
+        cliente.setCif("B56976038");
+        Long id = 1L;
+        cliente.setId(id);
 
-        factoria.cargarInicioSesion(stage, "");
-        //factoriaPedidos.cargarPedidosPrincipal(stage);
+        //factoria.cargarInicioSesion(stage, "");
+        factoriaPedidos.cargarPedidosPrincipal(stage, cliente);
     }
 
 }
