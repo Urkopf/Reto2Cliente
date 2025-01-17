@@ -10,5 +10,5 @@ package crud.objetosTransferibles;
  * @author Urko
  */
 public enum Estado {
-    PREPARACION, ENVIADO, CANCELADO, INDICENCIA, COMPLETADO
+    PREPARACION, ENVIADO, CANCELADO, INCIDENCIA, COMPLETADO
 }
