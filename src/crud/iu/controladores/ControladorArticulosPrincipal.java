@@ -6,6 +6,7 @@
 package crud.iu.controladores;
 
 import crud.negocio.FactoriaArticulos;
+import crud.negocio.FactoriaUsuarios;
 import crud.objetosTransferibles.Articulo;
 import crud.objetosTransferibles.Trabajador;
 import crud.utilidades.AlertUtilities;
@@ -18,6 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -37,6 +39,7 @@ public class ControladorArticulosPrincipal implements Initializable {
 
     private static final Logger LOGGER = Logger.getLogger(ControladorArticulosPrincipal.class.getName());
     private FactoriaArticulos factoriaArticulos = FactoriaArticulos.getInstance();
+    private FactoriaUsuarios factoriaUsuarios = FactoriaUsuarios.getInstance();
     private Stage stage = new Stage();
     private Trabajador userTrabajador;
     private ObservableList<Articulo> ArticulosObservableList;
@@ -72,7 +75,7 @@ public class ControladorArticulosPrincipal implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        LOGGER.info("Inicializando controlador PedidosPrincipal");
+        LOGGER.info("Inicializando controlador ArticulosPrincipal");
         configurarTabla();
         cargarDatosArticulos();
     }
@@ -121,9 +124,43 @@ public class ControladorArticulosPrincipal implements Initializable {
     public void initStage(Parent root) {
         Scene scene = new Scene(root);
         stage.setScene(scene);
+        LOGGER.info("Inicializando la escena principal");
+        botonNuevo.addEventHandler(ActionEvent.ACTION, this::handleNuevoArticulo);
         // Configurar la escena y mostrar la ventana
         LOGGER.info("Inicializando la escena principal");
         stage.show();  // Mostrar el escenario
     }
+
+    //Eventos Botones
+    @FXML
+    private void handleNuevoArticulo(ActionEvent event) {
+
+    }
+    
+    @FXML
+    private void handleGuardarCambios(ActionEvent event) {
+        
+    }
+
+    @FXML
+    private void handleEliminarArticulo(ActionEvent event) {
+
+    }
+
+    @FXML
+    private void handleRecargarTabla(ActionEvent event) {
+
+    }
+
+    @FXML
+    private void handleAtras(ActionEvent event) {
+        factoriaUsuarios.cargarMenuPrincipal(stage, userTrabajador);
+    }
+
+    @FXML
+    private void handleBusqueda(ActionEvent event) {
+        
+    }
+
 
 }
