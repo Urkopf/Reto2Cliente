@@ -59,7 +59,10 @@ public class PedidoImpl implements IPedido {
 
     @Override
     public void borrarPedido(Pedido pedido) throws LogicaNegocioException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            cliente.remove(pedido.getId());
+        } catch (Exception e) {
+            throw new LogicaNegocioException("Error");
+        }
     }
-
 }

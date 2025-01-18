@@ -21,10 +21,10 @@
         </Menu>
 
         <!-- Menú Ir a -->
-        <Menu text="Ir a">
+        <Menu fx:id="pestanaIr" text="Ir a">
             <items>
-                <MenuItem  text="Vista Pedido" fx:id="opcionIrPedidos"/>
-                <MenuItem  text="Vista Artículo" fx:id="opcionIrArticulos"/>
+                <MenuItem fx:id="opcionIrPedidos" text="Vista Pedido" />
+                <MenuItem fx:id="opcionIrArticulos" text="Vista Artículo"/>
             </items>
         </Menu>
 

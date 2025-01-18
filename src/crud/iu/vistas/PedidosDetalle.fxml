@@ -64,10 +64,11 @@
                <children>
                   <GridPane hgap="20.0" vgap="5.0">
                     <columnConstraints>
-                      <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="230.0" minWidth="230.0" prefWidth="230.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="400.0" minWidth="400.0" prefWidth="400.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="230.0" minWidth="230.0" prefWidth="230.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="230.0" minWidth="230.0" prefWidth="230.0" />
                     </columnConstraints>
                     <rowConstraints>
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -76,12 +77,14 @@
                      <children>
                         <Label text="Id Pedido" />
                         <Label text="CIF/NIF" GridPane.columnIndex="1" />
-                        <Label text="Fecha pedido" GridPane.columnIndex="2" />
-                        <Label text="Estado" GridPane.columnIndex="3" />
-                        <TextField fx:id="campoId" disable="true" minHeight="38.0" minWidth="230.0" GridPane.rowIndex="1" />
+                        <Label text="Fecha pedido" GridPane.columnIndex="3" />
+                        <Label text="Estado" GridPane.columnIndex="4" />
+                        <TextField fx:id="campoId" disable="true" minHeight="38.0" minWidth="100.0" GridPane.rowIndex="1" />
                         <ComboBox fx:id="campoCif" minHeight="38.0" prefWidth="230.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <ComboBox fx:id="campoEstado" minHeight="38.0" prefWidth="230.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-                        <DatePicker fx:id="campoFecha" minHeight="38.0" minWidth="230.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                        <ComboBox fx:id="campoEstado" minHeight="38.0" prefWidth="230.0" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+                        <DatePicker fx:id="campoFecha" minHeight="38.0" minWidth="230.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                        <Label text="Dirección" GridPane.columnIndex="2" />
+                        <TextField fx:id="campoDireccion" maxWidth="400.0" minHeight="38.0" minWidth="400.0" prefWidth="400.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
                      </children>
                      <padding>
                         <Insets left="20.0" right="20.0" top="20.0" />
@@ -101,14 +104,14 @@
                                           </children>
                                       </HBox>
       
-                                            <TableView fx:id="tablaArticulosDisponibles">
+                                            <TableView fx:id="tablaArticulosDisponibles" maxWidth="520.0" minWidth="520.0" prefWidth="520.0">
                                           <columns>
                                               <TableColumn fx:id="columnaId" prefWidth="93.49563491344452" resizable="false" text="ID" />
                                               <TableColumn fx:id="columnaNombre" prefWidth="166.12178802490234" resizable="false" text="Nombre" />
                                               <TableColumn fx:id="columnaPrecio" prefWidth="147.75653076171875" resizable="false" text="Precio" />
                                           </columns>
                                       </TableView>
-                                      <Button fx:id="botonCompra" styleClass="btnVerde" mnemonicParsing="false" text="Comprar artículo">
+                                      <Button fx:id="botonCompra" mnemonicParsing="false" styleClass="btnVerde" text="Comprar artículo">
                                           <VBox.margin>
                                               <Insets top="20.0" />
                                           </VBox.margin>
@@ -132,7 +135,7 @@
                                     <Insets />
                                  </VBox.margin>
                                     </HBox>
-                                    <TableView fx:id="tablaArticulosPedidos" prefWidth="600.0">
+                                    <TableView fx:id="tablaArticulosPedidos" prefWidth="740.0">
                                         <columns>
                                             <TableColumn fx:id="columnaId2" prefWidth="93.49563491344452" resizable="false" text="ID" />
                                             <TableColumn fx:id="columnaNombre2" prefWidth="219.5478057861328" resizable="false" text="Nombre" />
@@ -143,7 +146,7 @@
                                     <Insets left="20.0" />
                                  </VBox.margin>
                                     </TableView>
-                                    <Button fx:id="botonEliminar" styleClass="btnRojo" mnemonicParsing="false" text="Eliminar artículo">
+                                    <Button fx:id="botonEliminar" mnemonicParsing="false" styleClass="btnRojo" text="Eliminar artículo">
                                         <VBox.margin>
                                             <Insets top="20.0" />
                                         </VBox.margin>

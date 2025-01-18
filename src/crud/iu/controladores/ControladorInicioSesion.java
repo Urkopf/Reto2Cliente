@@ -52,6 +52,8 @@ public class ControladorInicioSesion implements Initializable {
     private boolean hasError = false;  // Indica si hay errores en el formulario
     private Usuario usuario;  // Usuario que intenta iniciar sesión
     private Object respuesta;
+    private Trabajador trabajador;
+    private Cliente cliente;
 
     // Elementos de la interfaz FXML
     @FXML
@@ -323,16 +325,21 @@ public class ControladorInicioSesion implements Initializable {
                 respuesta = factoria.inicioSesion().getInicioSesion(usuario); // Nos tiene que devolver los datos del usuario salvo su contraseña
                 if (respuesta instanceof Cliente) {
                     System.out.println("Cliente recibido: " + ((Cliente) respuesta).getNombre());
+                    cliente = (Cliente) respuesta;
                 } else if (respuesta instanceof Trabajador) {
                     System.out.println("Trabajador recibido: " + ((Trabajador) respuesta).getNombre());
+                    trabajador = (Trabajador) respuesta;
                 } else {
                     throw new Exception("Tipo de respuesta desconocido.");
                 }
-                if (!actualizar) {
-
-                    factoria.cargarMenuPrincipal(stage, respuesta);  // Cargar la ventana principal
+                if ((cliente != null) ? !cliente.getActivo() : !trabajador.getActivo()) {
+                    showErrorDialog(AlertType.ERROR, "Usuario no activo", "Su usuario está desactivado. ACtualice su estado antes de iniciar sesión.");
                 } else {
-                    factoria.cargarRegistro(stage, respuesta);  // Cargar el SignUP
+                    if (!actualizar) {
+                        factoria.cargarMenuPrincipal(stage, respuesta);  // Cargar la ventana principal
+                    } else {
+                        factoria.cargarRegistro(stage, respuesta);  // Cargar el SignUP
+                    }
                 }
             } catch (ForbiddenException e) {
                 showErrorDialog(AlertType.ERROR, "Inicio de sesión fallido", "Su usuario está desactivado.");
