@@ -292,7 +292,6 @@ MenuBar, Menu, MenuItem .label-text, .label{
     -fx-border-color: rgba(254,153,1,254);    /* Borde púrpura */
     -fx-text-fill: rgba(58, 58, 58, 1);
     -fx-font-weight: bold;
-    -fx-background-color: rgba(254,153,1,254);
 }
 
 /* Efecto al hacer clic */
@@ -420,6 +419,7 @@ MenuBar, Menu, MenuItem .label-text, .label{
     -fx-font-family: "Protest Strike";         /* Fuente personalizada */
     -fx-font-size: 18px;                        /* Tamaño de fuente */
     -fx-text-fill: #FFFFFF;                     /* Texto blanco */
+    -fx-border-radius: 5;
 }
 
 /* Estilo para los botones de paginación */

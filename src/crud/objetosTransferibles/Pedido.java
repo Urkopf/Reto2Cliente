@@ -23,6 +23,8 @@ public class Pedido implements Serializable, Cloneable {
 
     private Long id;
 
+    private String direccion;
+
     private Date fechaPedido;
 
     private Estado estado;
@@ -45,6 +47,14 @@ public class Pedido implements Serializable, Cloneable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
     }
 
     public Date getFechaPedido() {

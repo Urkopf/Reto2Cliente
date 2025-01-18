@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="AnchorPane" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="crud.iu.controladores.ControladorPedidosPrincipal">
+<AnchorPane fx:id="anchorPane" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="crud.iu.controladores.ControladorPedidosPrincipal">
     <children>
         <BorderPane fx:id="BorderPane" prefHeight="768" prefWidth="1024">
             <top>
@@ -47,14 +47,15 @@
                         </GridPane>
                     </HBox>
 
-                    <TableView fx:id="tablaPedidos" prefHeight="588.0" prefWidth="984.0">
+                    <TableView fx:id="tablaPedidos" fixedCellSize="39.0" maxHeight="585.0" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="585.0" prefWidth="984.0" VBox.vgrow="NEVER">
                         <columns>
-                            <TableColumn fx:id="columnaId" styleClass="tablas" prefWidth="93.49563491344452" text="ID" />
-                            <TableColumn fx:id="columnaUsuarioId" styleClass="tablas" prefWidth="166.12178802490234" text="ID Usuario" />
-                            <TableColumn fx:id="columnaCif" styleClass="tablas" prefWidth="147.75653076171875" text="CIF" />
-                            <TableColumn fx:id="columnaFecha" styleClass="tablas" prefWidth="205.35665893554688" text="FECHA PEDIDO" />
-                            <TableColumn fx:id="columnaEstado" styleClass="tablas" prefWidth="177.80877685546875" text="ESTADO" />
-                            <TableColumn fx:id="columnaTotal" styleClass="tablas" minWidth="0.0" prefWidth="138.57391357421875" text="TOTAL" />
+                            <TableColumn fx:id="columnaId" prefWidth="93.49563491344452" resizable="false" styleClass="tablas" text="ID" />
+                            <TableColumn fx:id="columnaUsuarioId" prefWidth="166.12178802490234" resizable="false" styleClass="tablas" text="ID Usuario" />
+                            <TableColumn fx:id="columnaCif" prefWidth="147.75653076171875" resizable="false" styleClass="tablas" text="CIF/NIF" />
+                     <TableColumn fx:id="columnaDireccion" prefWidth="147.75653076171875" resizable="false" styleClass="tablas" text="Dirección" />
+                            <TableColumn fx:id="columnaFecha" prefWidth="205.35665893554688" resizable="false" styleClass="tablas" text="Fecha pedido" />
+                            <TableColumn fx:id="columnaEstado" prefWidth="177.80877685546875" resizable="false" styleClass="tablas" text="Estado" />
+                            <TableColumn fx:id="columnaTotal" minWidth="0.0" prefWidth="138.57391357421875" resizable="false" styleClass="tablas" text="Total" />
                         </columns>
                         <VBox.margin>
                             <Insets left="20.0" right="20.0" top="10.0" />
@@ -78,7 +79,7 @@
                         <children>
 
                             <!-- Paginador en el centro -->
-                            <Pagination fx:id="paginador" maxPageIndicatorCount="3" pageCount="10" prefWidth="432.0" translateY="15.0" />
+                            <Pagination fx:id="paginador" maxPageIndicatorCount="8" pageCount="10" prefWidth="432.0" translateY="15.0" />
                         </children>
                     </HBox>
 
