@@ -25,7 +25,7 @@ public class PedidoArticuloImpl implements IPedidoArticulo {
     }
 
     @Override
-    public Collection<PedidoArticulo> getAllArticulos() throws LogicaNegocioException {
+    public Collection<PedidoArticulo> getAllPedidoArticulo() throws LogicaNegocioException {
         List<PedidoArticulo> pedidoArticulos = null;
         try {
             pedidoArticulos = cliente.findAll_XML(new GenericType<List<PedidoArticulo>>() {
@@ -37,7 +37,7 @@ public class PedidoArticuloImpl implements IPedidoArticulo {
     }
 
     @Override
-    public void crearArticulo(PedidoArticulo pedidoArticulo) throws LogicaNegocioException {
+    public void crearPedidoArticulo(PedidoArticulo pedidoArticulo) throws LogicaNegocioException {
         try {
             cliente.create_XML(pedidoArticulo);
         } catch (Exception e) {
@@ -46,7 +46,7 @@ public class PedidoArticuloImpl implements IPedidoArticulo {
     }
 
     @Override
-    public void actualizarPPedidoArticulo(PedidoArticulo pedidoArticulo) throws LogicaNegocioException {
+    public void actualizarPedidoArticulo(PedidoArticulo pedidoArticulo) throws LogicaNegocioException {
         try {
             cliente.edit_XML(pedidoArticulo);
         } catch (Exception e) {

@@ -30,7 +30,7 @@ public class ArticulosRestFull {
     private WebTarget webTarget;
     private Client client;
     private static final String BASE_URI
-            = ResourceBundle.getBundle("crud.recursos.configCliente")
+            = ResourceBundle.getBundle("recursos.configCliente")
                     .getString("BASE_URI");
 
     public ArticulosRestFull() {
@@ -71,16 +71,14 @@ public class ArticulosRestFull {
     public void create_XML(Object requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
                 .post(javax.ws.rs.client.Entity.entity(requestEntity,
-                         javax.ws.rs.core.MediaType.APPLICATION_XML),
-                         Articulo.class);
+                        javax.ws.rs.core.MediaType.APPLICATION_XML),
+                        Articulo.class);
     }
-
 
     public <T> T findAll_XML(GenericType<T> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
-
 
     public void remove(Long id) throws WebApplicationException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id}))

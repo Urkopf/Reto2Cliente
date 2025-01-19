@@ -109,6 +109,7 @@ public class ControladorPedidosPrincipal implements Initializable {
 
     // Copia de seguridad de los datos originales
     private ObservableList<Pedido> pedidosOriginales;
+    private Collection listaBusqueda;
 
     public void initStage(Parent root) {
         Scene scene = new Scene(root);
@@ -120,7 +121,7 @@ public class ControladorPedidosPrincipal implements Initializable {
         botonNuevo.addEventHandler(ActionEvent.ACTION, this::handleNuevoPedido);
         botonReiniciar.addEventHandler(ActionEvent.ACTION, this::handleReiniciarTabla);
         botonDetalles.addEventHandler(ActionEvent.ACTION, this::handleDetalles);
-        //botonBusqueda
+        botonBusqueda.addEventHandler(ActionEvent.ACTION, this::handleBusqueda);
         botonEliminar.addEventHandler(ActionEvent.ACTION, this::handleEliminar);
         botonGuardar.addEventHandler(ActionEvent.ACTION, this::handleGuardarCambios);
         botonAtras.addEventHandler(ActionEvent.ACTION, this::handleAtras);
@@ -194,6 +195,11 @@ public class ControladorPedidosPrincipal implements Initializable {
     public void setStage(Stage stage) {
         this.stage = stage;
         LOGGER.info("Stage asignado.");
+    }
+
+    public void setBusqueda(Collection lista) {
+        this.listaBusqueda = lista;
+        LOGGER.info("Lista Busqueda asignada.");
     }
 
     private void actualizarEstadoBotones() {
@@ -564,7 +570,13 @@ public class ControladorPedidosPrincipal implements Initializable {
     private void cargarDatosPedidos() {
         try {
             LOGGER.info("Cargando datos de pedidos...");
-            Collection<Pedido> pedidos = factoriaPedidos.acceso().getAllPedidos();
+            Collection<Pedido> pedidos;
+            if (listaBusqueda != null) {
+                pedidos = listaBusqueda;
+            } else {
+                pedidos = factoriaPedidos.acceso().getAllPedidos();
+            }
+
             if (pedidos == null || pedidos.isEmpty()) {
                 pedidos = new ArrayList<>();
             }
@@ -619,6 +631,17 @@ public class ControladorPedidosPrincipal implements Initializable {
 
     }
 
+    @FXML
+    private void handleBusqueda(ActionEvent event) {
+
+        LOGGER.info("Botón Busqueda presionado");
+        if (userCliente != null) {
+            factoriaPedidos.cargarPedidosBusqueda(stage, userCliente);
+        } else {
+            factoriaPedidos.cargarPedidosBusqueda(stage, userTrabajador);
+        }
+    }
+
     private void reiniciar() {
 
         cargarDatosPedidos();
@@ -641,7 +664,12 @@ public class ControladorPedidosPrincipal implements Initializable {
 
         try {
             // Llamar a la factoría de PedidoArticulo y cargar el detalle
-            FactoriaPedidoArticulo.getInstance().cargarPedidosDetalle(stage, usuario, pedidoSeleccionado);
+            if (userCliente != null) {
+                FactoriaPedidoArticulo.getInstance().cargarPedidosDetalle(stage, userCliente, pedidoSeleccionado);
+            } else {
+                FactoriaPedidoArticulo.getInstance().cargarPedidosDetalle(stage, userTrabajador, pedidoSeleccionado);
+            }
+
             LOGGER.info("Cargando detalles del pedido: " + pedidoSeleccionado.getId());
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cargar detalles del pedido", e);

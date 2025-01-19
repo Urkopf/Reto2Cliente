@@ -5,13 +5,16 @@
  */
 package crud.negocio;
 
+import crud.iu.controladores.ControladorPedidosBusqueda;
 import crud.iu.controladores.ControladorPedidosPrincipal;
 import crud.objetosTransferibles.Pedido;
 import crud.objetosTransferibles.Usuario;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 
 import javafx.scene.Parent;
@@ -44,11 +47,25 @@ public class FactoriaPedidos {
     }
 
     //Ventanas
-    public void cargarPedidosPrincipal(Stage stage, Object user) {
+    public void cargarPedidosPrincipal(Stage stage, Object user, Collection<Pedido> pedidoBusqueda) {
         try {
             FXMLLoader cargador = new FXMLLoader(getClass().getResource("/crud/iu/vistas/PedidosPrincipal.fxml"));
             Parent root = cargador.load();
             ControladorPedidosPrincipal controlador = cargador.getController();
+            controlador.setStage(stage);
+            controlador.setUser(user);
+            controlador.initStage(root);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error al abrir la ventnaa de PedidosPrincipal: {0}", e.getMessage());
+            showErrorDialog(Alert.AlertType.ERROR, "Error", "No se puede cargar la ventana de Pedidos principal.");
+        }
+    }
+
+    public void cargarPedidosBusqueda(Stage stage, Object user) {
+        try {
+            FXMLLoader cargador = new FXMLLoader(getClass().getResource("/crud/iu/vistas/PedidosBusqueda.fxml"));
+            Parent root = cargador.load();
+            ControladorPedidosBusqueda controlador = cargador.getController();
             controlador.setStage(stage);
             controlador.setUser(user);
             controlador.initStage(root);

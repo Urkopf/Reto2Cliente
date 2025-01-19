@@ -13,14 +13,10 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Urko
  */
 @XmlRootElement
-public class PedidoArticulo implements Serializable {
+public class PedidoArticulo implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 1L;
     private Long id;
-
-    private Long pedidoId;
-
-    private Long articuloId;
 
     private Pedido pedido;
 
@@ -33,10 +29,8 @@ public class PedidoArticulo implements Serializable {
     public PedidoArticulo() {
     }
 
-    public PedidoArticulo(Long id, Long pedidoId, Long articuloId, Pedido pedido, Articulo articulo, int cantidad, double precioCompra) {
+    public PedidoArticulo(Long id, Pedido pedido, Articulo articulo, int cantidad, double precioCompra) {
         this.id = id;
-        this.pedidoId = pedidoId;
-        this.articuloId = articuloId;
         this.pedido = pedido;
         this.articulo = articulo;
         this.cantidad = cantidad;
@@ -48,24 +42,28 @@ public class PedidoArticulo implements Serializable {
         return id;
     }
 
-    public void setPedidoArticuloId(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
     public Long getPedidoId() {
-        return pedidoId;
+        return pedido.getId();
     }
 
     public void setPedidoId(Long pedidoId) {
-        this.pedidoId = pedidoId;
+        this.pedido.setId(pedidoId);
     }
 
     public Long getArticuloId() {
-        return articuloId;
+        return articulo.getId();
     }
 
     public void setArticuloId(Long articuloId) {
-        this.articuloId = articuloId;
+        this.articulo.setId(articuloId);
+    }
+
+    public String getArticuloNombre() {
+        return articulo.getNombre();
     }
 
     public Pedido getPedido() {
@@ -118,6 +116,17 @@ public class PedidoArticulo implements Serializable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public PedidoArticulo clone() {
+        PedidoArticulo copia = new PedidoArticulo();
+        copia.setId(this.id);
+        copia.setPedido(this.pedido);
+        copia.setArticulo(this.articulo);
+        copia.setCantidad(this.cantidad);
+        copia.setPrecioCompra(this.precioCompra);
+        return copia;
     }
 
     @Override
