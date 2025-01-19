@@ -413,6 +413,7 @@ public class ControladorArticulosPrincipal implements Initializable {
 
     @FXML
     private void handleAtras(ActionEvent event) {
+        LOGGER.info("Regresando al menu principal.");
         factoriaUsuarios.cargarMenuPrincipal(stage, userTrabajador);
     }
 
