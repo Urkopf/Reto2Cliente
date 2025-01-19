@@ -41,6 +41,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 /**
@@ -87,6 +88,8 @@ public class ControladorArticulosPrincipal implements Initializable {
     private Button botonGuardar;
     @FXML
     private Pagination paginador;
+    @FXML
+    private AnchorPane anchorPane;
 
     // Copia de seguridad de los datos originales
     private ObservableList<Articulo> articulosOriginales;
@@ -97,6 +100,7 @@ public class ControladorArticulosPrincipal implements Initializable {
         configurarTabla();
         cargarDatosArticulos();
         configurarPaginador();
+        configurarSalidaEdicion();
     }
 
     public void setUser(Object user) {
@@ -231,6 +235,25 @@ public class ControladorArticulosPrincipal implements Initializable {
             AlertUtilities.showErrorDialog(Alert.AlertType.ERROR, "Error al cargar los articulos", "No se pudieron cargar los articulos. Intente nuevamente más tarde.");
         }
 
+    }
+
+    private void configurarSalidaEdicion() {
+        // Salir del modo edición al hacer clic en el AnchorPane
+        anchorPane.setOnMouseClicked(event -> cancelarEdicionEnTabla());
+
+        // Listener para clics en la tabla
+        tablaArticulos.setOnMouseClicked(event -> cancelarEdicionEnTabla());
+
+        // Listener para teclas en la tabla
+        tablaArticulos.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ENTER:
+                    cancelarEdicionEnTabla();
+                    break;
+                default:
+                    break;
+            }
+        });
     }
 
     //Eventos
