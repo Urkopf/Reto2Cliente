@@ -19,7 +19,9 @@ import java.util.Date;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -52,7 +54,7 @@ public class ControladorArticulosPrincipal implements Initializable {
     private FactoriaUsuarios factoriaUsuarios = FactoriaUsuarios.getInstance();
     private Stage stage = new Stage();
     private Trabajador userTrabajador;
-    private ObservableList<Articulo> ArticulosObservableList;
+    private ObservableList<Articulo> articulosObservableList;
     private static final int FILAS_POR_PAGINA = 14;
 
     @FXML
@@ -94,6 +96,7 @@ public class ControladorArticulosPrincipal implements Initializable {
         LOGGER.info("Inicializando controlador ArticulosPrincipal");
         configurarTabla();
         cargarDatosArticulos();
+        configurarPaginador();
     }
 
     public void setUser(Object user) {
@@ -113,11 +116,55 @@ public class ControladorArticulosPrincipal implements Initializable {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Gestión de Articulos");
-        LOGGER.info("Inicializando la escena principal");
-        botonNuevo.addEventHandler(ActionEvent.ACTION, this::handleNuevoArticulo);
         // Configurar la escena y mostrar la ventana
         LOGGER.info("Inicializando la escena principal");
+
+        botonNuevo.addEventHandler(ActionEvent.ACTION, this::handleNuevoArticulo);
+        botonGuardar.addEventHandler(ActionEvent.ACTION, this::handleGuardarCambios);
+        botonAtras.addEventHandler(ActionEvent.ACTION, this::handleAtras);
+        botonReiniciar.addEventHandler(ActionEvent.ACTION, this::handleRecargarTabla);
+        botonEliminar.addEventHandler(ActionEvent.ACTION, this::handleEliminarArticulo);
+
+        // Configurar listeners para habilitar/deshabilitar botones
+        tablaArticulos.getSelectionModel().getSelectedItems().addListener((ListChangeListener<Articulo>) change -> {
+            actualizarEstadoBotones();
+        });
         stage.show();  // Mostrar el escenario
+    }
+
+    private void configurarPaginador() {
+        int numeroPaginas = (int) Math.ceil((double) articulosObservableList.size() / FILAS_POR_PAGINA);
+        paginador.setPageCount(numeroPaginas);
+        paginador.setCurrentPageIndex(0);
+
+        // Listener para cambiar de página
+        paginador.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> {
+            actualizarPagina(newIndex.intValue());
+        });
+
+        // Mostrar la primera página por defecto
+        actualizarPagina(0);
+    }
+
+    private void actualizarPagina(int indicePagina) {
+        int desdeIndice = indicePagina * FILAS_POR_PAGINA;
+        int hastaIndice = Math.min(desdeIndice + FILAS_POR_PAGINA, articulosObservableList.size());
+
+        if (desdeIndice <= hastaIndice) {
+            ObservableList<Articulo> pagina = FXCollections.observableArrayList(articulosObservableList.subList(desdeIndice, hastaIndice));
+            tablaArticulos.setItems(pagina);
+        }
+    }
+
+    private void actualizarTablaYPaginador() {
+        tablaArticulos.setItems(articulosObservableList);
+
+        int numeroPaginas = (int) Math.ceil((double) articulosObservableList.size() / FILAS_POR_PAGINA);
+        paginador.setPageCount(numeroPaginas);
+        paginador.setCurrentPageIndex(0);
+
+        // Mostrar la primera página
+        actualizarPagina(0);
     }
 
     private void configurarTabla() {
@@ -149,6 +196,22 @@ public class ControladorArticulosPrincipal implements Initializable {
 
     }
 
+    private void actualizarEstadoBotones() {
+        int numSeleccionados = tablaArticulos.getSelectionModel().getSelectedItems().size();
+
+        // Habilitar el botón detalles solo si hay exactamente una fila seleccionada
+        botonDetalles.setDisable(numSeleccionados != 1);
+
+        // Habilitar el botón eliminar si hay una o más filas seleccionadas
+        botonEliminar.setDisable(numSeleccionados == 0);
+    }
+
+    private void cancelarEdicionEnTabla() {
+        if (tablaArticulos.getEditingCell() != null) {
+            tablaArticulos.edit(-1, null); // Salir del modo edición
+        }
+    }
+
     private void cargarDatosArticulos() {
         try {
             LOGGER.info("Cargando datos de articulos...");
@@ -157,8 +220,11 @@ public class ControladorArticulosPrincipal implements Initializable {
                 LOGGER.warning("No se encontraron articulos.");
                 articulos = new ArrayList<>();
             }
-            ArticulosObservableList = FXCollections.observableArrayList(articulos);
-            tablaArticulos.setItems(ArticulosObservableList);
+            articulosObservableList = FXCollections.observableArrayList(articulos);
+            tablaArticulos.setItems(articulosObservableList);
+
+            articulosOriginales = FXCollections.observableArrayList(
+                    articulos.stream().map(Articulo::new).collect(Collectors.toList()));
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cargar los datos de articulos", e);
@@ -167,34 +233,159 @@ public class ControladorArticulosPrincipal implements Initializable {
 
     }
 
-//    private void configurarTabla() {
-//        columnaId.setCellValueFactory(new PropertyValueFactory<>("id"));
-//        columnaNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-//        columnaPrecio.setCellValueFactory(new PropertyValueFactory<>("precio"));
-//        columnaFecha.setCellValueFactory(new PropertyValueFactory<>("fechaReposicion"));
-//        columnaDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
-//        columnaStock.setCellValueFactory(new PropertyValueFactory<>("stock"));
-//
-//    }
     //Eventos
     @FXML
     private void handleNuevoArticulo(ActionEvent event) {
+        cancelarEdicionEnTabla();
+        LOGGER.info("Botón Nuevo Articulo presionado");
+        Articulo nuevoArticulo = new Articulo();
+        nuevoArticulo.setPrecio(0);
+        nuevoArticulo.setFechaReposicion(new Date());
+        nuevoArticulo.setStock(0);
 
+        articulosObservableList.add(nuevoArticulo);
+
+        // Calcular la página donde está el nuevo pedido
+        int indicePagina = (articulosObservableList.size() - 1) / FILAS_POR_PAGINA;
+        paginador.setCurrentPageIndex(indicePagina); // Cambiar a esa página
+
+        actualizarPagina(indicePagina); // Refrescar la tabla
+        tablaArticulos.scrollTo(nuevoArticulo); // Desplazar a la nueva fila
+        LOGGER.info("Nuevo articulo añadido con valores predeterminados.");
     }
 
     @FXML
     private void handleGuardarCambios(ActionEvent event) {
+        cancelarEdicionEnTabla();
+        LOGGER.info("Botón Guardar Cambios presionado");
 
+        boolean hayErrores = false;
+        for (Articulo articulo : articulosObservableList) {
+            if (!validarArticulo(articulo)) {
+                hayErrores = true;
+            }
+        }
+
+        if (hayErrores) {
+            AlertUtilities.showErrorDialog(Alert.AlertType.ERROR, "Guardar Cambios", "Hay errores en algunos campos. Corríjalos antes de guardar.");
+            return;
+        }
+
+        try {
+            for (Articulo articulo : articulosObservableList) {
+                LOGGER.info("Revisando articulos" + articulo.getId());
+                Articulo articuloOriginal = articulosOriginales.stream()
+                        .filter(p -> p.getId().equals(articulo.getId()))
+                        .findFirst()
+                        .orElse(null);
+
+                if (articulo.getId() == null) {
+                    LOGGER.info("Creando articulo.");
+                    factoriaArticulos.acceso().crearArticulo(articulo);
+                } else if (articuloOriginal != null && haCambiado(articuloOriginal, articulo)) {
+                    LOGGER.info("Actualizando articulo: " + articulo);
+                    factoriaArticulos.acceso().actualizarArticulo(articulo);
+
+                }
+            }
+
+            for (Articulo articuloOriginal : articulosOriginales) {
+                if (!articulosObservableList.contains(articuloOriginal)) {
+                    LOGGER.info("Eliminando articulo.");
+                    factoriaArticulos.acceso().borrarArticulo(articuloOriginal);
+                }
+            }
+
+            articulosOriginales.setAll(articulosObservableList);
+            LOGGER.info("Cambios guardados exitosamente.");
+            reiniciar();
+
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error al guardar cambios", e);
+            AlertUtilities.showErrorDialog(Alert.AlertType.ERROR, "Error", "No se pudieron guardar los cambios. Intentelo de nuevo.");
+        }
+
+    }
+
+    public boolean haCambiado(Articulo original, Articulo modificado) {
+        if (original == null || modificado == null) {
+            return false;
+        }
+        return !original.getNombre().equals(modificado.getNombre())
+                || Double.compare(original.getPrecio(), modificado.getPrecio()) != 0
+                || !original.getFechaReposicion().equals(modificado.getFechaReposicion())
+                || !original.getDescripcion().equals(modificado.getDescripcion())
+                || Integer.compare(original.getStock(), modificado.getStock()) != 0;
+    }
+
+    private boolean validarArticulo(Articulo articulo) {
+        boolean valido = true;
+
+        if (articulo.getNombre() == null || articulo.getNombre().isEmpty()) {
+            pintarCeldaInvalida(columnaNombre, articulo);
+            valido = false;
+        }
+        if (articulo.getPrecio() <= 0) {
+            pintarCeldaInvalida(columnaPrecio, articulo);
+            valido = false;
+        }
+        if (articulo.getFechaReposicion() == null) {
+            pintarCeldaInvalida(columnaFecha, articulo);
+            valido = false;
+        }
+        if (articulo.getDescripcion() == null || articulo.getDescripcion().isEmpty()) {
+            pintarCeldaInvalida(columnaDescripcion, articulo);
+            valido = false;
+        }
+        if (articulo.getStock() <= 0) {
+            pintarCeldaInvalida(columnaStock, articulo);
+            valido = false;
+        }
+
+        return valido;
+    }
+
+    private <T> void pintarCeldaInvalida(TableColumn<Articulo, T> columna, Articulo articulo) {
+        columna.setCellFactory(column -> {
+            return new TableCell<Articulo, T>() {
+                @Override
+                protected void updateItem(T item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (!empty && articulo.equals(getTableView().getItems().get(getIndex()))) {
+                        setStyle("-fx-background-color: red;");
+                    } else {
+                        setStyle("");
+                    }
+                }
+            };
+        });
     }
 
     @FXML
     private void handleEliminarArticulo(ActionEvent event) {
+        cancelarEdicionEnTabla();
+        LOGGER.info("Botón Eliminar presionado");
+        ObservableList<Articulo> seleccionados = tablaArticulos.getSelectionModel().getSelectedItems();
+        if (seleccionados.isEmpty()) {
+            AlertUtilities.showErrorDialog(Alert.AlertType.WARNING, "Eliminar Pedidos", "Debe seleccionar al menos un pedido para eliminar.");
+        } else {
+            articulosObservableList.removeAll(seleccionados);
+            actualizarTablaYPaginador();
+            LOGGER.info("Articulos eliminados de la tabla.");
+        }
 
     }
 
     @FXML
     private void handleRecargarTabla(ActionEvent event) {
+        cancelarEdicionEnTabla();
+        LOGGER.info("Botón Reiniciar Tabla presionado");
+        reiniciar();
+        LOGGER.info("Tabla reiniciada a los datos originales.");
+    }
 
+    private void reiniciar() {
+        cargarDatosArticulos();
     }
 
     @FXML
@@ -204,6 +395,29 @@ public class ControladorArticulosPrincipal implements Initializable {
 
     @FXML
     private void handleBusqueda(ActionEvent event) {
+
+    }
+
+    @FXML
+    private void handleDetalle(ActionEvent event) {
+        cancelarEdicionEnTabla(); // Asegura que no hay edición activa
+        LOGGER.info("Botón Detalles presionado");
+
+        Articulo articuloSeleccionado = tablaArticulos.getSelectionModel().getSelectedItem();
+
+        if (articuloSeleccionado == null) {
+            LOGGER.warning("No se ha seleccionado ningún articulo.");
+            AlertUtilities.showErrorDialog(Alert.AlertType.WARNING, "Detalles de Articulo", "Debe seleccionar un articulo para ver los detalles.");
+            return;
+        }
+
+        try {
+            //Falta la parte de llamar a la ventana
+            LOGGER.info("Cargando detalles del articulo: " + articuloSeleccionado.getId());
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error al cargar detalles del articulo", e);
+            AlertUtilities.showErrorDialog(Alert.AlertType.ERROR, "Error", "No se pudieron cargar los detalles del articulo. Intentelo de nuevo.");
+        }
 
     }
 
@@ -287,7 +501,10 @@ public class ControladorArticulosPrincipal implements Initializable {
                         = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10000.0, getItem(), 0.01);
                 spinnerPrecio.setValueFactory(valueFactory);
 
-                // Formatear el valor del Spinner al iniciar la edición
+                // Permitir entrada manual
+                spinnerPrecio.setEditable(true);
+
+                // Inicializar el valor actual en el Spinner
                 spinnerPrecio.getValueFactory().setValue(getItem());
                 setGraphic(spinnerPrecio);
                 setText(null);
@@ -296,14 +513,14 @@ public class ControladorArticulosPrincipal implements Initializable {
                 // Listener para manejar la pérdida de foco
                 spinnerPrecio.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
                     if (!isNowFocused) {
-                        validarYCommit(spinnerPrecio.getValue());
+                        validarYCommit(obtenerValorSpinner(spinnerPrecio));
                     }
                 });
 
                 // Listener para manejar Enter (confirma edición)
                 spinnerPrecio.setOnKeyPressed(event -> {
                     if (event.getCode() == KeyCode.ENTER) {
-                        validarYCommit(spinnerPrecio.getValue());
+                        validarYCommit(obtenerValorSpinner(spinnerPrecio));
                     }
                 });
             }
@@ -346,6 +563,17 @@ public class ControladorArticulosPrincipal implements Initializable {
                     cancelEdit(); // Cancela la edición y restaura el valor anterior
                 } else {
                     commitEdit(newValue); // Valido, confirma la edición
+                }
+            }
+
+            private Double obtenerValorSpinner(Spinner<Double> spinner) {
+                try {
+                    // Obtener el texto ingresado manualmente y convertirlo a Double
+                    String input = spinner.getEditor().getText();
+                    return Double.parseDouble(input);
+                } catch (NumberFormatException e) {
+                    AlertUtilities.showErrorDialog(AlertType.ERROR, "Valor inválido", "Debe ingresar un número válido.");
+                    return spinner.getValue(); // Retorna el valor actual si hay un error
                 }
             }
 
@@ -511,6 +739,9 @@ public class ControladorArticulosPrincipal implements Initializable {
                         = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 10000, getItem());
                 spinnerStock.setValueFactory(valueFactory);
 
+                // Permitir entrada manual
+                spinnerStock.setEditable(true);
+
                 // Inicializar el valor actual en el Spinner
                 spinnerStock.getValueFactory().setValue(getItem());
                 setGraphic(spinnerStock);
@@ -520,14 +751,14 @@ public class ControladorArticulosPrincipal implements Initializable {
                 // Listener para manejar la pérdida de foco
                 spinnerStock.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
                     if (!isNowFocused) {
-                        validarYCommit(spinnerStock.getValue());
+                        validarYCommit(obtenerValorSpinner(spinnerStock));
                     }
                 });
 
                 // Listener para manejar Enter (confirma edición)
                 spinnerStock.setOnKeyPressed(event -> {
                     if (event.getCode() == KeyCode.ENTER) {
-                        validarYCommit(spinnerStock.getValue());
+                        validarYCommit(obtenerValorSpinner(spinnerStock));
                     }
                 });
             }
@@ -570,6 +801,17 @@ public class ControladorArticulosPrincipal implements Initializable {
                     cancelEdit(); // Cancela la edición y restaura el valor anterior
                 } else {
                     commitEdit(newValue); // Valido, confirma la edición
+                }
+            }
+
+            private Integer obtenerValorSpinner(Spinner<Integer> spinner) {
+                try {
+                    // Obtener el texto ingresado manualmente y convertirlo a Integer
+                    String input = spinner.getEditor().getText();
+                    return Integer.parseInt(input);
+                } catch (NumberFormatException e) {
+                    AlertUtilities.showErrorDialog(AlertType.ERROR, "Valor inválido", "Debe ingresar un número entero.");
+                    return spinner.getValue(); // Retorna el valor actual si hay un error
                 }
             }
 

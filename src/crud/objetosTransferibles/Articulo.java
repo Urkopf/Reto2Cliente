@@ -9,7 +9,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -38,6 +37,15 @@ public class Articulo implements Serializable {
 
     public Articulo() {
 
+    }
+
+    public Articulo(Articulo articulo) {
+        this.id = articulo.id;
+        this.nombre = articulo.nombre;
+        this.precio = articulo.precio;
+        this.descripcion = articulo.descripcion;
+        this.stock = articulo.stock;
+        this.fechaReposicion = articulo.fechaReposicion;
     }
 
     // Getters y setters
