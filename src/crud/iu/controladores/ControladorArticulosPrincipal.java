@@ -100,7 +100,7 @@ public class ControladorArticulosPrincipal implements Initializable {
         configurarTabla();
         cargarDatosArticulos();
         configurarPaginador();
-        configurarSalidaEdicion();
+        //configurarSalidaEdicion();
     }
 
     public void setUser(Object user) {
@@ -128,6 +128,7 @@ public class ControladorArticulosPrincipal implements Initializable {
         botonAtras.addEventHandler(ActionEvent.ACTION, this::handleAtras);
         botonReiniciar.addEventHandler(ActionEvent.ACTION, this::handleRecargarTabla);
         botonEliminar.addEventHandler(ActionEvent.ACTION, this::handleEliminarArticulo);
+        botonBusqueda.addEventHandler(ActionEvent.ACTION, this::handleBusqueda);
 
         // Configurar listeners para habilitar/deshabilitar botones
         tablaArticulos.getSelectionModel().getSelectedItems().addListener((ListChangeListener<Articulo>) change -> {
@@ -173,6 +174,11 @@ public class ControladorArticulosPrincipal implements Initializable {
 
     private void configurarTabla() {
         tablaArticulos.setEditable(true);
+
+        // Desactivar la ordenación en todas las columnas
+        tablaArticulos.getColumns().forEach(column -> column.setSortable(false));
+        tablaArticulos.getColumns().forEach(column -> column.setResizable(false));
+        tablaArticulos.getSelectionModel().setSelectionMode(javafx.scene.control.SelectionMode.MULTIPLE);
 
         //Gestion de Columnas
         //Columna Id (no editable)
@@ -419,6 +425,8 @@ public class ControladorArticulosPrincipal implements Initializable {
 
     @FXML
     private void handleBusqueda(ActionEvent event) {
+        LOGGER.info("Vamos a la Busqueda...");
+        factoriaArticulos.cargarArticulosBusqueda(stage, userTrabajador);
 
     }
 

@@ -5,6 +5,7 @@
  */
 package crud.negocio;
 
+import crud.iu.controladores.ControladorArticulosBusqueda;
 import crud.iu.controladores.ControladorArticulosPrincipal;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
 import java.util.logging.Level;
@@ -51,6 +52,20 @@ public class FactoriaArticulos {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al abrir la ventana de ArticulosPrincipal: {0}", e.getMessage());
             showErrorDialog(Alert.AlertType.ERROR, "Error", "No se puede cargar la ventana de Articulos principal.");
+        }
+    }
+
+    public void cargarArticulosBusqueda(Stage stage, Object user) {
+        try {
+            FXMLLoader cargador = new FXMLLoader(getClass().getResource("/crud/iu/vistas/ArticulosBusqueda.fxml"));
+            Parent root = cargador.load();
+            ControladorArticulosBusqueda controlador = cargador.getController();
+            controlador.setStage(stage);
+            controlador.setUser(user);
+            controlador.initStage(root);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error al abrir la ventana de ArticulosBusqueda: {0}", e.getMessage());
+            showErrorDialog(Alert.AlertType.ERROR, "Error", "No se puede cargar la ventana de Articulos busqueda.");
         }
     }
 }

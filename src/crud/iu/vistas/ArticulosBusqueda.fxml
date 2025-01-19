@@ -29,38 +29,38 @@
                   <children>
                      <HBox alignment="CENTER_LEFT">
                         <children>
-                           <CheckBox mnemonicParsing="false" text="Por ID articulo, desde  " />
-                           <Spinner prefHeight="35.0" prefWidth="180.0" />
+                           <CheckBox fx:id="checkBoxId" mnemonicParsing="false" text="Por ID articulo, desde  " />
+                           <Spinner fx:id="spinnerIdDesde" prefHeight="35.0" prefWidth="180.0" />
                            <Label text=" hasta " />
-                           <Spinner prefHeight="35.0" prefWidth="180.0" />
+                           <Spinner fx:id="spinnerIdHasta" prefHeight="35.0" prefWidth="180.0" />
                         </children>
                      </HBox>
                      <HBox alignment="CENTER_LEFT">
                         <children>
-                           <CheckBox mnemonicParsing="false" text="Por Nombre  " />
-                           <ComboBox prefHeight="35.0" prefWidth="180.0" />
+                           <CheckBox fx:id="checkBoxNombre" mnemonicParsing="false" text="Por Nombre  " />
+                           <ComboBox fx:id="comboBoxNombre" prefHeight="35.0" prefWidth="180.0" />
                         </children>
                      </HBox>
                      <HBox alignment="CENTER_LEFT" prefWidth="200.0">
                         <children>
-                           <CheckBox mnemonicParsing="false" text="Por Fecha de reposicion, desde  " />
-                           <DatePicker prefHeight="35.0" prefWidth="180.0" />
+                           <CheckBox fx:id="checkBoxFecha" mnemonicParsing="false" text="Por Fecha de reposicion, desde  " />
+                           <DatePicker fx:id="datePickerDesde" prefHeight="35.0" prefWidth="180.0" />
                            <Label text=" hasta " />
-                           <DatePicker prefHeight="35.0" prefWidth="180.0" />
+                           <DatePicker fx:id="datePickerHasta" prefHeight="35.0" prefWidth="180.0" />
                         </children>
                      </HBox>
                      <HBox alignment="CENTER_LEFT" prefWidth="200.0">
                         <children>
-                           <CheckBox mnemonicParsing="false" text="Por precio min  " />
-                           <TextField prefHeight="35.0" prefWidth="180.0" />
+                           <CheckBox fx:id="checkBoxPrecio" mnemonicParsing="false" text="Por precio min  " />
+                           <TextField fx:id="textFieldPrecioMin" prefHeight="35.0" prefWidth="180.0" />
                            <Label text=" hasta " />
-                           <TextField prefHeight="35.0" prefWidth="180.0" />
+                           <TextField fx:id="textFieldPrecioMax" prefHeight="35.0" prefWidth="180.0" />
                         </children>
                      </HBox>
                      <HBox alignment="CENTER_LEFT">
                         <children>
-                           <CheckBox mnemonicParsing="false" text="Buscar por stock  " />
-                           <TextField prefHeight="35.0" prefWidth="180.0" />
+                           <CheckBox fx:id="checkBoxStock" mnemonicParsing="false" text="Buscar por stock  " />
+                           <TextField fx:id="textFieldStock" prefHeight="35.0" prefWidth="180.0" />
                         </children>
                      </HBox>
                   </children>
