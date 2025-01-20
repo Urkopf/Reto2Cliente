@@ -27,7 +27,7 @@
                 <VBox prefWidth="801.0" spacing="10">
                <VBox alignment="CENTER_LEFT" prefHeight="438.0" prefWidth="761.0" spacing="30.0">
                   <children>
-                     <HBox alignment="CENTER_LEFT">
+                     <HBox fx:id="hBoxIdPedido" alignment="CENTER_LEFT">
                         <children>
                            <CheckBox fx:id="checkBoxIdPedido" mnemonicParsing="false" text="Por ID de pedido, desde  " />
                            <Spinner fx:id="spinnerIdDesde" prefHeight="35.0" prefWidth="180.0" />
@@ -35,7 +35,7 @@
                            <Spinner fx:id="spinnerIdHasta" prefHeight="35.0" prefWidth="180.0" />
                         </children>
                      </HBox>
-                     <HBox alignment="CENTER_LEFT">
+                     <HBox fx:id="hBoxCif" alignment="CENTER_LEFT">
                         <children>
                            <CheckBox fx:id="checkBoxCIF" mnemonicParsing="false" text="Por CIF  " />
                            <ComboBox fx:id="comboBoxCIF" prefHeight="35.0" prefWidth="180.0" />

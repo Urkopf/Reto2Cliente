@@ -5,6 +5,7 @@ import crud.negocio.FactoriaPedidoArticulo;
 import crud.negocio.FactoriaPedidos;
 import crud.negocio.FactoriaUsuarios;
 import crud.objetosTransferibles.Cliente;
+import crud.objetosTransferibles.Estado;
 import crud.objetosTransferibles.Pedido;
 import crud.objetosTransferibles.Trabajador;
 import javafx.event.ActionEvent;
@@ -24,8 +25,10 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 /**
@@ -42,6 +45,8 @@ public class ControladorPedidosBusqueda implements Initializable {
     // Escenario y entidades
     private Stage stage;
 
+    @FXML
+    private HBox hBoxCif;
     @FXML
     private CheckBox checkBoxIdPedido;
 
@@ -76,7 +81,7 @@ public class ControladorPedidosBusqueda implements Initializable {
     private CheckBox checkBoxEstado;
 
     @FXML
-    private ComboBox<String> comboBoxEstado;
+    private ComboBox<Estado> comboBoxEstado;
 
     @FXML
     private CheckBox checkBoxPrecio;
@@ -104,9 +109,9 @@ public class ControladorPedidosBusqueda implements Initializable {
 
         // Configurar valores iniciales para los spinners
         spinnerIdDesde.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, Integer.MAX_VALUE, 1));
-        spinnerIdHasta.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, Integer.MAX_VALUE, 100));
+        spinnerIdHasta.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, Integer.MAX_VALUE, 1));
         spinnerPrecioDesde.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, Double.MAX_VALUE, 0.0));
-        spinnerPrecioHasta.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, Double.MAX_VALUE, 100.0));
+        spinnerPrecioHasta.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, Double.MAX_VALUE, 0.0));
 
         botonBuscar.setOnAction(this::handleBuscar);
         botonReiniciarCampos.setOnAction(this::handleReiniciarCampos);
@@ -122,6 +127,18 @@ public class ControladorPedidosBusqueda implements Initializable {
 
         stage.show();
 
+        // Configurar los Spinner con validación
+        configurarSpinnerId(spinnerIdDesde);
+        configurarSpinnerId(spinnerIdHasta);
+        configurarSpinnerPrecio(spinnerPrecioDesde);
+        configurarSpinnerPrecio(spinnerPrecioHasta);
+        // Cargar valores iniciales en los ComboBox
+        cargarComboBoxCIF();
+        cargarComboBoxEstado();
+
+        // Configurar el estado inicial basado en el usuario (cliente o trabajador)
+        configurarEstadoInicial();
+
     }
 
     public void setStage(Stage stage) {
@@ -135,7 +152,7 @@ public class ControladorPedidosBusqueda implements Initializable {
                 LOGGER.info("Usuario asignado (Cliente): " + userCliente.getId());
             } else {
                 this.userTrabajador = (Trabajador) user;
-                LOGGER.info("Usuario asignado (Trabajador): " + userCliente.getId());
+                LOGGER.info("Usuario asignado (Trabajador): " + userTrabajador.getId());
             }
         }
     }
@@ -148,6 +165,7 @@ public class ControladorPedidosBusqueda implements Initializable {
             Collection<Pedido> pedidosFiltrados = new ArrayList<>(factoriaPedidos.acceso().getAllPedidos());
 
             if (checkBoxIdPedido.isSelected()) {
+                LOGGER.info("Check Id Pedido Activo");
                 int idDesde = spinnerIdDesde.getValue();
                 int idHasta = spinnerIdHasta.getValue();
                 pedidosFiltrados.removeIf(pedido -> pedido.getId().intValue() < idDesde || pedido.getId().intValue() > idHasta);
@@ -170,7 +188,7 @@ public class ControladorPedidosBusqueda implements Initializable {
             }
 
             if (checkBoxEstado.isSelected()) {
-                String estadoSeleccionado = comboBoxEstado.getValue();
+                Estado estadoSeleccionado = comboBoxEstado.getValue();
                 pedidosFiltrados.removeIf(pedido -> !pedido.getEstado().equals(estadoSeleccionado));
             }
 
@@ -254,4 +272,100 @@ public class ControladorPedidosBusqueda implements Initializable {
             factoriaPedidos.cargarPedidosPrincipal(stage, userTrabajador, null);
         }
     }
+
+    /**
+     * Configura el estado inicial del formulario en función del usuario actual.
+     */
+    private void configurarEstadoInicial() {
+        if (userCliente != null) {
+            // Seleccionar y fijar el CIF del cliente
+            checkBoxCIF.setSelected(true);
+            comboBoxCIF.setValue(userCliente.getCif());
+            hBoxCif.setVisible(false); // Ocultar el HBox del CIF
+            LOGGER.info("Configurado estado inicial para cliente con CIF: " + userCliente.getCif());
+        } else {
+            LOGGER.info("Configurado estado inicial para trabajador.");
+        }
+    }
+
+    /**
+     * Carga los ID de los clientes en el ComboBox de CIF.
+     */
+    private void cargarComboBoxCIF() {
+        try {
+            List<String> cifsClientes = factoriaUsuarios.accesoCliente().getAllClientes().stream()
+                    .map(Cliente::getCif).collect(Collectors.toList());
+            comboBoxCIF.getItems().setAll(cifsClientes);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error al cargar los CIF de los clientes", e);
+            mostrarError("Error al cargar CIF", "No se pudieron cargar los CIF de los clientes.");
+        }
+    }
+
+    /**
+     * Carga las opciones de estado en el ComboBox de estado.
+     */
+    private void cargarComboBoxEstado() {
+        try {
+
+            comboBoxEstado.getItems().setAll(Estado.values());
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error al cargar los estados", e);
+            mostrarError("Error al cargar estados", "No se pudieron cargar las opciones de estado.");
+        }
+    }
+
+    /**
+     * Configura un Spinner para aceptar solo valores enteros positivos.
+     */
+    private void configurarSpinnerId(Spinner<Integer> spinner) {
+        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, Integer.MAX_VALUE, 1);
+        spinner.setValueFactory(valueFactory);
+        spinner.setEditable(true);
+
+        // Validación para permitir solo enteros positivos al escribir
+        spinner.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                spinner.getEditor().setText(oldValue);
+            } else if (!newValue.isEmpty()) {
+                int value = Integer.parseInt(newValue);
+                if (value < 1) {
+                    spinner.getEditor().setText(oldValue);
+                } else {
+                    spinner.getValueFactory().setValue(value);
+                }
+            }
+        });
+    }
+
+    /**
+     * Configura un Spinner para aceptar solo valores positivos con o sin
+     * decimales (permitiendo "," o ".").
+     */
+    private void configurarSpinnerPrecio(Spinner<Double> spinner) {
+        SpinnerValueFactory<Double> valueFactory = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, Double.MAX_VALUE, 0.0, 0.01);
+        spinner.setValueFactory(valueFactory);
+        spinner.setEditable(true);
+
+        // Validación para permitir solo números positivos con "," o "." al escribir
+        spinner.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*(\\.\\d*)?|\\d*(,\\d*)?")) {
+                spinner.getEditor().setText(oldValue);
+            } else if (!newValue.isEmpty()) {
+                try {
+                    // Cambiar coma a punto si es necesario y asignar el valor
+                    String standardizedValue = newValue.replace(",", ".");
+                    double value = Double.parseDouble(standardizedValue);
+                    if (value < 0) {
+                        spinner.getEditor().setText(oldValue);
+                    } else {
+                        spinner.getValueFactory().setValue(value);
+                    }
+                } catch (NumberFormatException e) {
+                    spinner.getEditor().setText(oldValue);
+                }
+            }
+        });
+    }
+
 }

@@ -132,14 +132,15 @@ public class ControladorPedidosPrincipal implements Initializable {
         });
 
         stage.show();  // Mostrar el escenario
+        cargarDatosPedidos();
+        configurarPaginador();
     }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         LOGGER.info("Inicializando controlador PedidosPrincipal");
         configurarTabla();
-        cargarDatosPedidos();
-        configurarPaginador();
+
     }
 
     private void configurarPaginador() {
@@ -197,9 +198,12 @@ public class ControladorPedidosPrincipal implements Initializable {
         LOGGER.info("Stage asignado.");
     }
 
-    public void setBusqueda(Collection lista) {
+    public void setBusqueda(Collection<Pedido> lista) {
         this.listaBusqueda = lista;
-        LOGGER.info("Lista Busqueda asignada.");
+        if (lista != null) {
+
+        }
+        LOGGER.info("Lista Busqueda asignada. Elementos: " + ((lista != null) ? lista.size() : "Null"));
     }
 
     private void actualizarEstadoBotones() {
@@ -626,6 +630,7 @@ public class ControladorPedidosPrincipal implements Initializable {
     private void handleReiniciarTabla(ActionEvent event) {
         cancelarEdicionEnTabla();
         LOGGER.info("Botón Reiniciar Tabla presionado");
+        listaBusqueda = null;
         reiniciar();
         LOGGER.info("Tabla reiniciada a los datos originales.");
 
