@@ -5,7 +5,7 @@
  */
 package crud.rest;
 
-import crud.objetosTransferibles.Articulo;
+import crud.objetosTransferibles.Almacen;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import javax.ws.rs.WebApplicationException;
@@ -14,21 +14,21 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 
 /**
- * Jersey REST client generated for REST resource:ArticuloFacadeREST
- * [articulo]<br>
+ * Jersey REST client generated for REST resource:AlmacenFacadeREST
+ * [almacen]<br>
  * USAGE:
  * <pre>
- *        ArticulosRestFull client = new ArticulosRestFull();
+ *        AlmacenRestFull client = new AlmacenRestFull();
  *        Object response = client.XXX(...);
  *        // do whatever with response
  *        client.close();
  * </pre>
  *
- * @author 2dam
+ * @author Ser_090
  */
-public class ArticulosRestFull {
+public class AlmacenRestFull {
 
-    private static final Logger LOGGER = Logger.getLogger(ArticulosRestFull.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(AlmacenRestFull.class.getName());
 
     private WebTarget webTarget;
     private Client client;
@@ -36,9 +36,9 @@ public class ArticulosRestFull {
             = ResourceBundle.getBundle("recursos.configCliente")
                     .getString("BASE_URI");
 
-    public ArticulosRestFull() {
+    public AlmacenRestFull() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
-        webTarget = client.target(BASE_URI).path("articulo");
+        webTarget = client.target(BASE_URI).path("almacen");
     }
 
     public String countREST() throws WebApplicationException {
@@ -48,34 +48,17 @@ public class ArticulosRestFull {
     }
 
     public void edit_XML(Object requestEntity) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Articulo.class);
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Almacen.class);
     }
 
     public <T> T find_XML(Class<T> responseType, String id) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                .get(responseType);
-    }
-
-    public <T> T findRange_XML(Class<T> responseType, String from, String to) throws WebApplicationException {
-        WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("{0}/{1}", new Object[]{from, to}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findRange_JSON(Class<T> responseType, String from, String to) throws WebApplicationException {
-        WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("{0}/{1}", new Object[]{from, to}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
-    }
-
     public void create_XML(Object requestEntity) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                .post(javax.ws.rs.client.Entity.entity(requestEntity,
-                        javax.ws.rs.core.MediaType.APPLICATION_XML),
-                        Articulo.class);
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Almacen.class);
     }
 
     public <T> T findAll_XML(GenericType<T> responseType) throws WebApplicationException {
@@ -83,9 +66,8 @@ public class ArticulosRestFull {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public void remove(Long id) throws WebApplicationException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id}))
-                .request().delete(Articulo.class);
+    public void remove(String id) throws WebApplicationException {
+        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete(Almacen.class);
     }
 
     public void close() {
