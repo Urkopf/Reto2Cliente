@@ -30,7 +30,7 @@ public class PedidoArticulosRestFull {
     private WebTarget webTarget;
     private Client client;
     private static final String BASE_URI
-            = ResourceBundle.getBundle("crud.recursos.configCliente")
+            = ResourceBundle.getBundle("recursos.configCliente")
                     .getString("BASE_URI");
 
     public PedidoArticulosRestFull() {
@@ -55,25 +55,21 @@ public class PedidoArticulosRestFull {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-
     public <T> T findRange_XML(Class<T> responseType, String from, String to) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}/{1}", new Object[]{from, to}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-
     public void create_XML(Object requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
                 .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), PedidoArticulo.class);
     }
 
-
     public <T> T findAll_XML(GenericType<T> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
-
 
     public void remove(Long id) throws WebApplicationException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id}))

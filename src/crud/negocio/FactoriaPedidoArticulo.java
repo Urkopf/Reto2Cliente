@@ -49,7 +49,7 @@ public class FactoriaPedidoArticulo {
             ControladorPedidosDetalle controlador = cargador.getController();
             controlador.setStage(stage);
             controlador.setUser(user);
-            //controlador.setPedido(pedido);
+            controlador.setPedido(pedido);
             controlador.initStage(root);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al abrir la ventnaa de PedidosDetalle: {0}", e.getMessage());

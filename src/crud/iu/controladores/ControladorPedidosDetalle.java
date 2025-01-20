@@ -1,627 +1,624 @@
 package crud.iu.controladores;
 
+import crud.negocio.FactoriaArticulos;
+import crud.negocio.FactoriaPedidoArticulo;
 import crud.negocio.FactoriaPedidos;
 import crud.negocio.FactoriaUsuarios;
-import crud.negocio.IPedido;
-import crud.negocio.PedidoImpl;
+import crud.objetosTransferibles.Articulo;
 import crud.objetosTransferibles.Cliente;
-import crud.objetosTransferibles.Estado;
 import crud.objetosTransferibles.Pedido;
+import crud.objetosTransferibles.PedidoArticulo;
 import crud.objetosTransferibles.Trabajador;
-import crud.objetosTransferibles.Usuario;
+import crud.objetosTransferibles.Estado;
 import crud.utilidades.AlertUtilities;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.Pagination;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TablePosition;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-/**
- * Controlador para la ventana principal de Pedidos.
- */
+import java.net.URL;
+import java.text.NumberFormat;
+import java.time.ZoneId;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.cell.PropertyValueFactory;
+
 public class ControladorPedidosDetalle implements Initializable {
 
     private static final Logger LOGGER = Logger.getLogger(ControladorPedidosDetalle.class.getName());
-    private FactoriaPedidos factoriaPedidos = FactoriaPedidos.getInstance();
-    private FactoriaUsuarios factoriaUsuarios = FactoriaUsuarios.getInstance();
-    private Stage stage;
-    private Usuario usuario;
-    private ObservableList<Pedido> pedidosObservableList;
-    private static final int FILAS_POR_PAGINA = 14;
 
-    // Elementos FXML
+    // Factorías de acceso a datos
+    private FactoriaUsuarios factoriaUsuarios = FactoriaUsuarios.getInstance();
+    private FactoriaPedidos factoriaPedidos = FactoriaPedidos.getInstance();
+    private FactoriaArticulos factoriaArticulos = FactoriaArticulos.getInstance();
+    private FactoriaPedidoArticulo factoriaPedidoArticulo = FactoriaPedidoArticulo.getInstance();
+
+    // Escenario y entidades
+    private Stage stage;
+    private Pedido pedido;
+    private Cliente userCliente;
+    private Trabajador userTrabajador;
+
+    // Listas para la tabla
+    private ObservableList<Articulo> articulosDisponibles;
+    private ObservableList<PedidoArticulo> articulosDelPedido;
+    private ObservableList<PedidoArticulo> articulosDelPedidoOriginales;
+
+    // Componentes FXML
     @FXML
     private AnchorPane anchorPane;
     @FXML
-    private Button botonNuevo;
+    private TableView<Articulo> tablaArticulosDisponibles;
     @FXML
-    private Button botonReiniciar;
+    private TableColumn<Articulo, Long> columnaId;
     @FXML
-    private Button botonBusqueda;
+    private TableColumn<Articulo, String> columnaNombre;
+    @FXML
+    private TableColumn<Articulo, Double> columnaPrecio;
+
+    @FXML
+    private TableView<PedidoArticulo> tablaArticulosPedidos;
+    @FXML
+    private TableColumn<PedidoArticulo, Long> columnaPedidoArticuloId;
+    @FXML
+    private TableColumn<PedidoArticulo, Long> columnaId2;
+    @FXML
+    private TableColumn<PedidoArticulo, String> columnaNombre2;
+    @FXML
+    private TableColumn<PedidoArticulo, Integer> columnaUnidades2;
+    @FXML
+    private TableColumn<PedidoArticulo, Double> columnaPrecio2;
+
+    @FXML
+    private TextField campoTotal;
+    @FXML
+    private Button botonCompra;
     @FXML
     private Button botonEliminar;
     @FXML
     private Button botonGuardar;
     @FXML
-    private Button botonDetalles;
-    @FXML
     private Button botonAtras;
-    @FXML
-    private TableView<Pedido> tablaPedidos;
-    @FXML
-    private TableColumn<Pedido, Long> columnaId;
-    @FXML
-    private TableColumn<Pedido, Long> columnaUsuarioId;
-    @FXML
-    private TableColumn<Pedido, String> columnaCif;
-    @FXML
-    private TableColumn<Pedido, Estado> columnaEstado;
-    @FXML
-    private TableColumn<Pedido, Date> columnaFecha;
-    @FXML
-    private TableColumn<Pedido, Double> columnaTotal;
-    @FXML
-    private Pagination paginador;
-    @FXML
-    private MenuItem opcionIrPedidos;
-    private Cliente userCliente;
-    private Trabajador userTrabajador;
 
-    // Copia de seguridad de los datos originales
-    private ObservableList<Pedido> pedidosOriginales;
+    @FXML
+    private TextField campoId;
+    @FXML
+    private ComboBox<String> campoCif;
+    @FXML
+    private TextField campoDireccion;
+    @FXML
+    private DatePicker campoFecha;
+    @FXML
+    private ComboBox<Estado> campoEstado;
+
+    // -------------------------------------------------------------------------
+    //  MÉTODOS DE INICIALIZACIÓN
+    // -------------------------------------------------------------------------
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        configurarTablas();
+        cargarArticulosDisponibles();
+
+        articulosDelPedido = FXCollections.observableArrayList();
+        articulosDelPedidoOriginales = FXCollections.observableArrayList(
+                articulosDelPedido.stream()
+                        .map(PedidoArticulo::clone)
+                        .collect(Collectors.toList())
+        );
+
+        // Si no llamamos aquí a cargarArticulosDelPedido(), se llamará en initStage también
+        // Pero generalmente lo hacemos una vez que 'pedido' está seteado
+        actualizarTotal();
+
+    }
 
     public void initStage(Parent root) {
         Scene scene = new Scene(root);
         stage.setScene(scene);
-        stage.setTitle("Gestión de Pedidos");
-        // Configurar la escena y mostrar la ventana
+        stage.setTitle("Detalles del pedido");
+
         LOGGER.info("Inicializando la escena principal");
 
-        botonNuevo.addEventHandler(ActionEvent.ACTION, this::handleNuevoPedido);
-        botonReiniciar.addEventHandler(ActionEvent.ACTION, this::handleReiniciarTabla);
-        //botonBusqueda
-        botonEliminar.addEventHandler(ActionEvent.ACTION, this::handleEliminar);
-        botonGuardar.addEventHandler(ActionEvent.ACTION, this::handleGuardarCambios);
-        botonAtras.addEventHandler(ActionEvent.ACTION, this::handleAtras);
+        // Añadir eventos a los botones
+        botonCompra.setOnAction(this::handleCompra);
+        botonEliminar.setOnAction(this::handleEliminar);
+        botonGuardar.setOnAction(this::handleGuardarCambios);
+        botonAtras.setOnAction(this::handleAtras);
 
-        stage.show();  // Mostrar el escenario
+        stage.show();
 
-    }
+        // Si ya tenemos el pedido, cargamos sus datos a pantalla
+        if (pedido != null) {
+            cargarCifsClientes();
+            cargarEstados();
+            campoId.setText(String.valueOf(pedido.getId()));
+            campoDireccion.setText(pedido.getDireccion());
+            campoCif.setValue(pedido.getCifCliente());
+            campoEstado.setValue(pedido.getEstado());
 
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        LOGGER.info("Inicializando controlador PedidosPrincipal");
-        configurarTabla();
-        cargarDatosPedidos();
-        configurarPaginador();
-    }
+            campoFecha.setValue(
+                    pedido.getFechaPedido().toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate()
+            );
 
-    private void configurarPaginador() {
-        int numeroPaginas = (int) Math.ceil((double) pedidosObservableList.size() / FILAS_POR_PAGINA);
-        paginador.setPageCount(numeroPaginas);
-        paginador.setCurrentPageIndex(0);
-
-        // Listener para cambiar de página
-        paginador.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> {
-            actualizarPagina(newIndex.intValue());
-        });
-
-        // Mostrar la primera página por defecto
-        actualizarPagina(0);
-    }
-
-    private void actualizarPagina(int indicePagina) {
-        int desdeIndice = indicePagina * FILAS_POR_PAGINA;
-        int hastaIndice = Math.min(desdeIndice + FILAS_POR_PAGINA, pedidosObservableList.size());
-
-        if (desdeIndice <= hastaIndice) {
-            ObservableList<Pedido> pagina = FXCollections.observableArrayList(pedidosObservableList.subList(desdeIndice, hastaIndice));
-            tablaPedidos.setItems(pagina);
+            // Ahora sí, cargar los PedidoArticulo
+            cargarArticulosDelPedido();
+            actualizarTotal();
+            agregarListeners();
         }
-    }
-
-    public void setUser(Object user) {
-        if (user != null) {
-            if (user instanceof Cliente) {
-                this.userCliente = new Cliente();
-                this.userCliente = (Cliente) user;
-                LOGGER.info("Usuario asignado: " + userCliente.getNombre() + userCliente.getId());
-
-            } else {
-                this.userTrabajador = new Trabajador();
-                this.userTrabajador = (Trabajador) user;
-                LOGGER.info("Usuario asignado: " + userTrabajador.getNombre());
-            }
+        if (userCliente != null) {
+            campoEstado.setDisable(true);
+            campoCif.setDisable(true);
         }
     }
 
     public void setStage(Stage stage) {
         this.stage = stage;
-        LOGGER.info("Stage asignado.");
     }
 
-    /**
-     * Configura las columnas de la tabla de pedidos.
-     */
-    private void configurarTabla() {
-        tablaPedidos.setEditable(true);
+    public void setPedido(Pedido pedido) {
+        this.pedido = pedido;
+    }
 
-        // Desactivar la ordenación en todas las columnas
-        tablaPedidos.getColumns().forEach(column -> column.setSortable(false));
-        tablaPedidos.getColumns().forEach(column -> column.setResizable(false));
+    public void setUser(Object user) {
+        if (user != null) {
+            if (user instanceof Cliente) {
+                this.userCliente = (Cliente) user;
+                LOGGER.info("Usuario asignado (Cliente): " + userCliente.getNombre() + " ID=" + userCliente.getId());
+            } else {
+                this.userTrabajador = (Trabajador) user;
+                LOGGER.info("Usuario asignado (Trabajador): " + userTrabajador.getNombre());
+            }
+        }
+    }
 
-        // Columna ID (No editable)
+    // -------------------------------------------------------------------------
+    //  CONFIGURACIÓN DE TABLAS
+    // -------------------------------------------------------------------------
+    private void configurarTablas() {
+        // Tabla de artículos disponibles
+
         columnaId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        columnaNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+        columnaPrecio.setCellValueFactory(new PropertyValueFactory<>("precio"));
 
-        // Columna Usuario ID (Oculta)
-        columnaUsuarioId.setCellValueFactory(new PropertyValueFactory<>("usuarioId"));
-        columnaUsuarioId.setVisible(false);
+        // Evitamos que el usuario reordene las columnas
+        tablaArticulosDisponibles.getColumns().forEach(col -> col.setSortable(false));
 
-        // Columna CIF (Editable solo para trabajadores, con doble clic)
-        columnaCif.setCellValueFactory(new PropertyValueFactory<>("cifCliente"));
-        columnaCif.setCellFactory(tc -> new TableCell<Pedido, String>() {
-            private final TextField textField = new TextField();
+        // Tabla de artículos del pedido
+        columnaPedidoArticuloId.setCellValueFactory(new PropertyValueFactory<>("pedidoArticuloId"));
+        columnaId2.setCellValueFactory(new PropertyValueFactory<>("articuloId"));
+
+        // Nombre (personalizado, no sortable)
+        columnaNombre2.setSortable(false);
+        columnaNombre2.setCellValueFactory(new PropertyValueFactory<>("articuloNombre"));
+
+        // Cantidad (Spinner), no sortable
+        columnaUnidades2.setSortable(false);
+        columnaUnidades2.setCellValueFactory(new PropertyValueFactory<>("cantidad"));
+        columnaUnidades2.setCellFactory(tc -> new TableCell<PedidoArticulo, Integer>() {
+
+            private Spinner<Integer> spinner;
 
             @Override
-            public void startEdit() {
-                super.startEdit();
-                if (userTrabajador != null) {
-                    textField.setText(getItem());
-                    setGraphic(textField);
-                    setText(null);
-                    textField.requestFocus();
-                    // Listener para perder foco
-                    textField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
-                        if (!isNowFocused) {
-                            commitEdit(textField.getText()); // Commit cuando se pierde el foco
+            protected void updateItem(Integer item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                    setGraphic(null);
+                    return;
+                }
+
+                PedidoArticulo pa = (PedidoArticulo) getTableRow().getItem();
+
+                // Buscar Articulo y calcular máximo stock
+                Articulo articulo = articulosDisponibles.stream()
+                        .filter(a -> a.getId().equals(pa.getArticuloId()))
+                        .findFirst()
+                        .orElse(null);
+
+                int maxStock = (articulo != null) ? articulo.getStock() : 1000;
+
+                // Crear Spinner y setear rango
+                spinner = new Spinner<>();
+                spinner.setEditable(true);
+
+                SpinnerValueFactory<Integer> valueFactory
+                        = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, maxStock, pa.getCantidad());
+                spinner.setValueFactory(valueFactory);
+
+                // Cada vez que cambia el Spinner -> actualizar modelo
+                spinner.valueProperty().addListener((obs, oldVal, newVal) -> {
+                    if (newVal != null && !newVal.equals(pa.getCantidad())) {
+                        pa.setCantidad(newVal);
+                        // Recalcular total
+                        actualizarTotal();
+                        // No llamamos a tableView.refresh() aquí para evitar bucles
+                    }
+                });
+
+                // Al perder el foco, refrescamos la tabla para que se redibuje Subtotal
+                spinner.focusedProperty().addListener((obs, wasFocused, isFocused) -> {
+                    if (!isFocused) {
+                        // commitEdit si la columna está en modo editable
+                        commitEdit(spinner.getValue());
+                        // Forzar refresco de la tabla
+                        getTableView().refresh();
+                        // Además, forzamos orden si lo deseas
+                        ordenarTablaPorArticuloId();
+                    }
+                });
+
+                // Manejar entradas manuales en el editor
+                spinner.getEditor().textProperty().addListener((obs, oldText, newText) -> {
+                    try {
+                        int value = Integer.parseInt(newText);
+                        if (value < 1) {
+                            spinner.getValueFactory().setValue(1);
+                        } else if (value > maxStock) {
+                            spinner.getValueFactory().setValue(maxStock);
+                        } else {
+                            spinner.getValueFactory().setValue(value);
                         }
-                    });
-                }
-            }
-
-            @Override
-            public void cancelEdit() {
-                super.cancelEdit();
-                setText(getItem());
-                setGraphic(null);
-            }
-
-            @Override
-            public void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    if (isEditing()) {
-                        textField.setText(item);
-                        setGraphic(textField);
-                        setText(null);
-                    } else {
-                        setText(item);
-                        setGraphic(null);
-                    }
-                }
-            }
-        });
-
-        // Columna Fecha (Editable con DatePicker al hacer doble clic y formato dd/MM/yyyy)
-        columnaFecha.setCellValueFactory(new PropertyValueFactory<>("fechaPedido"));
-        columnaFecha.setCellFactory(tc -> new TableCell<Pedido, Date>() {
-            private final DatePicker datePicker = new DatePicker();
-            private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-
-            @Override
-            public void startEdit() {
-                super.startEdit();
-                Date item = getItem();
-                if (item != null) {
-                    datePicker.setValue(item.toInstant()
-                            .atZone(ZoneId.systemDefault())
-                            .toLocalDate());
-                } else {
-                    datePicker.setValue(null);
-                }
-                setGraphic(datePicker);
-                setText(null);
-
-                // Listener para perder el foco
-                datePicker.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
-                    if (!isNowFocused) {
-                        cancelEdit(); // Salir del modo edición si se pierde el foco
+                    } catch (NumberFormatException e) {
+                        spinner.getEditor().setText(oldText);
                     }
                 });
 
-                datePicker.setOnAction(event -> {
-                    Date newDate = Date.from(datePicker.getValue()
-                            .atStartOfDay(ZoneId.systemDefault())
-                            .toInstant());
-
-                    // Verificar si la fecha seleccionada es anterior a hoy
-                    if (newDate.before(new Date()) && !newDate.equals(getItem())) {
-                        // Mostrar error si la fecha es anterior y no coincide con la original
-                        AlertUtilities.showErrorDialog(Alert.AlertType.ERROR, "Fecha inválida", "No se permiten fechas anteriores al día actual.");
-                        cancelEdit(); // Cancela la edición
-                    } else {
-                        commitEdit(newDate); // Fecha válida
-                    }
-                });
-
-            }
-
-            @Override
-            public void cancelEdit() {
-                super.cancelEdit();
-                setText(getItem() != null ? dateFormat.format(getItem()) : null);
-                setGraphic(null);
-            }
-
-            @Override
-            public void commitEdit(Date newValue) {
-                super.commitEdit(newValue);
-                Pedido pedido = getTableView().getItems().get(getIndex());
-                pedido.setFechaPedido(newValue); // Sincroniza el modelo
-            }
-
-            @Override
-            public void updateItem(Date item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    if (isEditing()) {
-                        setGraphic(datePicker);
-                        setText(null);
-                    } else {
-                        setText(dateFormat.format(item));
-                        setGraphic(null);
-                    }
-                }
+                setGraphic(spinner);
             }
         });
 
-        //Combo ESTADO
-        columnaEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
-        columnaEstado.setCellFactory(tc -> new TableCell<Pedido, Estado>() {
-            private final ComboBox<Estado> comboBox = new ComboBox<>(FXCollections.observableArrayList(Estado.values()));
-
-            @Override
-            public void startEdit() {
-                super.startEdit();
-                if (getItem() != null) {
-                    comboBox.setValue(getItem()); // Usamos directamente el valor del enum
-                }
-                setGraphic(comboBox);
-                setText(null);
-
-                // Registrar cambios al seleccionar un nuevo valor en el ComboBox
-                comboBox.setOnAction(event -> commitEdit(comboBox.getValue()));
-            }
-
-            @Override
-            public void cancelEdit() {
-                super.cancelEdit();
-                setText(getItem() != null ? getItem().name() : null); // Mostrar el nombre del enum
-                setGraphic(null);
-            }
-
-            @Override
-            public void commitEdit(Estado newValue) {
-                super.commitEdit(newValue);
-                Pedido pedido = getTableView().getItems().get(getIndex());
-                pedido.setEstado(newValue); // Actualizar el valor del enum en el modelo
-            }
-
-            @Override
-            protected void updateItem(Estado item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    if (isEditing()) {
-                        comboBox.setValue(item); // Establecer el valor actual en el ComboBox
-                        setGraphic(comboBox);
-                        setText(null);
-                    } else {
-                        setText(item.name()); // Mostrar el nombre del enum en la celda
-                        setGraphic(null);
-                    }
-                }
-            }
-        });
-
-        // Columna Total (No editable, con símbolo €)
-        columnaTotal.setCellValueFactory(new PropertyValueFactory<>("total"));
-        columnaTotal.setCellFactory(tc -> new TableCell<Pedido, Double>() {
+        // Precio (Subtotal), no sortable
+        columnaPrecio2.setSortable(false);
+        columnaPrecio2.setCellValueFactory(new PropertyValueFactory<>("precio"));
+        columnaPrecio2.setCellFactory(tc -> new TableCell<PedidoArticulo, Double>() {
             @Override
             protected void updateItem(Double item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty || item == null) {
+                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
                     setText(null);
-                } else {
-                    setText(String.format("%.2f €", item));
-                    setStyle("-fx-alignment: CENTER-RIGHT;");
+                    return;
                 }
+                PedidoArticulo pa = (PedidoArticulo) getTableRow().getItem();
+                Articulo articulo = articulosDisponibles.stream()
+                        .filter(a -> a.getId().equals(pa.getArticuloId()))
+                        .findFirst()
+                        .orElse(null);
+
+                double precioUnitario = (articulo != null ? articulo.getPrecio() : 0);
+                double subtotal = precioUnitario * pa.getCantidad();
+                setText(String.format("%.2f €", subtotal));
             }
         });
-        ajustarAnchoProporcional(tablaPedidos);
+
+        // También podemos desactivar la reordenación de columnas en la tabla de pedido:
+        tablaArticulosPedidos.getColumns().forEach(col -> col.setSortable(false));
     }
 
-    private void ajustarAnchoProporcional(TableView<?> tableView) {
-        double totalWidth = tableView.getPrefWidth(); // Obtiene el ancho total de la tabla
-        tableView.getColumns().forEach(column -> {
-            // Define las proporciones para cada columna
-            if (column.equals(columnaId)) {
-                column.setPrefWidth(totalWidth * 0.1d); // 10% del ancho total
-            } else if (column.equals(columnaCif)) {
-                column.setPrefWidth(totalWidth * 0.2d); // 20% del ancho total
-            } else if (column.equals(columnaEstado)) {
-                column.setPrefWidth(totalWidth * 0.2d); // 20% del ancho total
-            } else if (column.equals(columnaFecha)) {
-                column.setPrefWidth(totalWidth * 0.2d); // 20% del ancho total
-            } else if (column.equals(columnaTotal)) {
-                column.setPrefWidth((totalWidth * 0.3d) - 20); // 30% del ancho total
-            }
-        });
-    }
-
-    /**
-     * Carga los datos de pedidos en la tabla.
-     *
-     * private void cargarDatosPedidos() { try { LOGGER.info("Cargando datos de
-     * pedidos..."); Collection<Pedido> pedidos =
-     * factoriaPedidos.acceso().getAllPedidos(); if (pedidos == null ||
-     * pedidos.isEmpty()) { LOGGER.warning("No se encontraron pedidos.");
-     * pedidos = new ArrayList<>(); } pedidosObservableList =
-     * FXCollections.observableArrayList(pedidos);
-     * tablaPedidos.setItems(pedidosObservableList); } catch (Exception e) {
-     * LOGGER.log(Level.SEVERE, "Error al cargar los datos de pedidos", e);
-     * AlertUtilities.showErrorDialog(Alert.AlertType.ERROR, "Error al cargar
-     * pedidos", "No se pudieron cargar los pedidos. Intente nuevamente más
-     * tarde."); } }
-     */
-    /**
-     * Establece el usuario activo.
-     *
-     * @param usuario Usuario activo.
-     */
-    /**
-     * Inicializa la ventana principal.
-     *
-     * @param root Nodo raíz de la escena.
-     */
-    private void cargarDatosPedidos() {
+    // -------------------------------------------------------------------------
+    //  CARGA DE DATOS
+    // -------------------------------------------------------------------------
+    private void cargarArticulosDisponibles() {
         try {
-            LOGGER.info("Cargando datos de pedidos...");
-            Collection<Pedido> pedidos = factoriaPedidos.acceso().getAllPedidos();
-            if (pedidos == null || pedidos.isEmpty()) {
-                pedidos = new ArrayList<>();
+            Collection<Articulo> articulos = factoriaArticulos.acceso().getAllArticulos();
+            articulosDisponibles = FXCollections.observableArrayList(articulos);
+
+            // Ordenamos la lista por ID (si lo deseas)
+            FXCollections.sort(articulosDisponibles, Comparator.comparing(Articulo::getId));
+
+            tablaArticulosDisponibles.setItems(articulosDisponibles);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error al cargar los artículos disponibles", e);
+            mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudieron cargar los artículos disponibles.");
+        }
+    }
+
+    private void cargarArticulosDelPedido() {
+        try {
+            Collection<PedidoArticulo> articulosPedido = factoriaPedidoArticulo.acceso().getAllPedidoArticulo();
+
+            if (articulosPedido != null && pedido != null && pedido.getId() != null) {
+                articulosDelPedido = FXCollections.observableArrayList(
+                        articulosPedido.stream()
+                                .filter(pa -> pa.getPedidoId() != null
+                                && pa.getPedidoId().equals(pedido.getId()))
+                                .collect(Collectors.toList())
+                );
+            } else {
+                articulosDelPedido = FXCollections.observableArrayList();
             }
 
-            // Crear copias independientes de los pedidos
-            pedidosObservableList = FXCollections.observableArrayList(pedidos);
-            pedidosOriginales = FXCollections.observableArrayList(
-                    pedidos.stream()
-                            .map(Pedido::clone)
+            articulosDelPedidoOriginales = FXCollections.observableArrayList(
+                    articulosDelPedido.stream()
+                            .map(PedidoArticulo::clone)
                             .collect(Collectors.toList())
             );
 
-            tablaPedidos.setItems(pedidosObservableList);
-            configurarSalidaEdicion(); // Configurar el evento para salir del modo edición
-            configurarPaginador();
+            // Ordena la lista por el ID del artículo
+            ordenarListaPorArticuloId(articulosDelPedido);
+
+            // Asigna la lista a la tabla
+            tablaArticulosPedidos.setItems(articulosDelPedido);
+
+            // Y actualiza la vista
+            tablaArticulosPedidos.refresh();
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al cargar los datos de pedidos", e);
-            AlertUtilities.showErrorDialog(Alert.AlertType.ERROR, "Error al cargar pedidos", "No se pudieron cargar los pedidos. Intente nuevamente más tarde.");
+            LOGGER.log(Level.SEVERE, "Error al cargar los artículos del pedido", e);
+            mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudieron cargar los artículos del pedido.");
         }
+    }
+
+    private void cargarCifsClientes() {
+        try {
+            Collection<Cliente> clientes = factoriaUsuarios.accesoCliente().getAllClientes();
+            ObservableList<String> cifs = FXCollections.observableArrayList(
+                    clientes.stream().map(Cliente::getCif).collect(Collectors.toList())
+            );
+            campoCif.setItems(cifs);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error al cargar los CIF de los clientes", e);
+            mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudieron cargar los CIF de los clientes.");
+        }
+    }
+
+    private void cargarEstados() {
+        campoEstado.setItems(FXCollections.observableArrayList(Estado.values()));
+    }
+
+    // -------------------------------------------------------------------------
+    //  EVENTOS DE BOTONES Y LISTENERS DE CAMPOS
+    // -------------------------------------------------------------------------
+    private void agregarListeners() {
+        // Listener para campoDireccion
+        campoDireccion.focusedProperty().addListener((obs, oldFocus, newFocus) -> {
+            if (!newFocus) { // Se ejecuta cuando pierde el foco
+                if (campoDireccion.getText().isEmpty()) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "Validación", "La dirección no puede estar vacía.");
+                    campoDireccion.setText(pedido.getDireccion()); // Restaurar el valor original
+                } else {
+                    pedido.setDireccion(campoDireccion.getText());
+                }
+            }
+        });
+
+        // Listener para campoCif
+        campoCif.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue == null || newValue.isEmpty()) {
+                mostrarAlerta(Alert.AlertType.WARNING, "Validación", "Debe seleccionar un CIF válido.");
+                campoCif.setValue(oldValue); // Restaurar el valor anterior
+            } else {
+                pedido.setCifCliente(newValue);
+            }
+        });
+
+        // Listener para campoEstado
+        campoEstado.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue != null) {
+                pedido.setEstado(newValue);
+            }
+        });
+
+        // Listener para campoFecha
+        campoFecha.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue != null) {
+                if (newValue.isBefore(java.time.LocalDate.now()) && !newValue.equals(oldValue)) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "Validación", "La fecha no puede ser anterior al día de hoy.");
+                    campoFecha.setValue(oldValue); // Restaurar el valor anterior
+                } else {
+                    pedido.setFechaPedido(java.sql.Date.valueOf(newValue));
+                }
+            }
+        });
+
+        // Listener para campoTotal (solo para validación adicional, si es editable)
+        campoTotal.focusedProperty().addListener((obs, oldFocus, newFocus) -> {
+            if (!newFocus) { // Se ejecuta cuando pierde el foco
+                try {
+                    String valor = campoTotal.getText().replace(" €", ""); // Quitar símbolo de moneda
+                    double total = Double.parseDouble(valor);
+                    pedido.setTotal(total);
+                } catch (NumberFormatException e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "Validación", "El total debe ser un valor numérico.");
+                    campoTotal.setText(String.format("%.2f €", pedido.getTotal())); // Restaurar el valor original
+                }
+            }
+        });
+    }
+
+    @FXML
+    private void handleCompra(ActionEvent event) {
+        Articulo articuloSeleccionado = tablaArticulosDisponibles.getSelectionModel().getSelectedItem();
+        if (articuloSeleccionado == null) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Agregar Artículo", "Seleccione un artículo para agregar.");
+            return;
+        }
+
+        // Busca si ya existe un PedidoArticulo para ese artículo
+        PedidoArticulo pedidoArticulo = articulosDelPedido.stream()
+                .filter(pa -> pa.getArticuloId().equals(articuloSeleccionado.getId()))
+                .findFirst()
+                .orElse(null);
+
+        if (pedidoArticulo != null) {
+            // Si ya existe, aumenta la cantidad
+            pedidoArticulo.setCantidad(pedidoArticulo.getCantidad() + 1);
+        } else {
+            pedidoArticulo = new PedidoArticulo();
+            pedidoArticulo.setArticulo(new Articulo());
+            pedidoArticulo.setPedido(new Pedido());
+
+            // Objetos completos
+            pedidoArticulo.setArticulo(articuloSeleccionado);
+            pedidoArticulo.setPedido(pedido);
+
+            pedidoArticulo.setCantidad(1);
+            pedidoArticulo.setPrecioCompra(articuloSeleccionado.getPrecio());
+            articulosDelPedido.add(pedidoArticulo);
+
+        }
+
+        // Ordena la lista por ID de artículo
+        ordenarListaPorArticuloId(articulosDelPedido);
+
+        tablaArticulosPedidos.refresh();
+        actualizarTotal();
     }
 
     @FXML
     private void handleEliminar(ActionEvent event) {
-        cancelarEdicionEnTabla();
-        LOGGER.info("Botón Eliminar presionado");
-        ObservableList<Pedido> seleccionados = tablaPedidos.getSelectionModel().getSelectedItems();
-        if (seleccionados.isEmpty()) {
-            AlertUtilities.showErrorDialog(Alert.AlertType.WARNING, "Eliminar Pedidos", "Debe seleccionar al menos un pedido para eliminar.");
-        } else {
-            pedidosObservableList.removeAll(seleccionados);
-            LOGGER.info("Pedidos eliminados de la tabla.");
+        PedidoArticulo articuloSeleccionado = tablaArticulosPedidos.getSelectionModel().getSelectedItem();
+        if (articuloSeleccionado == null) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Eliminar Artículo", "Seleccione un artículo para eliminar.");
+            return;
         }
-    }
 
-    @FXML
-    private void handleReiniciarTabla(ActionEvent event) {
-        cancelarEdicionEnTabla();
-        LOGGER.info("Botón Reiniciar Tabla presionado");
-        reiniciar();
-        LOGGER.info("Tabla reiniciada a los datos originales.");
+        // Si la cantidad > 1, decrementa; si no, lo elimina
+        if (articuloSeleccionado.getCantidad() > 1) {
+            articuloSeleccionado.setCantidad(articuloSeleccionado.getCantidad() - 1);
+        } else {
+            articulosDelPedido.remove(articuloSeleccionado);
+        }
 
-    }
-
-    private void reiniciar() {
-
-        cargarDatosPedidos();
-
+        ordenarListaPorArticuloId(articulosDelPedido);
+        tablaArticulosPedidos.refresh();
+        actualizarTotal();
     }
 
     @FXML
     private void handleGuardarCambios(ActionEvent event) {
-        cancelarEdicionEnTabla();
         LOGGER.info("Botón Guardar Cambios presionado");
 
-        boolean hayErrores = false;
-        for (Pedido pedido : pedidosObservableList) {
-            if (!validarPedido(pedido)) {
-                hayErrores = true;
-            }
-        }
-
-        if (hayErrores) {
-            AlertUtilities.showErrorDialog(Alert.AlertType.ERROR, "Guardar Cambios", "Hay errores en algunos campos. Corríjalos antes de guardar.");
-            return;
-        }
-
         try {
-            for (Pedido pedido : pedidosObservableList) {
-                LOGGER.info("Revisando pedidos." + pedido.getId());
-                Pedido pedidoOriginal = pedidosOriginales.stream()
-                        .filter(p -> p.getId().equals(pedido.getId()))
+            // Actualizar el pedido (total, etc.)
+            NumberFormat nf = NumberFormat.getInstance(Locale.getDefault());
+            // o un Locale específico: new Locale("es", "ES")
+
+            String valor = campoTotal.getText().replace(" €", ""); // Quitar el símbolo
+            Number number = nf.parse(valor);
+            double total = number.doubleValue();
+            pedido.setTotal(total);
+            factoriaPedidos.acceso().actualizarPedido(pedido);
+
+            // Para cada PedidoArticulo actual en la tabla
+            for (PedidoArticulo pedidoArticulo : articulosDelPedido) {
+                // Asignar también las ENTIDADES completas
+                pedidoArticulo.setPedido(pedido);
+                Articulo art = articulosDisponibles.stream()
+                        .filter(a -> a.getId().equals(pedidoArticulo.getArticuloId()))
+                        .findFirst()
+                        .orElse(null);
+                pedidoArticulo.setArticulo(art);
+
+                PedidoArticulo pedidoArticuloOriginal = articulosDelPedidoOriginales.stream()
+                        .filter(p -> p.getId() != null && p.getId().equals(pedidoArticulo.getId()))
                         .findFirst()
                         .orElse(null);
 
-                if (pedido.getId() == null) {
-                    LOGGER.info("Creando pedido.");
-                    factoriaPedidos.acceso().crearPedido(pedido); // Crear nuevo
-                } else if (pedidoOriginal != null && haCambiado(pedidoOriginal, pedido)) {
-                    LOGGER.info("Actualizando pedido: " + pedido);
-                    factoriaPedidos.acceso().actualizarPedido(pedido); // Actualizar existente
+                // Caso 1: ID es null => no existía, hay que crearlo en BBDD
+                if (pedidoArticulo.getId() == null) {
+                    LOGGER.info("Creando nuevo PedidoArticulo (ArticuloID=" + pedidoArticulo.getArticuloId() + ")");
+                    factoriaPedidoArticulo.acceso().crearPedidoArticulo(pedidoArticulo);
+
+                    // Caso 2: ID existe y se detectan cambios => actualizar
+                } else if (pedidoArticuloOriginal != null && haCambiado(pedidoArticuloOriginal, pedidoArticulo)) {
+                    LOGGER.info("Actualizando PedidoArticulo con ID=" + pedidoArticulo.getId());
+                    factoriaPedidoArticulo.acceso().actualizarPedidoArticulo(pedidoArticulo);
                 }
             }
 
-            for (Pedido pedidoOriginal : pedidosOriginales) {
-                if (!pedidosObservableList.contains(pedidoOriginal)) {
-                    LOGGER.info("Eliminando pedido.");
-                    factoriaPedidos.acceso().borrarPedido(pedidoOriginal); // Eliminar
+            // Para cada PedidoArticulo original que ya no esté en la lista => borrarlo
+            for (PedidoArticulo pedidoArticuloOriginal : articulosDelPedidoOriginales) {
+                if (!articulosDelPedido.contains(pedidoArticuloOriginal)) {
+                    LOGGER.info("Borrando PedidoArticulo con ID=" + pedidoArticuloOriginal.getId());
+                    factoriaPedidoArticulo.acceso().borrarPedidoArticulo(pedidoArticuloOriginal);
                 }
             }
 
-            pedidosOriginales.setAll(pedidosObservableList);
-            LOGGER.info("Cambios guardados exitosamente.");
+            // Refresca la lista de "originales" con el estado actual
+            articulosDelPedidoOriginales.setAll(articulosDelPedido);
+
+            // Forzamos recarga (si deseas)
             reiniciar();
+
+            LOGGER.info("Cambios guardados exitosamente.");
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al guardar cambios", e);
             AlertUtilities.showErrorDialog(Alert.AlertType.ERROR, "Error", "No se pudieron guardar los cambios. Intente nuevamente.");
         }
     }
 
-    public boolean haCambiado(Pedido original, Pedido modificado) {
+    @FXML
+    private void handleAtras(ActionEvent event) {
+        if (userCliente != null) {
+            factoriaPedidos.cargarPedidosPrincipal(stage, userCliente, null);
+        } else {
+            factoriaPedidos.cargarPedidosPrincipal(stage, userTrabajador, null);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    //  MÉTODOS DE APOYO
+    // -------------------------------------------------------------------------
+    private void reiniciar() {
+        cargarArticulosDisponibles();
+        cargarArticulosDelPedido();
+        tablaArticulosDisponibles.refresh();
+        tablaArticulosPedidos.refresh();
+        actualizarTotal();
+    }
+
+    public boolean haCambiado(PedidoArticulo original, PedidoArticulo modificado) {
         if (original == null || modificado == null) {
             return false;
         }
-        return !original.getEstado().equals(modificado.getEstado())
-                || !original.getFechaPedido().equals(modificado.getFechaPedido())
-                || !original.getCifCliente().equals(modificado.getCifCliente())
-                || Double.compare(original.getTotal(), modificado.getTotal()) != 0;
+        // Podrías comprobar más campos si lo deseas (precioCompra, etc.)
+        return original.getCantidad() != modificado.getCantidad();
     }
 
-    @FXML
-    private void handleNuevoPedido(ActionEvent event) {
-        cancelarEdicionEnTabla();
-        LOGGER.info("Botón Nuevo Pedido presionado");
-
-        Pedido nuevoPedido = new Pedido();
-        nuevoPedido.setCifCliente(userCliente.getCif());
-        nuevoPedido.setEstado(Estado.PREPARACION);
-        nuevoPedido.setFechaPedido(new Date());
-
-        if (userCliente != null) {
-            nuevoPedido.setCliente(userCliente);
-        } else if (userTrabajador != null) {
-            // Buscar ID del cliente asociado al CIF (simulación)
-            //nuevoPedido.setUsuarioId(factoriaUsuarios.accesoCliente().getIdPorCIF(nuevoPedido.getCifCliente()));
-        }
-
-        pedidosObservableList.add(nuevoPedido);
-        tablaPedidos.scrollTo(nuevoPedido);
-        LOGGER.info("Nuevo pedido añadido con valores predeterminados.");
-
+    private void actualizarTotal() {
+        double total = articulosDelPedido.stream()
+                .mapToDouble(pa -> pa.getCantidad() * pa.getPrecioCompra())
+                .sum();
+        campoTotal.setText(String.format("%.2f €", total));
     }
 
-    private boolean validarPedido(Pedido pedido) {
-        boolean valido = true;
-
-        if (pedido.getCifCliente() == null || pedido.getCifCliente().isEmpty()) {
-            pintarCeldaInvalida(columnaCif, pedido);
-            valido = false;
-        }
-        if (pedido.getFechaPedido() == null) {
-            pintarCeldaInvalida(columnaFecha, pedido);
-            valido = false;
-        }
-        if (pedido.getEstado() == null) {
-            pintarCeldaInvalida(columnaEstado, pedido);
-            valido = false;
-        }
-
-        return valido;
+    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
+        Alert alerta = new Alert(tipo);
+        alerta.setTitle(titulo);
+        alerta.setContentText(mensaje);
+        alerta.showAndWait();
     }
 
-    private <T> void pintarCeldaInvalida(TableColumn<Pedido, T> columna, Pedido pedido) {
-        columna.setCellFactory(column -> {
-            return new TableCell<Pedido, T>() {
-                @Override
-                protected void updateItem(T item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (!empty && pedido.equals(getTableView().getItems().get(getIndex()))) {
-                        setStyle("-fx-background-color: red;");
-                    } else {
-                        setStyle("");
-                    }
-                }
-            };
-        });
+    // -------------------------------------------------------------------------
+    //  ORDENAR TABLA POR ID DE ARTÍCULO
+    // -------------------------------------------------------------------------
+    /**
+     * Ordena la lista de PedidoArticulo en memoria según el ID del artículo.
+     * Luego refresca la tabla.
+     */
+    private void ordenarListaPorArticuloId(ObservableList<PedidoArticulo> lista) {
+        FXCollections.sort(lista, Comparator.comparing(PedidoArticulo::getArticuloId));
     }
 
-    @FXML
-    private void handleAtras(ActionEvent event) {
-        factoriaUsuarios.cargarMenuPrincipal(stage, userCliente);
+    /**
+     * Para llamar tras editar cantidades, si deseas reordenar en vivo.
+     */
+    private void ordenarTablaPorArticuloId() {
+        ordenarListaPorArticuloId(articulosDelPedido);
+        tablaArticulosPedidos.refresh();
     }
-
-    private void configurarSalidaEdicion() {
-        // Salir del modo edición al hacer clic en el AnchorPane
-        anchorPane.setOnMouseClicked(event -> cancelarEdicionEnTabla());
-
-        // Listener para clics en la tabla
-        tablaPedidos.setOnMouseClicked(event -> cancelarEdicionEnTabla());
-
-        // Listener para teclas en la tabla
-        tablaPedidos.setOnKeyPressed(event -> {
-            switch (event.getCode()) {
-                case ENTER:
-                    cancelarEdicionEnTabla();
-                    break;
-                default:
-                    break;
-            }
-        });
-    }
-
-    private void cancelarEdicionEnTabla() {
-        if (tablaPedidos.getEditingCell() != null) {
-            tablaPedidos.edit(-1, null); // Salir del modo edición
-        }
-    }
-
 }

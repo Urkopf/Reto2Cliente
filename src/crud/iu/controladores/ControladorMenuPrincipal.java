@@ -234,7 +234,7 @@ public class ControladorMenuPrincipal implements Initializable {
         try {
             LOGGER.info("Botón 'Gestión de Pedidos' presionado.");
 
-            factoriaPedidos.cargarPedidosPrincipal(stage, (userCliente != null) ? userCliente : userTrabajador);
+            factoriaPedidos.cargarPedidosPrincipal(stage, (userCliente != null) ? userCliente : userTrabajador, null);
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al gestionar pedidos", e);

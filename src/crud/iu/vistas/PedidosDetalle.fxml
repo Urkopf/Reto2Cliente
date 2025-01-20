@@ -18,7 +18,7 @@
 
 <AnchorPane fx:id="AnchorPane" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="crud.iu.controladores.ControladorPedidosDetalle">
     <children>
-        <BorderPane fx:id="BorderPane" maxHeight="768.0" prefWidth="1024">
+        <BorderPane fx:id="BorderPane" maxHeight="768.0" maxWidth="1024.0" prefWidth="1024">
             <top>
 
                 <fx:include source="MenuVentanas.fxml" />
@@ -137,6 +137,7 @@
                                     </HBox>
                                     <TableView fx:id="tablaArticulosPedidos" prefWidth="740.0">
                                         <columns>
+                                    <TableColumn fx:id="columnaPedidoArticuloId" prefWidth="93.49563491344452" resizable="false" text="PA_ID" visible="false" />
                                             <TableColumn fx:id="columnaId2" prefWidth="93.49563491344452" resizable="false" text="ID" />
                                             <TableColumn fx:id="columnaNombre2" prefWidth="219.5478057861328" resizable="false" text="Nombre" />
                                             <TableColumn fx:id="columnaUnidades2" prefWidth="114.36529541015625" resizable="false" text="Unidades" />
