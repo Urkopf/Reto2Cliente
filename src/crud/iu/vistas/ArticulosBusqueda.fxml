@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="AnchorPane" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="crud.iu.controladores.ArticulosMainController">
+<AnchorPane fx:id="AnchorPane" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="crud.iu.controladores.ControladorArticulosBusqueda">
     <children>
         <BorderPane fx:id="BorderPane" prefHeight="500" prefWidth="800">
             <top>
@@ -29,38 +29,38 @@
                   <children>
                      <HBox alignment="CENTER_LEFT">
                         <children>
-                           <CheckBox mnemonicParsing="false" text="Por ID articulo, desde  " />
-                           <Spinner prefHeight="35.0" prefWidth="180.0" />
+                           <CheckBox fx:id="checkBoxId" mnemonicParsing="false" text="Por ID articulo, desde  " />
+                           <Spinner fx:id="spinnerIdDesde" prefHeight="35.0" prefWidth="180.0" />
                            <Label text=" hasta " />
-                           <Spinner prefHeight="35.0" prefWidth="180.0" />
+                           <Spinner fx:id="spinnerIdHasta" prefHeight="35.0" prefWidth="180.0" />
                         </children>
                      </HBox>
                      <HBox alignment="CENTER_LEFT">
                         <children>
-                           <CheckBox mnemonicParsing="false" text="Por Nombre  " />
-                           <ComboBox prefHeight="35.0" prefWidth="180.0" />
+                           <CheckBox fx:id="checkBoxNombre" mnemonicParsing="false" text="Por Nombre  " />
+                           <ComboBox fx:id="comboBoxNombre" prefHeight="35.0" prefWidth="180.0" />
                         </children>
                      </HBox>
                      <HBox alignment="CENTER_LEFT" prefWidth="200.0">
                         <children>
-                           <CheckBox mnemonicParsing="false" text="Por Fecha de reposicion, desde  " />
-                           <DatePicker prefHeight="35.0" prefWidth="180.0" />
+                           <CheckBox fx:id="checkBoxFecha" mnemonicParsing="false" text="Por Fecha de reposicion, desde  " />
+                           <DatePicker fx:id="datePickerDesde" prefHeight="35.0" prefWidth="180.0" />
                            <Label text=" hasta " />
-                           <DatePicker prefHeight="35.0" prefWidth="180.0" />
+                           <DatePicker fx:id="datePickerHasta" prefHeight="35.0" prefWidth="180.0" />
                         </children>
                      </HBox>
                      <HBox alignment="CENTER_LEFT" prefWidth="200.0">
                         <children>
-                           <CheckBox mnemonicParsing="false" text="Por precio min  " />
-                           <TextField prefHeight="35.0" prefWidth="180.0" />
+                           <CheckBox fx:id="checkBoxPrecio" mnemonicParsing="false" text="Por precio min  " />
+                           <TextField fx:id="textFieldPrecioMin" prefHeight="35.0" prefWidth="180.0" />
                            <Label text=" hasta " />
-                           <TextField prefHeight="35.0" prefWidth="180.0" />
+                           <TextField fx:id="textFieldPrecioMax" prefHeight="35.0" prefWidth="180.0" />
                         </children>
                      </HBox>
                      <HBox alignment="CENTER_LEFT">
                         <children>
-                           <CheckBox mnemonicParsing="false" text="Buscar por stock  " />
-                           <TextField prefHeight="35.0" prefWidth="180.0" />
+                           <CheckBox fx:id="checkBoxStock" mnemonicParsing="false" text="Buscar por stock  " />
+                           <TextField fx:id="textFieldStock" prefHeight="35.0" prefWidth="180.0" />
                         </children>
                      </HBox>
                   </children>
@@ -84,13 +84,13 @@
                     </Button>
 
                     <!-- Botón Ver -->
-                    <Button fx:id="botonEliminar" text="Reiniciar campos" GridPane.columnIndex="2" GridPane.halignment="RIGHT">
+                    <Button fx:id="botonReiniciar" text="Reiniciar campos" GridPane.columnIndex="2" GridPane.halignment="RIGHT">
                         <GridPane.margin>
                             <Insets />
                         </GridPane.margin>
                     </Button>
                     <!-- Botón Ver -->
-                    <Button fx:id="botonDetalles" text="Buscar" GridPane.columnIndex="3" GridPane.halignment="RIGHT">
+                    <Button fx:id="botonBuscar" text="Buscar" GridPane.columnIndex="3" GridPane.halignment="RIGHT">
                         <GridPane.margin>
                             <Insets right="20.0" />
                         </GridPane.margin>

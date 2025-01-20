@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="AnchorPane" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="crud.iu.controladores.ArticulosMainController">
+<AnchorPane fx:id="anchorPane" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="crud.iu.controladores.ControladorArticulosPrincipal">
     <children>
         <BorderPane fx:id="BorderPane" prefHeight="768" prefWidth="1024">
             <top>
@@ -25,7 +25,7 @@
                     <HBox fx:id="HBoxSuperior" alignment="CENTER_LEFT">
                         <GridPane fx:id="gridSuperior" prefHeight="35.0">
                             <children>
-                                <Button fx:id="botonNuevo" minWidth="30" prefWidth="100.0" text="Nuevo" />
+                                <Button fx:id="botonNuevo" minWidth="30" prefWidth="100.0" text="Nuevo"/>
                                 <Button fx:id="botonReiniciar" minWidth="30" prefHeight="35.0" prefWidth="153.0" text="Reiniciar tabla" GridPane.columnIndex="2" GridPane.halignment="RIGHT" />
                                 <Button fx:id="botonBusqueda" text="Búsqueda avanzada" GridPane.columnIndex="3" GridPane.halignment="RIGHT" />
                             </children>
@@ -44,14 +44,14 @@
                   </VBox.margin>
                     </HBox>
 
-                    <TableView fx:id="tablaPedidos" prefHeight="636.0" prefWidth="1261.0">
+                    <TableView fx:id="tablaArticulos" prefHeight="636.0" prefWidth="1261.0">
                         <columns>
-                            <TableColumn fx:id="columna1" prefWidth="93.49563491344452" text="ID" />
-                            <TableColumn fx:id="columna2" prefWidth="166.12178802490234" text="ID Usuario" />
-                            <TableColumn fx:id="columna3" prefWidth="147.75653076171875" text="CIF" />
-                            <TableColumn fx:id="columna4" prefWidth="205.35665893554688" text="FECHA PEDIDO" />
-                            <TableColumn fx:id="columna5" prefWidth="177.80877685546875" text="ESTADO" />
-                            <TableColumn fx:id="columna6" minWidth="0.0" prefWidth="138.57391357421875" text="TOTAL" />
+                            <TableColumn fx:id="columnaId" prefWidth="93.49563491344452" text="ID" />
+                            <TableColumn fx:id="columnaNombre" prefWidth="166.12178802490234" text="Nombre" />
+                            <TableColumn fx:id="columnaPrecio" prefWidth="147.75653076171875" text="Precio" />
+                            <TableColumn fx:id="columnaFecha" prefWidth="205.35665893554688" text="Fecha reposición" />
+                            <TableColumn fx:id="columnaDescripcion" prefWidth="177.80877685546875" text="Descripción" />
+                            <TableColumn fx:id="columnaStock" minWidth="0.0" prefWidth="138.57391357421875" text="Stock" />
                         </columns>
                   <VBox.margin>
                      <Insets left="20.0" right="20.0" />

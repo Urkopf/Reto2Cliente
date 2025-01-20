@@ -4,19 +4,21 @@
  * and open the template in the editor.
  */
 
+
 import crud.negocio.FactoriaPedidoArticulo;
 import crud.negocio.FactoriaPedidos;
+
 import crud.negocio.FactoriaUsuarios;
+
 import crud.objetosTransferibles.Cliente;
 import crud.objetosTransferibles.Estado;
 import crud.objetosTransferibles.Pedido;
 import crud.objetosTransferibles.Trabajador;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
@@ -34,6 +36,7 @@ public class Reto2_CRUD_Cliente extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+
         //FactoriaUsuarios factoria = FactoriaUsuarios.getInstance();
         FactoriaPedidos factoriaPedidos = FactoriaPedidos.getInstance();
         FactoriaPedidoArticulo factoriaPedidoArticulo = FactoriaPedidoArticulo.getInstance();
@@ -60,8 +63,10 @@ public class Reto2_CRUD_Cliente extends Application {
 
         //factoria.cargarInicioSesion(stage, "");
         //factoriaPedidos.cargarPedidosPrincipal(stage, cliente);
+
         //factoriaPedidos.cargarPedidosPrincipal(stage, trabajador);
         factoriaPedidoArticulo.cargarPedidosDetalle(stage, cliente, pedido);
+
     }
 
 }
