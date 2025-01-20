@@ -87,7 +87,7 @@ public class ControladorRegistro implements Initializable {
     @FXML
     private TextField campoCodigoPostal;
     @FXML
-    private TextField campoCIF; //Falta meterlo en el usuario y ademas validarlo previamente
+    private TextField campoCIF;
     @FXML
     private TextField campoSector;
     @FXML
@@ -103,7 +103,7 @@ public class ControladorRegistro implements Initializable {
     @FXML
     private Button botonCancelar;
     @FXML
-    private GridPane gridPane;  // Contenedor de todos los campos del formulario
+    private GridPane gridPane;
     @FXML
     private ImageView errorNombre;
     @FXML
@@ -142,6 +142,14 @@ public class ControladorRegistro implements Initializable {
     private Button botonOjoContrasena;  // Botón para alternar la visibilidad de la contraseña
     @FXML
     private Button botonOjoRepite;  // Botón para alternar la visibilidad de la confirmación de la contraseña
+    @FXML
+    private ImageView imagenSector;
+    @FXML
+    private ImageView imagenTelefono;
+    @FXML
+    private Group grupoSector;
+    @FXML
+    private Group grupoTelefono;
 
     private ContextMenu contextMenu;  // Menú contextual personalizado
     private boolean actualizar;
@@ -226,6 +234,18 @@ public class ControladorRegistro implements Initializable {
 
         // Añadir listener a cada TextField o PasswordField en el GridPane
         for (Node node : gridPane.getChildren()) {
+            if (node instanceof TextField || node instanceof PasswordField || node instanceof ComboBox) {
+                node.setOnKeyTyped(event -> hideErrorImage(node));  // Ocultar error tan pronto como se escribe algo
+            }
+        }
+
+        for (Node node : grupoSector.getChildren()) {
+            if (node instanceof TextField || node instanceof PasswordField || node instanceof ComboBox) {
+                node.setOnKeyTyped(event -> hideErrorImage(node));  // Ocultar error tan pronto como se escribe algo
+            }
+        }
+
+        for (Node node : grupoTelefono.getChildren()) {
             if (node instanceof TextField || node instanceof PasswordField || node instanceof ComboBox) {
                 node.setOnKeyTyped(event -> hideErrorImage(node));  // Ocultar error tan pronto como se escribe algo
             }
@@ -355,9 +375,10 @@ public class ControladorRegistro implements Initializable {
             botonCancelar.setOnAction(null); // Eliminar cualquier manejador anterior
 
             // Asignar manejadores de eventos a los botones
-            //  botonRegistrar.addEventHandler(ActionEvent.ACTION, this::handleButtonRegister);
-//            botonCancelar.addEventHandler(ActionEvent.ACTION, this::handleButtonCancel);
-            //           checkActivo.addEventHandler(ActionEvent.ACTION, this::handleActiveCheckBoxChange);
+            botonRegistrar.addEventHandler(ActionEvent.ACTION, this::handleButtonRegister);
+            botonCancelar.addEventHandler(ActionEvent.ACTION, this::handleButtonCancel);
+            checkActivo.addEventHandler(ActionEvent.ACTION, this::handleActiveCheckBoxChange);
+
             // Configurar la visibilidad de las contraseñas
             botonOjoContrasena.setOnMousePressed(event -> {
                 if (event.getButton() == MouseButton.PRIMARY) {
@@ -434,6 +455,7 @@ public class ControladorRegistro implements Initializable {
 
         // Verificar si todos los campos están llenos
         if (!areAllFieldsFilled()) {
+
             LOGGER.severe("Error: Todos los campos deben ser completados.");
             for (Node node : gridPane.getChildren()) {
                 if (node instanceof TextField || node instanceof PasswordField) {
@@ -443,22 +465,30 @@ public class ControladorRegistro implements Initializable {
                     }
                 }
             }
+            if (!radioTrabajador.isSelected()) {
+                if (campoSector.getText().isEmpty()) {
+                    showErrorImage(campoSector);
+                }
+                if (campoTelefono.getText().isEmpty()) {
+                    showErrorImage(campoTelefono);
+                }
+            }
         }
 
         // Validar el formato de los campos
         campoContrasena.setText(campoContrasena.getText().trim());
-        if (!isValid(campoContrasena.getText(), "pass")) {
+        if (!actualizar && !isValid(campoContrasena.getText(), "pass")) {
             showErrorImage(campoContrasena);
             hasError = true;
         }
 
         campoRepiteContrasena.setText(campoRepiteContrasena.getText().trim());
-        if (!campoContrasena.getText().equals(campoRepiteContrasena.getText())) {
+        if (!actualizar && !campoContrasena.getText().equals(campoRepiteContrasena.getText())) {
             showErrorImage(campoRepiteContrasena);
             hasError = true;
         }
 
-        if (!isValid(campoEmail.getText(), "email")) {
+        if (!actualizar && !isValid(campoEmail.getText(), "email")) {
             showErrorImage(campoEmail);
             hasError = true;
         }
@@ -471,32 +501,33 @@ public class ControladorRegistro implements Initializable {
             showErrorImage(campoCIF);
             hasError = true;
         }
-
-        if (!isValid(campoTelefono.getText(), "telefono")) {
-            showErrorImage(campoTelefono);
-            hasError = true;
+        if (!radioTrabajador.isSelected()) {
+            if (!isValid(campoTelefono.getText(), "telefono")) {
+                showErrorImage(campoTelefono);
+                hasError = true;
+            }
         }
 
         // Si hay errores, no continuar
         if (hasError) {
             LOGGER.severe("Hay errores en el formulario.");
             showErrorDialog(AlertType.ERROR, "Error", "Uno o varios campos incorrectos o vacíos. Mantenga el cursor encima de los campos para más información.");
-            botonRegistrar.setDisable(false);
+
         } else {
             LOGGER.info("Validación de campos correcta.");
 
             if (radioCliente.isSelected()) {
                 userCliente = new Cliente(campoSector.getText(), campoTelefono.getText(), campoEmail.getText(), campoContrasena.getText(),
                         campoNombre.getText() + " " + campoApellido1.getText() + " " + campoApellido2.getText(),
-                        campoDireccion.getText(), campoCodigoPostal.getText(), campoCiudad.getText(), campoCIF.getText(), checkActivo.isSelected());
+                        campoDireccion.getText(), campoCiudad.getText(), campoCodigoPostal.getText(), campoCIF.getText(), checkActivo.isSelected());
             } else {
                 userTrabajador = new Trabajador(comboDepartamento.getSelectionModel().getSelectedItem(), comboCategoria.getSelectionModel().getSelectedItem(),
                         campoEmail.getText(),
                         campoContrasena.getText(),
                         campoNombre.getText() + " " + campoApellido1.getText() + " " + campoApellido2.getText(),
                         campoDireccion.getText(),
-                        campoCodigoPostal.getText(),
                         campoCiudad.getText(),
+                        campoCodigoPostal.getText(),
                         campoCIF.getText(),
                         checkActivo.isSelected()
                 );
@@ -509,19 +540,24 @@ public class ControladorRegistro implements Initializable {
                         if (radioCliente.isSelected()) {
                             userCliente.setId(userClienteOriginal.getId());
                             factoria.accesoCliente().actualizarCliente(userCliente);
+                            factoria.cargarInicioSesion(stage, userCliente.getCorreo());
                         } else {
                             userTrabajador.setId(userTrabajadorOriginal.getId());
                             factoria.accesoTrabajador().actualizarTrabajador(userTrabajador);
+                            factoria.cargarInicioSesion(stage, userTrabajador.getCorreo());
                         }
 
                     } else {
                         if (radioCliente.isSelected()) {
                             factoria.accesoCliente().crearCliente(userCliente);
+                            factoria.cargarInicioSesion(stage, userCliente.getCorreo());
                         } else {
                             factoria.accesoTrabajador().crearTrabajador(userTrabajador);
+                            factoria.cargarInicioSesion(stage, userTrabajador.getCorreo());
                         }
                     }
                 } catch (Exception e) {
+                    showErrorDialog(AlertType.ERROR, "Error", "Error alguno.");
                 }
 
                 //  messageManager(response);
@@ -631,10 +667,6 @@ public class ControladorRegistro implements Initializable {
             errorTelefono.setVisible(true);
         } else if (node == campoCIF) {
             errorCIF.setVisible(true);
-        } else if (node == comboDepartamento) {
-            errorSector.setVisible(true);
-        } else if (node == comboCategoria) {
-            errorTelefono.setVisible(true);
         }
     }
 
@@ -669,10 +701,6 @@ public class ControladorRegistro implements Initializable {
             errorTelefono.setVisible(false);
         } else if (node == campoCIF) {
             errorCIF.setVisible(false);
-        } else if (node == comboDepartamento) {
-            errorSector.setVisible(false);
-        } else if (node == comboCategoria) {
-            errorTelefono.setVisible(false);
         }
     }
 
@@ -727,9 +755,33 @@ public class ControladorRegistro implements Initializable {
             if ((node instanceof TextField || node instanceof PasswordField)
                     && (node != campoContrasenaVista)
                     && (node != campoRepiteContrasenaVista)) {
+                // Validar los demás campos
                 if (((TextField) node).getText() == null || ((TextField) node).getText().isEmpty()) {
                     LOGGER.severe("Error: El campo " + ((TextField) node).getPromptText() + " está vacío.");
                     return false;
+                }
+            }
+        }
+
+        if (radioTrabajador.isSelected()) {
+            for (Node node : grupoSector.getChildren()) {
+                if ((node instanceof TextField || node instanceof PasswordField)) {
+
+                    // Validar los demás campos
+                    if (((TextField) node).getText() == null || ((TextField) node).getText().isEmpty()) {
+                        LOGGER.severe("Error: El campo " + ((TextField) node).getPromptText() + " está vacío.");
+                        return false;
+                    }
+                }
+            }
+            for (Node node : grupoTelefono.getChildren()) {
+                if ((node instanceof TextField || node instanceof PasswordField)) {
+
+                    // Validar los demás campos
+                    if (((TextField) node).getText() == null || ((TextField) node).getText().isEmpty()) {
+                        LOGGER.severe("Error: El campo " + ((TextField) node).getPromptText() + " está vacío.");
+                        return false;
+                    }
                 }
             }
         }
@@ -790,10 +842,10 @@ public class ControladorRegistro implements Initializable {
         // Cambiar la imagen del botón a "mostrar"
         if (passwordFieldParam == campoContrasena) {
             ImageView imageView = (ImageView) botonOjoContrasena.getGraphic();
-            imageView.setImage(new Image("resources/iconos/ocultar.png"));
+            imageView.setImage(new Image("recursos/iconos/ocultar.png"));
         } else if (passwordFieldParam == campoRepiteContrasena) {
             ImageView imageView = (ImageView) botonOjoRepite.getGraphic();
-            imageView.setImage(new Image("resources/iconos/ocultar.png"));
+            imageView.setImage(new Image("recursos/iconos/ocultar.png"));
         }
         // Recuperar el foco y colocar el cursor al final del texto sin seleccionar todo
         textFieldParam.requestFocus();
@@ -816,10 +868,10 @@ public class ControladorRegistro implements Initializable {
         // Cambiar la imagen del botón a "ocultar"
         if (passwordFieldParam == campoContrasena) {
             ImageView imageView = (ImageView) botonOjoContrasena.getGraphic();
-            imageView.setImage(new Image("resources/iconos/visualizar.png"));
+            imageView.setImage(new Image("recursos/iconos/visualizar.png"));
         } else if (passwordFieldParam == campoRepiteContrasena) {
             ImageView imageView = (ImageView) botonOjoRepite.getGraphic();
-            imageView.setImage(new Image("resources/iconos/visualizar.png"));
+            imageView.setImage(new Image("recursos/iconos/visualizar.png"));
         }
         // Recuperar el foco y colocar el cursor al final del texto sin seleccionar todo
         passwordFieldParam.requestFocus();
@@ -838,7 +890,7 @@ public class ControladorRegistro implements Initializable {
             campoEmail.setText(userClienteOriginal.getCorreo());
             campoEmail.setDisable(true);
             campoContrasena.setDisable(true);
-            campoRepiteContrasena.setVisible(false);
+            campoRepiteContrasena.setDisable(true);
             campoContrasenaVista.setVisible(false);
             campoRepiteContrasenaVista.setVisible(false);
             campoDireccion.setText(userClienteOriginal.getCalle());
@@ -857,7 +909,7 @@ public class ControladorRegistro implements Initializable {
             campoEmail.setText(userTrabajadorOriginal.getCorreo());
             campoEmail.setDisable(true);
             campoContrasena.setDisable(true);
-            campoRepiteContrasena.setVisible(false);
+            campoRepiteContrasena.setDisable(true);
             campoContrasenaVista.setVisible(false);
             campoRepiteContrasenaVista.setVisible(false);
             campoDireccion.setText(userTrabajadorOriginal.getCalle());
@@ -888,6 +940,8 @@ public class ControladorRegistro implements Initializable {
 
             comboDepartamento.setVisible(false);
             comboCategoria.setVisible(false);
+            imagenSector.setVisible(true);
+            imagenTelefono.setVisible(true);
 
             labelDepartamento.setVisible(false);
             labelCategoria.setVisible(false);
@@ -899,6 +953,8 @@ public class ControladorRegistro implements Initializable {
             comboCategoria.setVisible(true);
             labelDepartamento.setVisible(true);
             labelCategoria.setVisible(true);
+            imagenSector.setVisible(false);
+            imagenTelefono.setVisible(false);
 
         }
     }
