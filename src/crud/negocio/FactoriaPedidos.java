@@ -70,8 +70,8 @@ public class FactoriaPedidos {
             controlador.setUser(user);
             controlador.initStage(root);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al abrir la ventnaa de PedidosPrincipal: {0}", e.getMessage());
-            showErrorDialog(Alert.AlertType.ERROR, "Error", "No se puede cargar la ventana de Pedidos principal.");
+            LOGGER.log(Level.SEVERE, "Error al abrir la ventnaa de Busqueda: {0}", e.getMessage());
+            showErrorDialog(Alert.AlertType.ERROR, "Error", "No se puede cargar la ventana de Busqueda.");
         }
     }
 

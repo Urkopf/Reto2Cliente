@@ -252,7 +252,7 @@ public class ControladorMenuPrincipal implements Initializable {
         try {
 
             LOGGER.info("Botón 'Gestión de Artículos' presionado.");
-            showErrorDialog(AlertType.ERROR, "Funcionalidad en desarrollo", "Próximamente estará disponible.");
+            factoriaArticulos.cargarArticulosPrincipal(stage, userTrabajador);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al gestionar artículos", e);
             showErrorDialog(AlertType.ERROR, "No se pudo gestionar los artículos", "Inténtelo de nuevo más tarde.");

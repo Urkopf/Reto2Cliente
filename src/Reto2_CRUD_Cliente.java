@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 
-
 import crud.negocio.FactoriaPedidoArticulo;
 import crud.negocio.FactoriaPedidos;
 
@@ -63,9 +62,8 @@ public class Reto2_CRUD_Cliente extends Application {
 
         //factoria.cargarInicioSesion(stage, "");
         //factoriaPedidos.cargarPedidosPrincipal(stage, cliente);
-
-        //factoriaPedidos.cargarPedidosPrincipal(stage, trabajador);
-        factoriaPedidoArticulo.cargarPedidosDetalle(stage, cliente, pedido);
+        factoriaPedidos.cargarPedidosPrincipal(stage, trabajador, null);
+        //factoriaPedidoArticulo.cargarPedidosDetalle(stage, cliente, pedido);
 
     }
 
