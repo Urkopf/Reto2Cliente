@@ -7,6 +7,7 @@ import crud.negocio.FactoriaUsuarios;
 import crud.objetosTransferibles.Cliente;
 import crud.objetosTransferibles.Estado;
 import crud.objetosTransferibles.Pedido;
+import crud.objetosTransferibles.PedidoArticulo;
 import crud.objetosTransferibles.Trabajador;
 import crud.objetosTransferibles.Usuario;
 import crud.utilidades.AlertUtilities;
@@ -367,7 +368,22 @@ public class ControladorPedidosPrincipal implements Initializable {
             for (Pedido pedidoOriginal : pedidosOriginales) {
                 if (!pedidosObservableList.contains(pedidoOriginal) && pedidoOriginal.getId() != null) {
                     LOGGER.info("Eliminando pedido: " + pedidoOriginal.getId());
-                    factoriaPedidos.acceso().borrarPedido(pedidoOriginal);
+                    ObservableList<PedidoArticulo> lista = (ObservableList<PedidoArticulo>) FactoriaPedidoArticulo.getInstance().acceso().getAllPedidoArticulo();
+                    lista = FXCollections.observableArrayList(
+                            lista.stream()
+                                    .filter(p -> p.getPedidoId().equals(pedidoOriginal.getId()))
+                                    .collect(Collectors.toList()));
+                    if (lista.size() == 0) {
+                        factoriaPedidos.acceso().borrarPedido(pedidoOriginal);
+                    } else {
+                        //preguntar
+                        for (PedidoArticulo pa : lista) {
+                            FactoriaPedidoArticulo.getInstance().acceso().borrarPedidoArticulo(pa);
+                        }
+                        factoriaPedidos.acceso().borrarPedido(pedidoOriginal);
+
+                    }
+
                 }
             }
             pedidosOriginales.setAll(pedidosObservableList);
@@ -387,7 +403,8 @@ public class ControladorPedidosPrincipal implements Initializable {
      * cambiar de ventana), comprueba si hay cambios sin guardar.
      */
     @FXML
-    private void handleDetalles(ActionEvent event) {
+    private void handleDetalles(ActionEvent event
+    ) {
         confirmarCambiosSinGuardar(this::handleDetallesInterno);
     }
 
@@ -468,8 +485,8 @@ public class ControladorPedidosPrincipal implements Initializable {
         // Si hay cambios, mostramos un diálogo de confirmación
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Cambios sin guardar");
-        alert.setHeaderText("Hay cambios sin guardar. ¿Desea continuar?");
-        alert.setContentText("Si continúa sin guardar, se perderán los cambios realizados.");
+        alert.setHeaderText(null);
+        alert.setContentText("Hay cambios sin guardar. ¿Qué desea hacer?");
 
         ButtonType buttonGuardar = new ButtonType("Guardar");
         ButtonType buttonSinGuardar = new ButtonType("No guardar");

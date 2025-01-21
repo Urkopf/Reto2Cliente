@@ -138,6 +138,7 @@ public class Pedido implements Serializable, Cloneable {
     public Pedido clone() {
         Pedido copia = new Pedido();
         copia.setId(this.getId());
+        copia.setDireccion(this.getDireccion());
         copia.setCliente(this.getCliente());
         copia.setCifCliente(this.getCifCliente());
         copia.setEstado(this.getEstado());

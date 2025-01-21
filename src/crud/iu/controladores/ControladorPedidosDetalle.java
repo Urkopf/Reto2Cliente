@@ -1,5 +1,6 @@
 package crud.iu.controladores;
 
+import crud.excepciones.LogicaNegocioException;
 import crud.negocio.FactoriaArticulos;
 import crud.negocio.FactoriaPedidoArticulo;
 import crud.negocio.FactoriaPedidos;
@@ -11,6 +12,7 @@ import crud.objetosTransferibles.Pedido;
 import crud.objetosTransferibles.PedidoArticulo;
 import crud.objetosTransferibles.Trabajador;
 import crud.utilidades.AlertUtilities;
+
 import static crud.utilidades.AlertUtilities.showErrorDialog;
 
 import java.net.URL;
@@ -33,6 +35,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Spinner;
@@ -152,6 +156,16 @@ public class ControladorPedidosDetalle implements Initializable {
     private ComboBox<Estado> campoEstado;
     // </editor-fold>
 
+    // <editor-fold defaultstate="collapsed" desc="Control de cambios no guardados">
+    /**
+     * Indica si hay cambios sin guardar. Se marca a {@code true} cada vez que
+     * se modifica un artículo o cualquier campo del pedido. Se restablece a
+     * {@code false} en {@link #handleGuardarCambios(ActionEvent)}.
+     */
+    private boolean cambiosNoGuardados = false;
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="Métodos de ciclo de vida de JavaFX">
     /**
      * Se ejecuta tras cargar el FXML.
      *
@@ -205,7 +219,9 @@ public class ControladorPedidosDetalle implements Initializable {
             campoCif.setDisable(true);
         }
     }
+    // </editor-fold>
 
+    // <editor-fold defaultstate="collapsed" desc="Setters para Stage, Pedido y Usuario">
     /**
      * Asigna el {@code Stage} principal para este controlador.
      *
@@ -243,7 +259,9 @@ public class ControladorPedidosDetalle implements Initializable {
             }
         }
     }
+    // </editor-fold>
 
+    // <editor-fold defaultstate="collapsed" desc="Configuración de tablas">
     /**
      * Configura las tablas de artículos disponibles y artículos del pedido.
      * Ajusta las columnas, sus celdas y el modo de edición (Spinner para
@@ -311,8 +329,8 @@ public class ControladorPedidosDetalle implements Initializable {
                 spinner.valueProperty().addListener((obs, oldVal, newVal) -> {
                     if (newVal != null && !newVal.equals(pa.getCantidad())) {
                         pa.setCantidad(newVal);
-                        // Recalcular total
                         actualizarTotal();
+                        cambiosNoGuardados = true; // Se ha modificado la cantidad
                     }
                 });
 
@@ -326,7 +344,7 @@ public class ControladorPedidosDetalle implements Initializable {
                     }
                 });
 
-                // Manejar edición manual
+                // Manejar edición manual (teclado)
                 spinner.getEditor().textProperty().addListener((obs, oldText, newText) -> {
                     try {
                         int value = Integer.parseInt(newText);
@@ -414,7 +432,9 @@ public class ControladorPedidosDetalle implements Initializable {
             }
         });
     }
+    // </editor-fold>
 
+    // <editor-fold defaultstate="collapsed" desc="Carga de datos en tablas y campos">
     /**
      * Carga todos los artículos disponibles desde la base de datos y los
      * muestra en la tabla de artículos disponibles.
@@ -458,9 +478,6 @@ public class ControladorPedidosDetalle implements Initializable {
                             .map(PedidoArticulo::clone)
                             .collect(Collectors.toList())
             );
-
-            // Ordenar por ID de artículo
-            ordenarListaPorArticuloId(articulosDelPedido);
 
             // Asignar la lista a la tabla
             tablaArticulosPedidos.setItems(articulosDelPedido);
@@ -517,7 +534,9 @@ public class ControladorPedidosDetalle implements Initializable {
     private void cargarEstados() {
         campoEstado.setItems(FXCollections.observableArrayList(Estado.values()));
     }
+    // </editor-fold>
 
+    // <editor-fold defaultstate="collapsed" desc="Configuración de handlers y listeners">
     /**
      * Configura los handlers para los botones principales. (Compra, Eliminar,
      * Guardar, Atrás).
@@ -543,6 +562,7 @@ public class ControladorPedidosDetalle implements Initializable {
                     campoDireccion.setText(pedido.getDireccion());
                 } else {
                     pedido.setDireccion(campoDireccion.getText());
+                    cambiosNoGuardados = true;
                 }
             }
         });
@@ -555,6 +575,7 @@ public class ControladorPedidosDetalle implements Initializable {
                 campoCif.setValue(oldValue);
             } else {
                 pedido.setCifCliente(newValue);
+                cambiosNoGuardados = true;
             }
         });
 
@@ -562,6 +583,7 @@ public class ControladorPedidosDetalle implements Initializable {
         campoEstado.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null) {
                 pedido.setEstado(newValue);
+                cambiosNoGuardados = true;
             }
         });
 
@@ -574,6 +596,7 @@ public class ControladorPedidosDetalle implements Initializable {
                     campoFecha.setValue(oldValue);
                 } else {
                     pedido.setFechaPedido(java.sql.Date.valueOf(newValue));
+                    cambiosNoGuardados = true;
                 }
             }
         });
@@ -585,6 +608,7 @@ public class ControladorPedidosDetalle implements Initializable {
                     String valor = campoTotal.getText().replace(" €", "");
                     double total = Double.parseDouble(valor);
                     pedido.setTotal(total);
+                    cambiosNoGuardados = true;
                 } catch (NumberFormatException e) {
                     mostrarAlerta(Alert.AlertType.WARNING, "Validación",
                             "El total debe ser un valor numérico.");
@@ -593,7 +617,9 @@ public class ControladorPedidosDetalle implements Initializable {
             }
         });
     }
+    // </editor-fold>
 
+    // <editor-fold defaultstate="collapsed" desc="Handlers FXML">
     /**
      * Handler del botón "Compra": agrega el artículo seleccionado de la lista
      * de disponibles al pedido, con cantidad inicial de 1.
@@ -629,9 +655,9 @@ public class ControladorPedidosDetalle implements Initializable {
             articulosDelPedido.add(pedidoArticulo);
         }
 
-        ordenarListaPorArticuloId(articulosDelPedido);
         tablaArticulosPedidos.refresh();
         actualizarTotal();
+        cambiosNoGuardados = true;
     }
 
     /**
@@ -655,22 +681,16 @@ public class ControladorPedidosDetalle implements Initializable {
             articulosDelPedido.remove(articuloSeleccionado);
         }
 
-        ordenarListaPorArticuloId(articulosDelPedido);
         tablaArticulosPedidos.refresh();
         actualizarTotal();
+        cambiosNoGuardados = true;
     }
 
-    /**
-     * Handler del botón "Guardar": guarda los cambios en el pedido y en las
-     * relaciones PedidoArticulo (creación, actualización, eliminación).
-     *
-     * @param event Evento de la acción.
-     */
     @FXML
     private void handleGuardarCambios(ActionEvent event) {
         LOGGER.info("Botón Guardar Cambios presionado");
         try {
-            // 1. Actualizar el pedido en la base de datos (por ejemplo, el total)
+            // Actualizar el total del pedido
             NumberFormat nf = NumberFormat.getInstance(Locale.getDefault());
             String valor = campoTotal.getText().replace(" €", "");
             Number number = nf.parse(valor);
@@ -678,43 +698,43 @@ public class ControladorPedidosDetalle implements Initializable {
             pedido.setTotal(total);
             factoriaPedidos.acceso().actualizarPedido(pedido);
 
-            // 2. Crear o actualizar PedidoArticulo en la BBDD
+            // Actualizar stock y pedido-artículo en la base de datos
             for (PedidoArticulo pedidoArticulo : articulosDelPedido) {
-                // Asociar con el pedido y el artículo correcto
-                pedidoArticulo.setPedido(pedido);
-                Articulo art = buscarArticuloPorId(pedidoArticulo.getArticuloId());
-                pedidoArticulo.setArticulo(art);
-
+                Articulo articulo = buscarArticuloPorId(pedidoArticulo.getArticuloId());
                 PedidoArticulo pedidoArticuloOriginal = articulosDelPedidoOriginales.stream()
                         .filter(p -> p.getId() != null && p.getId().equals(pedidoArticulo.getId()))
                         .findFirst()
                         .orElse(null);
 
-                // Caso A: Si ID es null => es nuevo en BBDD
                 if (pedidoArticulo.getId() == null) {
-                    LOGGER.info("Creando nuevo PedidoArticulo (ArticuloID="
-                            + pedidoArticulo.getArticuloId() + ")");
+                    // Nuevo PedidoArticulo: crear y restar stock
+                    LOGGER.info("Creando nuevo PedidoArticulo (ArticuloID=" + pedidoArticulo.getArticuloId() + ")");
                     factoriaPedidoArticulo.acceso().crearPedidoArticulo(pedidoArticulo);
-
-                    // Caso B: Si existía antes y ha cambiado => actualizar
+                    actualizarStock(articulo, -pedidoArticulo.getCantidad());
                 } else if (pedidoArticuloOriginal != null && haCambiado(pedidoArticuloOriginal, pedidoArticulo)) {
+                    // Actualizar PedidoArticulo existente
                     LOGGER.info("Actualizando PedidoArticulo con ID=" + pedidoArticulo.getId());
                     factoriaPedidoArticulo.acceso().actualizarPedidoArticulo(pedidoArticulo);
+
+                    // Ajustar stock según la diferencia de cantidades
+                    int diferenciaCantidad = pedidoArticulo.getCantidad() - pedidoArticuloOriginal.getCantidad();
+                    actualizarStock(articulo, -diferenciaCantidad);
                 }
             }
 
-            // 3. Borrar los que ya no estén
+            // Eliminar PedidoArticulo y devolver stock
             for (PedidoArticulo pedidoArticuloOriginal : articulosDelPedidoOriginales) {
                 if (!articulosDelPedido.contains(pedidoArticuloOriginal)) {
                     LOGGER.info("Borrando PedidoArticulo con ID=" + pedidoArticuloOriginal.getId());
                     factoriaPedidoArticulo.acceso().borrarPedidoArticulo(pedidoArticuloOriginal);
+                    Articulo articulo = buscarArticuloPorId(pedidoArticuloOriginal.getArticuloId());
+                    actualizarStock(articulo, pedidoArticuloOriginal.getCantidad());
                 }
             }
 
-            // 4. Refrescar la lista original
+            // Actualizar la lista original y marcar como guardados
             articulosDelPedidoOriginales.setAll(articulosDelPedido);
-
-            // Recargar estado si se desea
+            cambiosNoGuardados = false;
             reiniciar();
 
             LOGGER.info("Cambios guardados exitosamente.");
@@ -726,24 +746,82 @@ public class ControladorPedidosDetalle implements Initializable {
     }
 
     /**
-     * Handler del botón "Atrás": Vuelve a la vista principal de pedidos,
-     * dependiendo del tipo de usuario.
+     * Actualiza el stock de un artículo en la base de datos.
+     *
+     * @param articulo El artículo cuyo stock se debe actualizar.
+     * @param cantidad La cantidad a ajustar (positiva para aumentar, negativa
+     * para reducir).
+     */
+    private void actualizarStock(Articulo articulo, int cantidad) throws LogicaNegocioException {
+        if (articulo != null) {
+            int nuevoStock = articulo.getStock() + cantidad;
+            if (nuevoStock < 0) {
+                mostrarAlerta(Alert.AlertType.WARNING, "Stock insuficiente",
+                        "El artículo " + articulo.getNombre() + " no tiene suficiente stock.");
+                throw new IllegalStateException("Stock insuficiente para el artículo ID=" + articulo.getId());
+            }
+            articulo.setStock(nuevoStock);
+            factoriaArticulos.acceso().actualizarArticulo(articulo);
+        }
+    }
+
+    /**
+     * Handler del botón "Atrás": Verifica si hay cambios no guardados y pide
+     * confirmación. Ofrece tres opciones: Guardar, No guardar o Cancelar.
      *
      * @param event Evento de la acción.
      */
     @FXML
     private void handleAtras(ActionEvent event) {
+        if (cambiosNoGuardados) {
+            // Preguntar confirmación
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Cambios sin guardar");
+            alert.setHeaderText(null);
+            alert.setContentText("Hay cambios sin guardar. ¿Qué desea hacer?");
+
+            // Botones Guardar, No guardar, Cancelar
+            ButtonType guardarButton = new ButtonType("Guardar");
+            ButtonType noGuardarButton = new ButtonType("No guardar");
+            ButtonType cancelarButton = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
+            alert.getButtonTypes().setAll(guardarButton, noGuardarButton, cancelarButton);
+
+            // Mostrar y esperar la respuesta del usuario
+            alert.showAndWait().ifPresent(response -> {
+                if (response == guardarButton) {
+                    // Guardar cambios y salir
+                    handleGuardarCambios(event);
+                    irAPantallaPrincipal();
+                } else if (response == noGuardarButton) {
+                    // Salir sin guardar
+                    irAPantallaPrincipal();
+                }
+                // Si es Cancelar, no hacemos nada
+            });
+        } else {
+            // Si no hay cambios, volver directamente
+            irAPantallaPrincipal();
+        }
+    }
+
+    /**
+     * Vuelve a la pantalla principal de pedidos según el tipo de usuario.
+     */
+    private void irAPantallaPrincipal() {
         if (userCliente != null) {
             factoriaPedidos.cargarPedidosPrincipal(stage, userCliente, null);
         } else {
             factoriaPedidos.cargarPedidosPrincipal(stage, userTrabajador, null);
         }
     }
+    // </editor-fold>
 
+    // <editor-fold defaultstate="collapsed" desc="Métodos de apoyo y utilidades">
     /**
      * Reinicia la vista recargando los artículos y actualizando el total.
      */
     private void reiniciar() {
+        configurarTablas();
         cargarArticulosDisponibles();
         cargarArticulosDelPedido();
         tablaArticulosDisponibles.refresh();
@@ -794,20 +872,11 @@ public class ControladorPedidosDetalle implements Initializable {
     }
 
     /**
-     * Ordena la lista de {@link PedidoArticulo} según el ID del artículo.
-     *
-     * @param lista Lista a ordenar.
-     */
-    private void ordenarListaPorArticuloId(ObservableList<PedidoArticulo> lista) {
-        FXCollections.sort(lista, Comparator.comparing(PedidoArticulo::getArticuloId));
-    }
-
-    /**
      * Ordena la tabla de artículos del pedido según el ID del artículo. Útil
      * tras modificar cantidades para mantener un orden coherente.
      */
     private void ordenarTablaPorArticuloId() {
-        ordenarListaPorArticuloId(articulosDelPedido);
+
         tablaArticulosPedidos.refresh();
     }
 
@@ -827,5 +896,5 @@ public class ControladorPedidosDetalle implements Initializable {
                 .findFirst()
                 .orElse(null);
     }
-
+    // </editor-fold>
 }
