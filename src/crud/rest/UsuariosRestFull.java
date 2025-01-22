@@ -70,6 +70,42 @@ public class UsuariosRestFull {
 
     }
 
+    public Usuario cambiar_XML(Usuario usuario) throws WebApplicationException {
+        Usuario cliente = null;
+        WebTarget resource = webTarget.path("cambiar");
+        LOGGER.info("Enviando solicitud a: " + resource.getUri());
+        // Enviar el objeto Usuario como entidad
+        Response response = resource.request(MediaType.APPLICATION_XML)
+                .post(Entity.entity(usuario, MediaType.APPLICATION_XML));
+        LOGGER.info("Estado de la respuesta: " + response.getStatus());
+        if (response.getStatus() == 200) {
+            cliente = response.readEntity(Cliente.class);
+            System.out.println("Cliente recibido: " + cliente.getNombre());
+        } else {
+            System.out.println("Error: " + response.getStatus());
+        }
+        return cliente;
+
+    }
+
+    public Usuario recuperar_XML(Object usuario) throws WebApplicationException {
+        Usuario cliente = null;
+        WebTarget resource = webTarget.path("recuperar");
+        LOGGER.info("Enviando solicitud a: " + resource.getUri());
+        // Enviar el objeto Usuario como entidad
+        Response response = resource.request(MediaType.APPLICATION_XML)
+                .post(Entity.entity(usuario, MediaType.APPLICATION_XML));
+        LOGGER.info("Estado de la respuesta: " + response.getStatus());
+        if (response.getStatus() == 200) {
+            cliente = response.readEntity(Cliente.class);
+            System.out.println("Cliente recibido: " + cliente.getNombre());
+        } else {
+            System.out.println("Error: " + response.getStatus());
+        }
+        return cliente;
+
+    }
+
     public void edit_XML(Object requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
                 .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Usuario.class);
