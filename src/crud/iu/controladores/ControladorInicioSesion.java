@@ -29,6 +29,8 @@ import crud.objetosTransferibles.Usuario;
 import crud.objetosTransferibles.Cliente;
 import crud.objetosTransferibles.Trabajador;
 import crud.seguridad.UtilidadesCifrado;
+import static crud.seguridad.UtilidadesCifrado.cargarClavePublica;
+import static crud.seguridad.UtilidadesCifrado.encriptarConClavePublica;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
 import static crud.utilidades.ValidateUtilities.isValid;
 import java.awt.Cursor;
@@ -320,22 +322,24 @@ public class ControladorInicioSesion implements Initializable {
 
         // Cargar clave pública y cifrar contraseña
         try {
-            // Ruta al archivo .pem de la clave pública
-            String rutaClavePublica = "crud/seguridad/clave_publica.pem";
+            // Cargar claves desde archivos
+            String contraseñaEncriptada = "";
+            PublicKey clavePublica;
+            try {
+                clavePublica = cargarClavePublica();
+                // Contraseña del cliente
+                String contraseña = campoContrasena.getText();
 
-            // Cargar clave pública desde el archivo PEM
-            PublicKey clavePublica = UtilidadesCifrado.cargarClavePublicaDesdePEM(rutaClavePublica);
-
-            // Cifrar la contraseña con la clave pública
-            byte[] contrasenaCifrada = UtilidadesCifrado.cifrarConRSA(campoContrasena.getText(), clavePublica);
-
-            // Convertir la contraseña cifrada a Base64
-            String contrasenaCifradaBase64 = Base64.getEncoder().encodeToString(contrasenaCifrada);
+                // Cliente encripta la contraseña
+                contraseñaEncriptada = encriptarConClavePublica(contraseña, clavePublica);
+            } catch (Exception ex) {
+                Logger.getLogger(ControladorRegistro.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
             // Preparar el usuario con la contraseña cifrada
             usuario = new Usuario();
             usuario.setCorreo(campoEmail.getText());
-            usuario.setContrasena(contrasenaCifradaBase64);
+            usuario.setContrasena(contraseñaEncriptada);
 
             // Enviar la solicitud al servidor
             respuesta = factoria.inicioSesion().getInicioSesion(usuario);

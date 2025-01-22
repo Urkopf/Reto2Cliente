@@ -35,6 +35,8 @@ import crud.objetosTransferibles.Cliente;
 import crud.objetosTransferibles.Departamento;
 import crud.objetosTransferibles.Trabajador;
 import crud.seguridad.UtilidadesCifrado;
+import static crud.seguridad.UtilidadesCifrado.cargarClavePublica;
+import static crud.seguridad.UtilidadesCifrado.encriptarConClavePublica;
 import static crud.utilidades.AlertUtilities.showConfirmationDialog;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
 import static crud.utilidades.ValidateUtilities.isValid;
@@ -520,89 +522,76 @@ public class ControladorRegistro implements Initializable {
         } else {
             LOGGER.info("Validación de campos correcta.");
 
-            // Si no hay errores, proceder con el registro
-// Ruta del archivo PEM
-            String rutaArchivoClavePublica = "crud/seguridad/clave_publica.pem";
-
-// Cargar la clave pública
-            PublicKey clavePublica = null;
+            // Cargar claves desde archivos
+            String contraseñaEncriptada = "";
+            PublicKey clavePublica;
             try {
-                clavePublica = UtilidadesCifrado.cargarClavePublicaDesdePEM(rutaArchivoClavePublica);
+                clavePublica = cargarClavePublica();
+                // Contraseña del cliente
+                String contraseña = campoContrasena.getText();
+
+                // Cliente encripta la contraseña
+                contraseñaEncriptada = encriptarConClavePublica(contraseña, clavePublica);
             } catch (Exception ex) {
-                Logger.getLogger(ControladorRegistro.class.getName()).log(Level.SEVERE, "Error al cargar la clave pública", ex);
-                showErrorDialog(Alert.AlertType.ERROR, "Error", "No se pudo cargar la clave pública para encriptar la contraseña.");
-                return; // No continuar si no se puede cargar la clave pública
+                Logger.getLogger(ControladorRegistro.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            try {
-                // Encripta la contraseña con la clave pública usando RSA
-                byte[] contrasenaCifrada = UtilidadesCifrado.cifrarClaveSimetricaConRSA(
-                        new javax.crypto.spec.SecretKeySpec(campoContrasena.getText().getBytes(), "AES"),
-                        clavePublica
+            // Si no hay errores, proceder con el registro
+            // Asigna la contraseña cifrada al usuario
+            if (radioCliente.isSelected()) {
+                userCliente = new Cliente(
+                        campoSector.getText(),
+                        campoTelefono.getText(),
+                        campoEmail.getText(),
+                        contraseñaEncriptada,
+                        campoNombre.getText() + " " + campoApellido1.getText() + " " + campoApellido2.getText(),
+                        campoDireccion.getText(),
+                        campoCiudad.getText(),
+                        campoCodigoPostal.getText(),
+                        campoCIF.getText(),
+                        checkActivo.isSelected()
                 );
+            } else {
+                userTrabajador = new Trabajador(
+                        comboDepartamento.getSelectionModel().getSelectedItem(),
+                        comboCategoria.getSelectionModel().getSelectedItem(),
+                        campoEmail.getText(),
+                        contraseñaEncriptada,
+                        campoNombre.getText() + " " + campoApellido1.getText() + " " + campoApellido2.getText(),
+                        campoDireccion.getText(),
+                        campoCiudad.getText(),
+                        campoCodigoPostal.getText(),
+                        campoCIF.getText(),
+                        checkActivo.isSelected()
+                );
+            }
 
-                // Convertir la contraseña cifrada a Base64 para el transporte
-                String contrasenaCifradaBase64 = Base64.getEncoder().encodeToString(contrasenaCifrada);
-
-                // Asigna la contraseña cifrada al usuario
-                if (radioCliente.isSelected()) {
-                    userCliente = new Cliente(
-                            campoSector.getText(),
-                            campoTelefono.getText(),
-                            campoEmail.getText(),
-                            contrasenaCifradaBase64,
-                            campoNombre.getText() + " " + campoApellido1.getText() + " " + campoApellido2.getText(),
-                            campoDireccion.getText(),
-                            campoCiudad.getText(),
-                            campoCodigoPostal.getText(),
-                            campoCIF.getText(),
-                            checkActivo.isSelected()
-                    );
-                } else {
-                    userTrabajador = new Trabajador(
-                            comboDepartamento.getSelectionModel().getSelectedItem(),
-                            comboCategoria.getSelectionModel().getSelectedItem(),
-                            campoEmail.getText(),
-                            contrasenaCifradaBase64,
-                            campoNombre.getText() + " " + campoApellido1.getText() + " " + campoApellido2.getText(),
-                            campoDireccion.getText(),
-                            campoCiudad.getText(),
-                            campoCodigoPostal.getText(),
-                            campoCIF.getText(),
-                            checkActivo.isSelected()
-                    );
-                }
-
-                // Enviar el objeto al servidor
-                if (checkActivo.isSelected() || (!checkActivo.isSelected() && confirmNoActiveUserRegister())) {
-                    try {
-                        if (actualizar) {
-                            if (radioCliente.isSelected()) {
-                                userCliente.setId(userClienteOriginal.getId());
-                                factoria.accesoCliente().actualizarCliente(userCliente);
-                                factoria.cargarInicioSesion(stage, userCliente.getCorreo());
-                            } else {
-                                userTrabajador.setId(userTrabajadorOriginal.getId());
-                                factoria.accesoTrabajador().actualizarTrabajador(userTrabajador);
-                                factoria.cargarInicioSesion(stage, userTrabajador.getCorreo());
-                            }
-
+            // Enviar el objeto al servidor
+            if (checkActivo.isSelected() || (!checkActivo.isSelected() && confirmNoActiveUserRegister())) {
+                try {
+                    if (actualizar) {
+                        if (radioCliente.isSelected()) {
+                            userCliente.setId(userClienteOriginal.getId());
+                            factoria.accesoCliente().actualizarCliente(userCliente);
+                            factoria.cargarInicioSesion(stage, userCliente.getCorreo());
                         } else {
-                            if (radioCliente.isSelected()) {
-                                factoria.accesoCliente().crearCliente(userCliente);
-                                factoria.cargarInicioSesion(stage, userCliente.getCorreo());
-                            } else {
-                                factoria.accesoTrabajador().crearTrabajador(userTrabajador);
-                                factoria.cargarInicioSesion(stage, userTrabajador.getCorreo());
-                            }
+                            userTrabajador.setId(userTrabajadorOriginal.getId());
+                            factoria.accesoTrabajador().actualizarTrabajador(userTrabajador);
+                            factoria.cargarInicioSesion(stage, userTrabajador.getCorreo());
                         }
-                    } catch (Exception e) {
-                        showErrorDialog(AlertType.ERROR, "Error", "Error alguno.");
+
+                    } else {
+                        if (radioCliente.isSelected()) {
+                            factoria.accesoCliente().crearCliente(userCliente);
+                            factoria.cargarInicioSesion(stage, userCliente.getCorreo());
+                        } else {
+                            factoria.accesoTrabajador().crearTrabajador(userTrabajador);
+                            factoria.cargarInicioSesion(stage, userTrabajador.getCorreo());
+                        }
                     }
+                } catch (Exception e) {
+                    showErrorDialog(AlertType.ERROR, "Error", "Error alguno.");
                 }
-            } catch (Exception e) {
-                Logger.getLogger(ControladorRegistro.class.getName()).log(Level.SEVERE, "Error al encriptar la contraseña", e);
-                showErrorDialog(Alert.AlertType.ERROR, "Error", "Error al procesar la contraseña.");
             }
 
             //  messageManager(response);

@@ -1,40 +1,36 @@
 package crud.seguridad;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.util.Base64;
+import static crud.seguridad.UtilidadesCifrado.generarYGuardarClaves;
 
 public class GeneradorClaves {
 
-    public static void main(String[] args) throws Exception {
-        // Generar un par de claves RSA
-        KeyPairGenerator generador = KeyPairGenerator.getInstance("RSA");
-        generador.initialize(2048); // Longitud recomendada: 2048 bits
-        KeyPair parDeClaves = generador.generateKeyPair();
+    public static void main(String[] args) {
+        try {
+            // Generar y guardar claves en archivos
+            generarYGuardarClaves();
+            /*
+            // Cargar claves desde archivos
+            PublicKey clavePublica = cargarClavePublica();
+            PrivateKey clavePrivada = cargarClavePrivada();
 
-        // Obtener las claves
-        PrivateKey clavePrivada = parDeClaves.getPrivate();
-        PublicKey clavePublica = parDeClaves.getPublic();
+            // Contraseña del cliente
+            String contraseña = "MiSuperContraseña123";
+            System.out.println("Contraseña original: " + contraseña);
 
-        // Convertir las claves a Base64 para guardarlas como texto
-        String clavePrivadaBase64 = Base64.getEncoder().encodeToString(clavePrivada.getEncoded());
-        String clavePublicaBase64 = Base64.getEncoder().encodeToString(clavePublica.getEncoded());
+            // Cliente encripta la contraseña
+            String contraseñaEncriptada = encriptarConClavePublica(contraseña, clavePublica);
+            System.out.println("Contraseña encriptada: " + contraseñaEncriptada);
 
-        // Mostrar las claves
-        System.out.println("Clave Privada:");
-        System.out.println(clavePrivadaBase64);
+            // Servidor desencripta la contraseña
+            String contraseñaDesencriptada = desencriptarConClavePrivada(contraseñaEncriptada, clavePrivada);
+            System.out.println("Contraseña desencriptada: " + contraseñaDesencriptada);
 
-        System.out.println("\nClave Pública:");
-        System.out.println(clavePublicaBase64);
-
-        // Guardar en archivos
-        // Guardar clave pública
-        Files.write(Paths.get("clave_publica.pem"), clavePublicaBase64.getBytes());
-        // Guardar clave privada
-        Files.write(Paths.get("clave_privada.pem"), clavePrivadaBase64.getBytes());
+            // Servidor hashea la contraseña antes de almacenarla
+            String contraseñaHasheada = hashearContraseña(contraseñaDesencriptada);
+            System.out.println("Contraseña hasheada: " + contraseñaHasheada);
+             */
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
