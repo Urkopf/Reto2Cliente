@@ -28,9 +28,12 @@ import javafx.stage.Stage;
 import crud.objetosTransferibles.Usuario;
 import crud.objetosTransferibles.Cliente;
 import crud.objetosTransferibles.Trabajador;
+import crud.seguridad.UtilidadesCifrado;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
 import static crud.utilidades.ValidateUtilities.isValid;
 import java.awt.Cursor;
+import java.security.PublicKey;
+import java.util.Base64;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javax.ws.rs.ForbiddenException;
@@ -279,14 +282,11 @@ public class ControladorInicioSesion implements Initializable {
         } else {
             actualizar = false;
         }
-        if (actualizar) {
-            LOGGER.info("Botón Actualizar Sesion presionado");
-        } else {
-            LOGGER.info("Botón Iniciar Sesion presionado");
-        }
+        LOGGER.info(actualizar ? "Botón Actualizar Sesion presionado" : "Botón Iniciar Sesion presionado");
 
         hasError = false;
-        // Verificar si todos los campos están llenos
+
+        // Verificar que los campos estén completos
         if (!comprobarCamposCompletos()) {
             LOGGER.severe("Error: Todos los campos deben ser completados.");
             for (Node node : gridPane.getChildren()) {
@@ -299,7 +299,7 @@ public class ControladorInicioSesion implements Initializable {
             }
         }
 
-        // Validar campos específicos como contraseña y nombre de usuario
+        // Validar campos específicos (contraseña y correo electrónico)
         campoContrasena.setText(campoContrasena.getText().trim());
         if (!isValid(campoContrasena.getText(), "pass")) {
             mostrarImagenError(campoContrasena);
@@ -314,44 +314,63 @@ public class ControladorInicioSesion implements Initializable {
         // Si hay errores, no continuar
         if (hasError) {
             LOGGER.severe("Hay errores en el formulario.");
-            showErrorDialog(AlertType.ERROR, "Error", "Uno o varios campos incorrectos o vacíos. Mantenga el cursor encima de los campos para más información.");
-        } else {
-            // Si no hay errores, proceder con el formulario
-            usuario = new Usuario();  // Crear un nuevo usuario
-            usuario.setCorreo(campoEmail.getText());
-            usuario.setContrasena(campoContrasena.getText());
+            showErrorDialog(AlertType.ERROR, "Error", "Uno o varios campos incorrectos o vacíos. Revise los campos marcados.");
+            return;
+        }
 
-            try {
-                respuesta = factoria.inicioSesion().getInicioSesion(usuario); // Nos tiene que devolver los datos del usuario salvo su contraseña
-                if (respuesta instanceof Cliente) {
-                    System.out.println("Cliente recibido: " + ((Cliente) respuesta).getNombre());
-                    cliente = (Cliente) respuesta;
-                } else if (respuesta instanceof Trabajador) {
-                    System.out.println("Trabajador recibido: " + ((Trabajador) respuesta).getNombre());
-                    trabajador = (Trabajador) respuesta;
-                } else {
-                    throw new Exception("Tipo de respuesta desconocido.");
-                }
-                if ((cliente != null) ? !cliente.getActivo() : !trabajador.getActivo()) {
-                    showErrorDialog(AlertType.ERROR, "Usuario no activo", "Su usuario está desactivado. ACtualice su estado antes de iniciar sesión.");
-                } else {
-                    if (!actualizar) {
-                        factoria.cargarMenuPrincipal(stage, respuesta);  // Cargar la ventana principal
-                    } else {
-                        factoria.cargarRegistro(stage, respuesta);  // Cargar el SignUP
-                    }
-                }
-            } catch (ForbiddenException e) {
-                showErrorDialog(AlertType.ERROR, "Inicio de sesión fallido", "Su usuario está desactivado.");
-            } catch (NotAuthorizedException e) {
-                showErrorDialog(AlertType.ERROR, "Inicio de sesión fallido", "El correo electrónico (login) y/o la contraseña incorrect@/s.");
-            } catch (InternalServerErrorException e) {
-                showErrorDialog(AlertType.ERROR, "Inicio de sesión fallido", "Error en el servidor.");
-            } catch (Exception e) {
-                showErrorDialog(AlertType.ERROR, "Inicio de sesión fallido", "Error en el metaverso." + e);
+        // Cargar clave pública y cifrar contraseña
+        try {
+            // Ruta al archivo .pem de la clave pública
+            String rutaClavePublica = "crud/seguridad/clave_publica.pem";
+
+            // Cargar clave pública desde el archivo PEM
+            PublicKey clavePublica = UtilidadesCifrado.cargarClavePublicaDesdePEM(rutaClavePublica);
+
+            // Cifrar la contraseña con la clave pública
+            byte[] contrasenaCifrada = UtilidadesCifrado.cifrarConRSA(campoContrasena.getText(), clavePublica);
+
+            // Convertir la contraseña cifrada a Base64
+            String contrasenaCifradaBase64 = Base64.getEncoder().encodeToString(contrasenaCifrada);
+
+            // Preparar el usuario con la contraseña cifrada
+            usuario = new Usuario();
+            usuario.setCorreo(campoEmail.getText());
+            usuario.setContrasena(contrasenaCifradaBase64);
+
+            // Enviar la solicitud al servidor
+            respuesta = factoria.inicioSesion().getInicioSesion(usuario);
+
+            // Procesar la respuesta del servidor
+            if (respuesta instanceof Cliente) {
+                LOGGER.info("Cliente recibido: " + ((Cliente) respuesta).getNombre());
+                cliente = (Cliente) respuesta;
+            } else if (respuesta instanceof Trabajador) {
+                LOGGER.info("Trabajador recibido: " + ((Trabajador) respuesta).getNombre());
+                trabajador = (Trabajador) respuesta;
+            } else {
+                throw new Exception("Tipo de respuesta desconocido.");
             }
 
-            //  messageManager(response);  // Manejar la respuesta del servidor
+            // Verificar si el usuario está activo
+            if ((cliente != null) ? !cliente.getActivo() : !trabajador.getActivo()) {
+                showErrorDialog(AlertType.ERROR, "Usuario no activo", "Su usuario está desactivado. Contacte con soporte.");
+            } else {
+                // Cargar la siguiente ventana dependiendo de la acción
+                if (!actualizar) {
+                    factoria.cargarMenuPrincipal(stage, respuesta);
+                } else {
+                    factoria.cargarRegistro(stage, respuesta);
+                }
+            }
+
+        } catch (ForbiddenException e) {
+            showErrorDialog(AlertType.ERROR, "Inicio de sesión fallido", "Usuario desactivado.");
+        } catch (NotAuthorizedException e) {
+            showErrorDialog(AlertType.ERROR, "Inicio de sesión fallido", "Correo y/o contraseña incorrectos.");
+        } catch (InternalServerErrorException e) {
+            showErrorDialog(AlertType.ERROR, "Inicio de sesión fallido", "Error interno del servidor.");
+        } catch (Exception e) {
+            showErrorDialog(AlertType.ERROR, "Inicio de sesión fallido", "Error inesperado: " + e.getMessage());
         }
     }
 

@@ -36,7 +36,7 @@ public class Reto2_CRUD_Cliente extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-        //FactoriaUsuarios factoria = FactoriaUsuarios.getInstance();
+        FactoriaUsuarios factoria = FactoriaUsuarios.getInstance();
         FactoriaPedidos factoriaPedidos = FactoriaPedidos.getInstance();
         FactoriaPedidoArticulo factoriaPedidoArticulo = FactoriaPedidoArticulo.getInstance();
         Cliente cliente = new Cliente();
@@ -60,9 +60,9 @@ public class Reto2_CRUD_Cliente extends Application {
         pedido.setEstado(Estado.PREPARACION);
         pedido.setCliente(cliente);
 
-        //factoria.cargarInicioSesion(stage, "");
+        factoria.cargarInicioSesion(stage, "");
         //factoriaPedidos.cargarPedidosPrincipal(stage, cliente);
-        factoriaPedidos.cargarPedidosPrincipal(stage, trabajador, null);
+        //factoriaPedidos.cargarPedidosPrincipal(stage, trabajador, null);
         //factoriaPedidoArticulo.cargarPedidosDetalle(stage, cliente, pedido);
 
     }
