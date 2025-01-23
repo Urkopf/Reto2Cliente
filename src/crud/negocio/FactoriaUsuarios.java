@@ -116,7 +116,7 @@ public class FactoriaUsuarios {
         }
     }
 
-    public void cargarRecuperarContrasena(Stage stage, Object usuario) {
+    public void cargarRecuperarContrasena(Stage stage) {
         try {
             FXMLLoader cargador = new FXMLLoader(getClass().getResource("/crud/iu/vistas/RecuperarContrasena.fxml"));
             Parent root = cargador.load();

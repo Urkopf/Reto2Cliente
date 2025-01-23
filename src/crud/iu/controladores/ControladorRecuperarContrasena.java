@@ -3,6 +3,7 @@ package crud.iu.controladores;
 import crud.negocio.FactoriaUsuarios;
 import crud.objetosTransferibles.Usuario;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
+import static crud.utilidades.ExcepcionesUtilidad.clasificadorExcepciones;
 import crud.utilidades.Utilidades;
 import static crud.utilidades.ValidateUtilities.isValid;
 import javafx.event.ActionEvent;
@@ -35,10 +36,10 @@ public class ControladorRecuperarContrasena implements Initializable {
     private Button botonCancelar;
     @FXML
     private Button botonRecuperar;
-    @FXML
-    private ImageView botonAyuda;
+    //@FXML
+    //private ImageView botonAyuda;
 
-    Stage stage;
+    private Stage stage;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -57,13 +58,12 @@ public class ControladorRecuperarContrasena implements Initializable {
 
             botonRecuperar.addEventHandler(ActionEvent.ACTION, this::manejarRecuperar);
 
-            botonAyuda.addEventHandler(MouseEvent.MOUSE_CLICKED, this::manejarAyuda);
-
+            //botonAyuda.addEventHandler(MouseEvent.MOUSE_CLICKED, this::manejarAyuda);
             //configurarTeclasMnemotecnicas();  // Configurar teclas mnemotécnicas
             stage.show();  // Mostrar el escenario
 
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al inicializar el stage", e);
+            clasificadorExcepciones(e, e.getMessage());
         }
     }
 
@@ -137,7 +137,7 @@ public class ControladorRecuperarContrasena implements Initializable {
             factoria.cargarInicioSesion(stage, "");
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al enviar solicitud de recuperación.", e);
-            showErrorDialog(Alert.AlertType.ERROR, "Error", "Hubo un problema al procesar su solicitud. Inténtelo de nuevo más tarde.");
+            clasificadorExcepciones(e, e.getMessage());
         }
     }
 

@@ -13,6 +13,7 @@ import crud.objetosTransferibles.Usuario;
 import crud.utilidades.AlertUtilities;
 
 import static crud.utilidades.AlertUtilities.showErrorDialog;
+import static crud.utilidades.ExcepcionesUtilidad.clasificadorExcepciones;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -376,11 +377,24 @@ public class ControladorPedidosPrincipal implements Initializable {
                     if (lista.size() == 0) {
                         factoriaPedidos.acceso().borrarPedido(pedidoOriginal);
                     } else {
-                        //preguntar
-                        for (PedidoArticulo pa : lista) {
-                            FactoriaPedidoArticulo.getInstance().acceso().borrarPedidoArticulo(pa);
+                        // Mostrar alerta de confirmación
+                        Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
+                        alerta.setTitle("Confirmación de eliminación");
+                        alerta.setHeaderText("El pedido " + pedidoOriginal.getId() + " contiene " + lista.size() + " artículo(s).");
+                        alerta.setContentText("¿Está seguro de que desea eliminar el pedido junto con sus artículos?");
+
+                        // Esperar la respuesta del usuario
+                        Optional<ButtonType> resultado = alerta.showAndWait();
+                        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+                            // Eliminar los artículos asociados
+                            for (PedidoArticulo pa : lista) {
+                                FactoriaPedidoArticulo.getInstance().acceso().borrarPedidoArticulo(pa);
+                            }
+                            // Eliminar el pedido
+                            factoriaPedidos.acceso().borrarPedido(pedidoOriginal);
+                        } else {
+                            LOGGER.info("Eliminación cancelada por el usuario para el pedido: " + pedidoOriginal.getId());
                         }
-                        factoriaPedidos.acceso().borrarPedido(pedidoOriginal);
 
                     }
 
@@ -393,8 +407,8 @@ public class ControladorPedidosPrincipal implements Initializable {
             setHayCambiosNoGuardados(false); // <<--- Ya no hay cambios sin guardar
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al guardar cambios", e);
-            showErrorDialog(Alert.AlertType.ERROR, "Error",
-                    "No se pudieron guardar los cambios. Intente nuevamente.");
+            clasificadorExcepciones(e, e.getMessage());
+
         }
     }
 
@@ -435,8 +449,7 @@ public class ControladorPedidosPrincipal implements Initializable {
             LOGGER.info("Cargando detalles del pedido: " + pedidoSeleccionado.getId());
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cargar detalles del pedido", e);
-            showErrorDialog(Alert.AlertType.ERROR, "Error",
-                    "No se pudieron cargar los detalles del pedido. Intente nuevamente.");
+            clasificadorExcepciones(e, e.getMessage());
         }
     }
 
@@ -660,9 +673,7 @@ public class ControladorPedidosPrincipal implements Initializable {
             setHayCambiosNoGuardados(false); // Al cargar inicial no hay cambios
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cargar los datos de pedidos", e);
-            AlertUtilities.showErrorDialog(Alert.AlertType.ERROR,
-                    "Error al cargar pedidos",
-                    "No se pudieron cargar los pedidos. Intente nuevamente más tarde.");
+            clasificadorExcepciones(e, e.getMessage());
         }
     }
 

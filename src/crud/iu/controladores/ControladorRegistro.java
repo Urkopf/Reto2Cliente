@@ -39,14 +39,20 @@ import static crud.seguridad.UtilidadesCifrado.cargarClavePublica;
 import static crud.seguridad.UtilidadesCifrado.encriptarConClavePublica;
 import static crud.utilidades.AlertUtilities.showConfirmationDialog;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
+import static crud.utilidades.ExcepcionesUtilidad.clasificadorExcepciones;
 import static crud.utilidades.ValidateUtilities.isValid;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.PublicKey;
 import java.util.Base64;
+import java.util.Optional;
+import java.util.Properties;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleGroup;
 
 /**
@@ -413,7 +419,7 @@ public class ControladorRegistro implements Initializable {
             }
             stage.show();
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al inicializar el stage", e);
+            clasificadorExcepciones(e, e.getMessage());
         }
     }
 
@@ -575,6 +581,12 @@ public class ControladorRegistro implements Initializable {
                             factoria.accesoCliente().actualizarCliente(userCliente);
                             factoria.cargarInicioSesion(stage, userCliente.getCorreo());
                         } else {
+                            boolean claveCorrecta = verificarClaveUnicaTrabajador();
+                            if (!claveCorrecta) {
+                                // Si la clave no es correcta, paramos aquí y no registramos
+                                showErrorDialog(AlertType.ERROR, "Error de Clave", "La clave única para registrar trabajadores no es correcta.");
+                                return;
+                            }
                             userTrabajador.setId(userTrabajadorOriginal.getId());
                             factoria.accesoTrabajador().actualizarTrabajador(userTrabajador);
                             factoria.cargarInicioSesion(stage, userTrabajador.getCorreo());
@@ -585,16 +597,63 @@ public class ControladorRegistro implements Initializable {
                             factoria.accesoCliente().crearCliente(userCliente);
                             factoria.cargarInicioSesion(stage, userCliente.getCorreo());
                         } else {
+
+                            boolean claveCorrecta = verificarClaveUnicaTrabajador();
+                            if (!claveCorrecta) {
+                                // Si la clave no es correcta, paramos aquí y no registramos
+                                showErrorDialog(AlertType.ERROR, "Error de Clave", "La clave única para registrar trabajadores no es correcta.");
+                                return;
+                            }
                             factoria.accesoTrabajador().crearTrabajador(userTrabajador);
                             factoria.cargarInicioSesion(stage, userTrabajador.getCorreo());
                         }
                     }
                 } catch (Exception e) {
-                    showErrorDialog(AlertType.ERROR, "Error", "Error alguno.");
+                    clasificadorExcepciones(e, e.getMessage());
                 }
             }
 
             //  messageManager(response);
+        }
+    }
+
+    private boolean verificarClaveUnicaTrabajador() {
+        // Creamos un diálogo de texto
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Clave Única de Trabajador");
+        dialog.setHeaderText("Para registrar a un Trabajador, es necesaria una clave única.");
+        dialog.setContentText("Introduce la clave única:");
+
+        // Estilos (si los usas)
+        dialog.getDialogPane().getStylesheets().add(
+                getClass().getResource("crud/iu/vistas/estilos.css").toExternalForm()
+        );
+        dialog.getDialogPane().getStyleClass().add("myDialog");
+
+        // Mostrar diálogo y esperar resultado
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            String claveIngresada = result.get().trim();
+
+            try {
+                // 1) Hasheamos la clave introducida
+                String hashClaveIngresada = UtilidadesCifrado.hashearContraseña(claveIngresada);
+
+                // 2) Cargamos la propiedad TRABAJADOR_PASS desde confCliente.properties
+                String hashEsperado
+                        = ResourceBundle.getBundle("recursos.configCliente")
+                                .getString("TRABAJADOR_PASS");
+
+                // 3) Comparamos el hash que ingresó el usuario con el hash guardado
+                return hashClaveIngresada.equals(hashEsperado);
+
+            } catch (Exception e) {
+                Logger.getLogger(ControladorRegistro.class.getName()).log(Level.SEVERE, null, e);
+                return false;
+            }
+        } else {
+            // Si el usuario cancela o cierra el diálogo
+            return false;
         }
     }
 

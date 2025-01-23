@@ -8,6 +8,7 @@ import crud.objetosTransferibles.Usuario;
 import static crud.seguridad.UtilidadesCifrado.cargarClavePublica;
 import static crud.seguridad.UtilidadesCifrado.encriptarConClavePublica;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
+import static crud.utilidades.ExcepcionesUtilidad.clasificadorExcepciones;
 import static crud.utilidades.ValidateUtilities.isValid;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -106,7 +107,7 @@ public class ControladorCambiarContrasena implements Initializable {
             stage.show();  // Mostrar el escenario
 
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al inicializar el stage", e);
+            clasificadorExcepciones(e, e.getMessage());
         }
     }
 
@@ -221,7 +222,7 @@ public class ControladorCambiarContrasena implements Initializable {
             cerrarVentana();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cambiar la contraseña.", e);
-            showErrorDialog(Alert.AlertType.ERROR, "Error", "Hubo un problema al procesar su solicitud. Inténtelo de nuevo más tarde.");
+            clasificadorExcepciones(e, e.getMessage());
         }
     }
 

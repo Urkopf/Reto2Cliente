@@ -6,6 +6,7 @@ import crud.objetosTransferibles.Cliente;
 import crud.objetosTransferibles.Estado;
 import crud.objetosTransferibles.Pedido;
 import crud.objetosTransferibles.Trabajador;
+import static crud.utilidades.ExcepcionesUtilidad.clasificadorExcepciones;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -360,7 +361,7 @@ public class ControladorPedidosBusqueda implements Initializable {
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al filtrar los pedidos", e);
-            mostrarError("Error al filtrar los pedidos", e.getMessage());
+            clasificadorExcepciones(e, e.getMessage());
         }
     }
 
@@ -466,8 +467,7 @@ public class ControladorPedidosBusqueda implements Initializable {
             comboBoxCIF.getItems().setAll(cifsClientes);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cargar los CIF de los clientes", e);
-            mostrarError("Error al cargar CIF",
-                    "No se pudieron cargar los CIF de los clientes.");
+            clasificadorExcepciones(e, e.getMessage());
         }
     }
 
@@ -480,8 +480,7 @@ public class ControladorPedidosBusqueda implements Initializable {
             comboBoxEstado.getItems().setAll(Estado.values());
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cargar los estados", e);
-            mostrarError("Error al cargar estados",
-                    "No se pudieron cargar las opciones de estado.");
+            clasificadorExcepciones(e, e.getMessage());
         }
     }
 

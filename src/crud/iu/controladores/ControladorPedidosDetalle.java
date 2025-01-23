@@ -14,6 +14,7 @@ import crud.objetosTransferibles.Trabajador;
 import crud.utilidades.AlertUtilities;
 
 import static crud.utilidades.AlertUtilities.showErrorDialog;
+import static crud.utilidades.ExcepcionesUtilidad.clasificadorExcepciones;
 
 import java.net.URL;
 import java.text.NumberFormat;
@@ -522,8 +523,7 @@ public class ControladorPedidosDetalle implements Initializable {
             campoCif.setItems(cifs);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cargar los CIF de los clientes", e);
-            mostrarAlerta(Alert.AlertType.ERROR, "Error",
-                    "No se pudieron cargar los CIF de los clientes.");
+            clasificadorExcepciones(e, e.getMessage());
         }
     }
 
@@ -740,8 +740,8 @@ public class ControladorPedidosDetalle implements Initializable {
             LOGGER.info("Cambios guardados exitosamente.");
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al guardar cambios", e);
-            showErrorDialog(Alert.AlertType.ERROR, "Error",
-                    "No se pudieron guardar los cambios. Intente nuevamente.");
+            clasificadorExcepciones(e, e.getMessage());
+
         }
     }
 

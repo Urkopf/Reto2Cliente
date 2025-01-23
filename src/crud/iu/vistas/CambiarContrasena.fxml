@@ -13,126 +13,126 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane id="signUp" minHeight="330.0" minWidth="695.0" prefHeight="384.0" prefWidth="695.0" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.ApplicationClientSignUpController">
+<AnchorPane id="signUp" minHeight="330.0" minWidth="695.0" prefHeight="384.0" prefWidth="695.0" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="crud.iu.controladores.ControladorCambiarContrasena">
     <children>
-      <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <bottom>
-            <HBox alignment="CENTER" prefHeight="71.0" prefWidth="695.0" spacing="100.0" BorderPane.alignment="CENTER">
-               <children>
-                     <Button fx:id="botonCancelar" maxWidth="Infinity" onAction="#handleButtonCancel" prefWidth="150.0" text="Cancelar" />
-                     <Button fx:id="botonGuardar" maxWidth="Infinity" onAction="#handleButtonRegister" text="Guardar cambios" />
-               </children>
-            </HBox>
-         </bottom>
-         <top>
-            <HBox alignment="CENTER" prefHeight="122.0" prefWidth="777.0" BorderPane.alignment="CENTER">
-               <children>
-                  <ImageView fitHeight="101.0" fitWidth="130.0" preserveRatio="true">
-                     <image>
-                        <Image url="@../../../recursos/logo_lite_clear.png" />
-                     </image>
-                  </ImageView>
-         
-                              <Label fx:id="labelTitulo1" styleClass="titulo" text="Cambiar contraseña" textAlignment="CENTER" />
-               </children>
-            </HBox>
-         </top>
-         <center>
-            <VBox spacing="10.0" BorderPane.alignment="CENTER">
-               <children>
-                  <HBox alignment="CENTER" spacing="10.0">
-                     <children>
-                        <ImageView fitHeight="40" fitWidth="40">
-                           <image>
-                              <Image url="@../../../recursos/iconos/old_key.png" />
-                           </image>
+        <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <bottom>
+                <HBox alignment="CENTER" prefHeight="71.0" prefWidth="695.0" spacing="100.0" BorderPane.alignment="CENTER">
+                    <children>
+                        <Button fx:id="botonCancelar" maxWidth="Infinity"  prefWidth="150.0" text="Cancelar" />
+                        <Button fx:id="botonGuardar" maxWidth="Infinity"  text="Guardar cambios" />
+                    </children>
+                </HBox>
+            </bottom>
+            <top>
+                <HBox alignment="CENTER" prefHeight="122.0" prefWidth="777.0" BorderPane.alignment="CENTER">
+                    <children>
+                        <ImageView fitHeight="101.0" fitWidth="130.0" preserveRatio="true">
+                            <image>
+                                <Image url="@../../../recursos/logo_lite_clear.png" />
+                            </image>
                         </ImageView>
-                        <Group>
-                           <children>
-                              <PasswordField id="passwordField" fx:id="campoContrasenaVieja" prefHeight="37.0" prefWidth="275.0" promptText="Contraseña actual">
-                                 <tooltip>
-                                    <Tooltip text="Ingrese su contraseña, minimo 8 caracteres, una mayúscula, una minúscula y un número" />
-                                 </tooltip>
-                              </PasswordField>
-                              <TextField id="passwordFieldVisual" fx:id="campoContrasenaViejaVista" prefHeight="37.0" prefWidth="275.0" promptText="Contraseña actual" visible="false">
-                                 <tooltip>
-                                    <Tooltip text="Ingrese su contraseña, minimo 8 caracteres, una mayúscula, una minúscula y un número" />
-                                 </tooltip>
-                              </TextField>
-                           </children>
-                        </Group>
-                        <ImageView fx:id="botonOjoVieja" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" styleClass="mostrarPassImage" translateX="-45.0">
-                           <image>
-                              <Image fx:id="imagePass1" url="@../../../recursos/iconos/visualizar.png" />
-                           </image>
-                        </ImageView>
-                     </children>
-                  </HBox>
-                  <HBox alignment="CENTER" spacing="10.0">
-                     <children>
-                        <ImageView fitHeight="40" fitWidth="40">
-                           <image>
-                              <Image url="@../../../recursos/iconos/contraseña.png" />
-                           </image>
-                        </ImageView>
-                        <Group>
-                           <children>
-                              <PasswordField id="passwordField" fx:id="campoContrasena" prefHeight="37.0" prefWidth="275.0" promptText="Contraseña nueva">
-                                 <tooltip>
-                                    <Tooltip text="Ingrese su contraseña, minimo 8 caracteres, una mayúscula, una minúscula y un número" />
-                                 </tooltip>
-                              </PasswordField>
-                              <TextField id="passwordFieldVisual" fx:id="campoContrasenaVista" prefHeight="37.0" prefWidth="275.0" promptText="Contraseña nueva" visible="false">
-                                 <tooltip>
-                                    <Tooltip text="Ingrese su contraseña, minimo 8 caracteres, una mayúscula, una minúscula y un número" />
-                                 </tooltip>
-                              </TextField>
-                           </children>
-                        </Group>
-                        <ImageView fx:id="botonOjoNueva" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" styleClass="mostrarPassImage" translateX="-45.0">
-                           <image>
-                              <Image fx:id="imagePass12" url="@../../../recursos/iconos/visualizar.png" />
-                           </image>
-                        </ImageView>
-                     </children>
-                  </HBox>
-                  <HBox alignment="CENTER" spacing="10.0">
-                     <children>
-                        <ImageView fitHeight="40" fitWidth="40">
-                           <image>
-                              <Image url="@../../../recursos/iconos/contraseñaconf.png" />
-                           </image>
-                        </ImageView>
-                        <Group>
-                           <children>
-                              <PasswordField id="passwordField" fx:id="campoRepiteContrasena" prefHeight="37.0" prefWidth="275.0" promptText="Repite contraseña nueva">
-                                 <tooltip>
-                                    <Tooltip text="Ingrese su contraseña, minimo 8 caracteres, una mayúscula, una minúscula y un número" />
-                                 </tooltip>
-                              </PasswordField>
-                              <TextField id="passwordFieldVisual" fx:id="campoRepiteContrasenaVista" prefHeight="37.0" prefWidth="275.0" promptText="Repite contraseña nueva" visible="false">
-                                 <tooltip>
-                                    <Tooltip text="Ingrese su contraseña, minimo 8 caracteres, una mayúscula, una minúscula y un número" />
-                                 </tooltip>
-                              </TextField>
-                           </children>
-                        </Group>
-                        <ImageView fx:id="botonOjoRepite" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" styleClass="mostrarPassImage" translateX="-45.0">
-                           <image>
-                              <Image fx:id="imagePass13" url="@../../../recursos/iconos/visualizar.png" />
-                           </image>
-                        </ImageView>
-                     </children>
-                  </HBox>
-               </children>
-            </VBox>
-         </center>
-      </BorderPane>
-      <ImageView fx:id="botonAyuda" fitHeight="43.0" fitWidth="43.0" layoutX="824.0" layoutY="3.0" pickOnBounds="true" preserveRatio="true" styleClass="mostrarPassImage" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
-         <image>
-            <Image fx:id="imagePass11" url="@../../../recursos/iconos/ayuda.png" />
-         </image>
-      </ImageView>
+
+                        <Label fx:id="labelTitulo1" styleClass="titulo" text="Cambiar contraseña" textAlignment="CENTER" />
+                    </children>
+                </HBox>
+            </top>
+            <center>
+                <VBox spacing="10.0" BorderPane.alignment="CENTER">
+                    <children>
+                        <HBox alignment="CENTER" spacing="10.0">
+                            <children>
+                                <ImageView fitHeight="40" fitWidth="40">
+                                    <image>
+                                        <Image url="@../../../recursos/iconos/old_key.png" />
+                                    </image>
+                                </ImageView>
+                                <Group>
+                                    <children>
+                                        <PasswordField id="passwordField" fx:id="campoContrasenaVieja" prefHeight="37.0" prefWidth="275.0" promptText="Contraseña actual">
+                                            <tooltip>
+                                                <Tooltip text="Ingrese su contraseña, minimo 8 caracteres, una mayúscula, una minúscula y un número" />
+                                            </tooltip>
+                                        </PasswordField>
+                                        <TextField id="passwordFieldVisual" fx:id="campoContrasenaViejaVista" prefHeight="37.0" prefWidth="275.0" promptText="Contraseña actual" visible="false">
+                                            <tooltip>
+                                                <Tooltip text="Ingrese su contraseña, minimo 8 caracteres, una mayúscula, una minúscula y un número" />
+                                            </tooltip>
+                                        </TextField>
+                                    </children>
+                                </Group>
+                                <ImageView fx:id="botonOjoVieja" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" styleClass="mostrarPassImage" translateX="-45.0">
+                                    <image>
+                                        <Image fx:id="imagePass1" url="@../../../recursos/iconos/visualizar.png" />
+                                    </image>
+                                </ImageView>
+                            </children>
+                        </HBox>
+                        <HBox alignment="CENTER" spacing="10.0">
+                            <children>
+                                <ImageView fitHeight="40" fitWidth="40">
+                                    <image>
+                                        <Image url="@../../../recursos/iconos/contraseña.png" />
+                                    </image>
+                                </ImageView>
+                                <Group>
+                                    <children>
+                                        <PasswordField id="passwordField" fx:id="campoContrasena" prefHeight="37.0" prefWidth="275.0" promptText="Contraseña nueva">
+                                            <tooltip>
+                                                <Tooltip text="Ingrese su contraseña, minimo 8 caracteres, una mayúscula, una minúscula y un número" />
+                                            </tooltip>
+                                        </PasswordField>
+                                        <TextField id="passwordFieldVisual" fx:id="campoContrasenaVista" prefHeight="37.0" prefWidth="275.0" promptText="Contraseña nueva" visible="false">
+                                            <tooltip>
+                                                <Tooltip text="Ingrese su contraseña, minimo 8 caracteres, una mayúscula, una minúscula y un número" />
+                                            </tooltip>
+                                        </TextField>
+                                    </children>
+                                </Group>
+                                <ImageView fx:id="botonOjoNueva" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" styleClass="mostrarPassImage" translateX="-45.0">
+                                    <image>
+                                        <Image fx:id="imagePass12" url="@../../../recursos/iconos/visualizar.png" />
+                                    </image>
+                                </ImageView>
+                            </children>
+                        </HBox>
+                        <HBox alignment="CENTER" spacing="10.0">
+                            <children>
+                                <ImageView fitHeight="40" fitWidth="40">
+                                    <image>
+                                        <Image url="@../../../recursos/iconos/contraseñaconf.png" />
+                                    </image>
+                                </ImageView>
+                                <Group>
+                                    <children>
+                                        <PasswordField id="passwordField" fx:id="campoRepiteContrasena" prefHeight="37.0" prefWidth="275.0" promptText="Repite contraseña nueva">
+                                            <tooltip>
+                                                <Tooltip text="Ingrese su contraseña, minimo 8 caracteres, una mayúscula, una minúscula y un número" />
+                                            </tooltip>
+                                        </PasswordField>
+                                        <TextField id="passwordFieldVisual" fx:id="campoRepiteContrasenaVista" prefHeight="37.0" prefWidth="275.0" promptText="Repite contraseña nueva" visible="false">
+                                            <tooltip>
+                                                <Tooltip text="Ingrese su contraseña, minimo 8 caracteres, una mayúscula, una minúscula y un número" />
+                                            </tooltip>
+                                        </TextField>
+                                    </children>
+                                </Group>
+                                <ImageView fx:id="botonOjoRepite" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" styleClass="mostrarPassImage" translateX="-45.0">
+                                    <image>
+                                        <Image fx:id="imagePass13" url="@../../../recursos/iconos/visualizar.png" />
+                                    </image>
+                                </ImageView>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+            </center>
+        </BorderPane>
+        <ImageView fx:id="botonAyuda" fitHeight="43.0" fitWidth="43.0" layoutX="824.0" layoutY="3.0" pickOnBounds="true" preserveRatio="true" styleClass="mostrarPassImage" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+            <image>
+                <Image fx:id="imagePass11" url="@../../../recursos/iconos/ayuda.png" />
+            </image>
+        </ImageView>
     </children>
 
 </AnchorPane>
