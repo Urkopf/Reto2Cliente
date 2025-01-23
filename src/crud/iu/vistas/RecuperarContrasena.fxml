@@ -12,56 +12,56 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane id="signUp" minHeight="330.0" minWidth="777.0" prefHeight="384.0" prefWidth="777.0" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.ApplicationClientSignUpController">
+<AnchorPane  minHeight="330.0" minWidth="777.0" prefHeight="384.0" prefWidth="777.0" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="crud.iu.controladores.ControladorRecuperarContrasena">
     <children>
-      <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <center>
-            <VBox alignment="CENTER" BorderPane.alignment="CENTER_RIGHT">
-               <children>
-                  <Label fx:id="labelTitulo2" prefHeight="66.0" prefWidth="586.0" text="Se enviará la contraseña nueva al correo electrónico con que se registró, asegurese que es correcto." textAlignment="CENTER" wrapText="true">
-                     <padding>
-                        <Insets bottom="20.0" />
-                     </padding>
-                  </Label>
-                  <HBox alignment="CENTER" spacing="10.0">
-                     <children>
-                           <TextField id="nameField" fx:id="campoCorreo" prefHeight="37.0" prefWidth="530.0" promptText="Correo de recuperación">
-                               <tooltip>
-                                   <Tooltip text="Ingrese su nombre" />
-                               </tooltip>
-                           </TextField>
-                     </children>
-                  </HBox>
-               </children>
-            </VBox>
-         </center>
-         <bottom>
-            <HBox alignment="CENTER" prefHeight="101.0" prefWidth="900.0" spacing="100.0" BorderPane.alignment="CENTER">
-               <children>
-                     <Button fx:id="botonCancelar" maxWidth="Infinity" onAction="#handleButtonCancel" prefWidth="150.0" text="Cancelar" />
-                     <Button fx:id="botonRecuperar" maxWidth="Infinity" onAction="#handleButtonRegister" text="Recuperar contraseña" />
-               </children>
-            </HBox>
-         </bottom>
-         <top>
-            <HBox alignment="CENTER" prefHeight="122.0" prefWidth="777.0" BorderPane.alignment="CENTER">
-               <children>
-                  <ImageView fitHeight="101.0" fitWidth="130.0" preserveRatio="true">
-                     <image>
-                        <Image url="@../../../recursos/logo_lite_clear.png" />
-                     </image>
-                  </ImageView>
-         
-                              <Label fx:id="labelTitulo1" styleClass="titulo" text="Recuperar contraseña" textAlignment="CENTER" />
-               </children>
-            </HBox>
-         </top>
-      </BorderPane>
-      <ImageView fx:id="botonAyuda" fitHeight="43.0" fitWidth="43.0" layoutX="824.0" layoutY="3.0" pickOnBounds="true" preserveRatio="true" styleClass="mostrarPassImage" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
-         <image>
-            <Image fx:id="imagePass11" url="@../../../recursos/iconos/ayuda.png" />
-         </image>
-      </ImageView>
+        <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <center>
+                <VBox alignment="CENTER" BorderPane.alignment="CENTER_RIGHT">
+                    <children>
+                        <Label fx:id="labelTitulo2" prefHeight="66.0" prefWidth="586.0" text="Se enviará la contraseña nueva al correo electrónico con que se registró, asegurese que es correcto." textAlignment="CENTER" wrapText="true">
+                            <padding>
+                                <Insets bottom="20.0" />
+                            </padding>
+                        </Label>
+                        <HBox alignment="CENTER" spacing="10.0">
+                            <children>
+                                <TextField id="nameField" fx:id="campoCorreo" prefHeight="37.0" prefWidth="530.0" promptText="Correo de recuperación">
+                                    <tooltip>
+                                        <Tooltip text="Ingrese su nombre" />
+                                    </tooltip>
+                                </TextField>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+            </center>
+            <bottom>
+                <HBox alignment="CENTER" prefHeight="101.0" prefWidth="900.0" spacing="100.0" BorderPane.alignment="CENTER">
+                    <children>
+                        <Button fx:id="botonCancelar" maxWidth="Infinity"  prefWidth="150.0" text="Cancelar" />
+                        <Button fx:id="botonRecuperar" maxWidth="Infinity"  text="Recuperar contraseña" />
+                    </children>
+                </HBox>
+            </bottom>
+            <top>
+                <HBox alignment="CENTER" prefHeight="122.0" prefWidth="777.0" BorderPane.alignment="CENTER">
+                    <children>
+                        <ImageView fitHeight="101.0" fitWidth="130.0" preserveRatio="true">
+                            <image>
+                                <Image url="@../../../recursos/logo_lite_clear.png" />
+                            </image>
+                        </ImageView>
+
+                        <Label fx:id="labelTitulo1" styleClass="titulo" text="Recuperar contraseña" textAlignment="CENTER" />
+                    </children>
+                </HBox>
+            </top>
+        </BorderPane>
+        <ImageView fx:id="botonAyuda" fitHeight="43.0" fitWidth="43.0" layoutX="824.0" layoutY="3.0" pickOnBounds="true" preserveRatio="true" styleClass="mostrarPassImage" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+            <image>
+                <Image fx:id="imagePass11" url="@../../../recursos/iconos/ayuda.png" />
+            </image>
+        </ImageView>
     </children>
 
 </AnchorPane>

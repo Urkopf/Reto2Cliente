@@ -21,7 +21,7 @@
         <BorderPane fx:id="BorderPane" maxHeight="768.0" maxWidth="1024.0" prefWidth="1024">
             <top>
 
-                <fx:include source="MenuVentanas.fxml" />
+                <fx:include fx:id="menuBar" source="MenuVentanas.fxml" />
                 
             </top>
 

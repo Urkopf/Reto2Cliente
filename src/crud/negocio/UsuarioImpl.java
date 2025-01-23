@@ -46,4 +46,27 @@ public class UsuarioImpl implements IUsuario {
         return user;
     }
 
+    @Override
+    public Object getCambiarContrasena(Usuario usuario) {
+
+        Object user = null;
+        try {
+            user = usuarioCliente.cambiar_XML(usuario);
+        } catch (Exception e) {
+            //Falta implementar las excepciones
+        }
+        return user;
+    }
+
+    @Override
+    public Object getRecuperarContrasena(Usuario usuario) {
+        Object user = null;
+        try {
+            user = usuarioCliente.recuperar_XML(usuario);
+        } catch (Exception e) {
+            //Falta implementar las excepciones
+        }
+        return user;
+    }
+
 }

@@ -54,6 +54,7 @@ public class FactoriaPedidos {
             ControladorPedidosPrincipal controlador = cargador.getController();
             controlador.setStage(stage);
             controlador.setUser(user);
+            controlador.setBusqueda(pedidoBusqueda);
             controlador.initStage(root);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al abrir la ventnaa de PedidosPrincipal: {0}", e.getMessage());
