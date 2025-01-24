@@ -1,6 +1,7 @@
 package crud.iu.controladores;
 
 import crud.excepciones.LogicaNegocioException;
+import crud.negocio.FactoriaArticulos;
 import crud.negocio.FactoriaPedidoArticulo;
 import crud.negocio.FactoriaPedidos;
 import crud.negocio.FactoriaUsuarios;
@@ -41,6 +42,8 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TableCell;
@@ -49,6 +52,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 /**
@@ -69,6 +74,7 @@ public class ControladorPedidosPrincipal implements Initializable {
     // <editor-fold defaultstate="collapsed" desc="Campos de negocio y lógica">
     private final FactoriaPedidos factoriaPedidos = FactoriaPedidos.getInstance();
     private final FactoriaUsuarios factoriaUsuarios = FactoriaUsuarios.getInstance();
+    private final FactoriaArticulos factoriaArticulos = FactoriaArticulos.getInstance();
 
     private Stage stage;
     private Usuario usuario;
@@ -152,6 +158,8 @@ public class ControladorPedidosPrincipal implements Initializable {
         stage.setTitle("Gestión de Pedidos");
         LOGGER.info("Inicializando la escena principal");
 
+        configurarMenu();
+
         configurarHandlers();
         configurarListeners();
         stage.show();
@@ -169,6 +177,66 @@ public class ControladorPedidosPrincipal implements Initializable {
     public void setStage(Stage stage) {
         this.stage = stage;
         LOGGER.info("Stage asignado.");
+    }
+
+    public void configurarMenu() {
+        // Obtiene el BorderPane de la raíz
+        BorderPane borderPane = (BorderPane) anchorPane.getChildrenUnmodifiable().get(0);
+
+        // Obtiene el menú incluido desde el BorderPane (posición superior)
+        MenuBar menuBar = (MenuBar) borderPane.getTop();
+
+        // Accede a los menús dentro del menú incluido
+        Menu menuPrincipal = menuBar.getMenus().get(0); // Primer menú ("Menú")
+        Menu menuIr = menuBar.getMenus().get(1);       // Segundo menú ("Ir a")
+
+        // Configura un listener para cada opción dentro del menú "Menú"
+        MenuItem opcionImprimir = menuPrincipal.getItems().get(0); // "Imprimir informe"
+        opcionImprimir.setOnAction(event -> imprimirInforme());
+
+        MenuItem opcionCerrarSesion = menuPrincipal.getItems().get(1); // "Cerrar sesión"
+        opcionCerrarSesion.setOnAction(event -> cerrarSesion());
+
+        MenuItem opcionSalir = menuPrincipal.getItems().get(2); // "Salir del programa"
+        opcionSalir.setOnAction(event -> salirPrograma());
+
+        MenuItem opcionVolver = menuPrincipal.getItems().get(3); // "Volver al Menú principal"
+        opcionVolver.setOnAction(event -> volverAlMenuPrincipal());
+
+        // Configura un listener para las opciones del menú "Ir a"
+        MenuItem opcionIrPedidos = menuIr.getItems().get(0); // "Vista Pedido"
+        opcionIrPedidos.setVisible(false);
+
+        MenuItem opcionIrArticulos = menuIr.getItems().get(1); // "Vista Artículo"
+        if (userCliente != null) {
+            menuIr.setVisible(false);
+            opcionIrArticulos.setVisible(false);
+            opcionIrArticulos.setOnAction(event -> irVistaArticulos());
+        }
+
+    }
+
+    // Métodos de acción
+    private void imprimirInforme() {
+        System.out.println("Imprimiendo informe...");
+    }
+
+    private void cerrarSesion() {
+        System.out.println("Cerrando sesión...");
+        stage.close();
+    }
+
+    private void salirPrograma() {
+        System.out.println("Saliendo del programa...");
+        System.exit(0);
+    }
+
+    private void volverAlMenuPrincipal() {
+        factoriaUsuarios.cargarMenuPrincipal(stage, (userCliente != null) ? userCliente : userTrabajador);
+    }
+
+    private void irVistaArticulos() {
+        factoriaArticulos.cargarArticulosPrincipal(stage, (userCliente != null) ? userCliente : userTrabajador);
     }
 
     /**

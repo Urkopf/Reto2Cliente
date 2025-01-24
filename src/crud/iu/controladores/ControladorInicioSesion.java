@@ -201,7 +201,7 @@ public class ControladorInicioSesion implements Initializable {
             if (!campoEmail.getText().equals("")) {
                 campoContrasena.requestFocus();  // Establece el foco en el campo de contraseña
             }
-
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/recursos/icon.png")));
             // Configurar la visibilidad de la contraseña
             botonOjo.setOnMousePressed(event -> {
                 if (event.getButton() == MouseButton.PRIMARY) {

@@ -87,7 +87,14 @@ public class ControladorCambiarContrasena implements Initializable {
     @FXML
     private void handleButtonCancel(ActionEvent event) {
         LOGGER.info("Botón Cancelar presionado.");
-        cerrarVentana();
+        ventanaPadre();
+
+    }
+
+    private void ventanaPadre() {
+
+        factoria.cargarMenuPrincipal(stage, (userCliente != null) ? userCliente : userTrabajador);
+
     }
 
     public void setStage(Stage stage) {
@@ -105,7 +112,8 @@ public class ControladorCambiarContrasena implements Initializable {
 
             //configurarTeclasMnemotecnicas();  // Configurar teclas mnemotécnicas
             stage.show();  // Mostrar el escenario
-
+            botonCancelar.addEventHandler(ActionEvent.ACTION, this::handleButtonCancel);
+            botonGuardar.addEventHandler(ActionEvent.ACTION, this::handleButtonRegister);
         } catch (Exception e) {
             clasificadorExcepciones(e, e.getMessage());
         }
@@ -128,7 +136,7 @@ public class ControladorCambiarContrasena implements Initializable {
             return;
         }
 
-        if (!isValid(contrasenaNueva, "password")) {
+        if (!isValid(contrasenaNueva, "pass")) {
             showErrorDialog(Alert.AlertType.ERROR, "Contraseña no válida", "La nueva contraseña no cumple con los requisitos mínimos.");
             LOGGER.warning("Contraseña no válida.");
             return;
@@ -141,6 +149,7 @@ public class ControladorCambiarContrasena implements Initializable {
         }
 
         enviarCambioContrasena(contrasenaVieja, contrasenaNueva);
+
     }
 
     /**
@@ -219,17 +228,11 @@ public class ControladorCambiarContrasena implements Initializable {
 
             factoria.inicioSesion().getCambiarContrasena(usuario);
             showErrorDialog(Alert.AlertType.INFORMATION, "Cambio exitoso", "La contraseña ha sido cambiada correctamente.");
-            cerrarVentana();
+            ventanaPadre();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cambiar la contraseña.", e);
             clasificadorExcepciones(e, e.getMessage());
         }
     }
 
-    /**
-     * Cierra la ventana actual.
-     */
-    private void cerrarVentana() {
-        botonCancelar.getScene().getWindow().hide();
-    }
 }
