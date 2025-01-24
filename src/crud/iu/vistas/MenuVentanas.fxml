@@ -31,7 +31,7 @@
         <!-- Menú Ayuda -->
         <Menu text="Ayuda">
             <items>
-                <MenuItem text="Ver manual" />
+                <MenuItem fx:id="opcionAyuda" text="Ver manual" />
             </items>
         </Menu>
     </menus>

@@ -8,6 +8,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -18,6 +20,11 @@
 
 <AnchorPane fx:id="AnchorPane" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="crud.iu.controladores.ControladorPedidosBusqueda">
     <children>
+      <ImageView fx:id="botonAyuda" fitHeight="43.0" fitWidth="43.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="8.0">
+         <image>
+            <Image url="@../../../recursos/iconos/ayuda.png" />
+         </image>
+      </ImageView>
         <BorderPane fx:id="BorderPane" prefHeight="500" prefWidth="800">
             <top>
 
@@ -27,7 +34,7 @@
                 <VBox prefWidth="801.0" spacing="10">
                <VBox alignment="CENTER_LEFT" prefHeight="438.0" prefWidth="761.0" spacing="30.0">
                   <children>
-                     <HBox fx:id="hBoxIdPedido" alignment="CENTER_LEFT">
+                     <HBox fx:id="botonAyuda" alignment="CENTER_LEFT">
                         <children>
                            <CheckBox fx:id="checkBoxIdPedido" mnemonicParsing="false" text="Por ID de pedido, desde  " />
                            <Spinner fx:id="spinnerIdDesde" prefHeight="35.0" prefWidth="180.0" />

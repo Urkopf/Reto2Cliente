@@ -205,6 +205,14 @@ public class ControladorInicioSesion implements Initializable {
             botonAyuda.setOnMouseClicked(event -> {
                 mostrarAyuda();
             });
+            botonAyuda.setOnMouseEntered(event -> {
+                botonAyuda.setStyle("-fx-cursor: hand;"); // Cambia el cursor al pasar el ratón
+            });
+
+            botonAyuda.setOnMouseExited(event -> {
+                botonAyuda.setStyle("-fx-cursor: default;"); // Vuelve al cursor normal al salir
+            });
+
             if (!campoEmail.getText().equals("")) {
                 campoContrasena.requestFocus();  // Establece el foco en el campo de contraseña
             }

@@ -25,6 +25,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 
@@ -46,6 +47,8 @@ public class ControladorMenuPrincipal implements Initializable {
     private Label labelTitulo;
     @FXML
     private Button botonSalir;
+    @FXML
+    private ImageView botonAyuda;
     @FXML
     private Button botonCerrarSesion;
     @FXML
@@ -132,7 +135,16 @@ public class ControladorMenuPrincipal implements Initializable {
             botonCerrarSesion.addEventHandler(ActionEvent.ACTION, this::manejarBotonCerrarSesion);
             botonSalir.setOnAction(null);
             botonSalir.addEventHandler(ActionEvent.ACTION, this::manejarBotonSalir);
+            botonAyuda.setOnMouseClicked(event -> {
+                mostrarAyuda();
+            });
+            botonAyuda.setOnMouseEntered(event -> {
+                botonAyuda.setStyle("-fx-cursor: hand;"); // Cambia el cursor al pasar el ratón
+            });
 
+            botonAyuda.setOnMouseExited(event -> {
+                botonAyuda.setStyle("-fx-cursor: default;"); // Vuelve al cursor normal al salir
+            });
             //configurarTeclasMnemotecnicas();  // Configurar teclas mnemotécnicas
             stage.show();  // Mostrar el escenario
 
@@ -266,5 +278,9 @@ public class ControladorMenuPrincipal implements Initializable {
 
     private void salir() {
         stage.close();
+    }
+
+    private void mostrarAyuda() {
+        factoriaUsuarios.cargarAyuda("menuPrincipal");
     }
 }

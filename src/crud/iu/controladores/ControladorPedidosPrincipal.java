@@ -96,10 +96,6 @@ public class ControladorPedidosPrincipal implements Initializable {
     @FXML
     private AnchorPane anchorPane;
     @FXML
-    private MenuItem opcionIrPedidos;
-    @FXML
-    private MenuItem opcionIrArticulos;
-    @FXML
     private Button botonNuevo;
     @FXML
     private Button botonReiniciar;
@@ -188,7 +184,8 @@ public class ControladorPedidosPrincipal implements Initializable {
 
         // Accede a los menús dentro del menú incluido
         Menu menuPrincipal = menuBar.getMenus().get(0); // Primer menú ("Menú")
-        Menu menuIr = menuBar.getMenus().get(1);       // Segundo menú ("Ir a")
+        Menu menuIr = menuBar.getMenus().get(1);
+        Menu menuAyuda = menuBar.getMenus().get(2);
 
         // Configura un listener para cada opción dentro del menú "Menú"
         MenuItem opcionImprimir = menuPrincipal.getItems().get(0); // "Imprimir informe"
@@ -213,6 +210,10 @@ public class ControladorPedidosPrincipal implements Initializable {
             opcionIrArticulos.setVisible(false);
             opcionIrArticulos.setOnAction(event -> irVistaArticulos());
         }
+        MenuItem botonAyuda = menuIr.getItems().get(0);
+        botonAyuda.setOnAction(event -> {
+            mostrarAyuda();
+        });
 
     }
 
@@ -1287,4 +1288,8 @@ public class ControladorPedidosPrincipal implements Initializable {
         });
     }
     // </editor-fold>
+
+    private void mostrarAyuda() {
+        factoriaUsuarios.cargarAyuda("pedidosPrincipal");
+    }
 }

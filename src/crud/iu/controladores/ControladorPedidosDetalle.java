@@ -40,6 +40,9 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TableCell;
@@ -49,6 +52,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 /**
@@ -201,7 +205,7 @@ public class ControladorPedidosDetalle implements Initializable {
         stage.setTitle("Detalles del pedido");
 
         LOGGER.info("Inicializando la escena principal");
-
+        configurarMenu();
         configurarHandlers();
         stage.show();
 
@@ -239,6 +243,71 @@ public class ControladorPedidosDetalle implements Initializable {
      */
     public void setPedido(Pedido pedido) {
         this.pedido = pedido;
+    }
+
+    public void configurarMenu() {
+        // Obtiene el BorderPane de la raíz
+        BorderPane borderPane = (BorderPane) anchorPane.getChildrenUnmodifiable().get(0);
+
+        // Obtiene el menú incluido desde el BorderPane (posición superior)
+        MenuBar menuBar = (MenuBar) borderPane.getTop();
+
+        // Accede a los menús dentro del menú incluido
+        Menu menuPrincipal = menuBar.getMenus().get(0); // Primer menú ("Menú")
+        Menu menuIr = menuBar.getMenus().get(1);
+        Menu menuAyuda = menuBar.getMenus().get(2);
+
+        // Configura un listener para cada opción dentro del menú "Menú"
+        MenuItem opcionImprimir = menuPrincipal.getItems().get(0); // "Imprimir informe"
+        opcionImprimir.setOnAction(event -> imprimirInforme());
+
+        MenuItem opcionCerrarSesion = menuPrincipal.getItems().get(1); // "Cerrar sesión"
+        opcionCerrarSesion.setOnAction(event -> cerrarSesion());
+
+        MenuItem opcionSalir = menuPrincipal.getItems().get(2); // "Salir del programa"
+        opcionSalir.setOnAction(event -> salirPrograma());
+
+        MenuItem opcionVolver = menuPrincipal.getItems().get(3); // "Volver al Menú principal"
+        opcionVolver.setOnAction(event -> volverAlMenuPrincipal());
+
+        // Configura un listener para las opciones del menú "Ir a"
+        MenuItem opcionIrPedidos = menuIr.getItems().get(0); // "Vista Pedido"
+        opcionIrPedidos.setVisible(false);
+
+        MenuItem opcionIrArticulos = menuIr.getItems().get(1); // "Vista Artículo"
+        if (userCliente != null) {
+            menuIr.setVisible(false);
+            opcionIrArticulos.setVisible(false);
+            opcionIrArticulos.setOnAction(event -> irVistaArticulos());
+        }
+        MenuItem botonAyuda = menuIr.getItems().get(0);
+        botonAyuda.setOnAction(event -> {
+            mostrarAyuda();
+        });
+
+    }
+
+    // Métodos de acción
+    private void imprimirInforme() {
+        System.out.println("Imprimiendo informe...");
+    }
+
+    private void cerrarSesion() {
+        System.out.println("Cerrando sesión...");
+        stage.close();
+    }
+
+    private void salirPrograma() {
+        System.out.println("Saliendo del programa...");
+        System.exit(0);
+    }
+
+    private void volverAlMenuPrincipal() {
+        factoriaUsuarios.cargarMenuPrincipal(stage, (userCliente != null) ? userCliente : userTrabajador);
+    }
+
+    private void irVistaArticulos() {
+        factoriaArticulos.cargarArticulosPrincipal(stage, (userCliente != null) ? userCliente : userTrabajador);
     }
 
     /**
@@ -896,5 +965,10 @@ public class ControladorPedidosDetalle implements Initializable {
                 .findFirst()
                 .orElse(null);
     }
+
+    private void mostrarAyuda() {
+        factoriaUsuarios.cargarAyuda("pedidosDetalle");
+    }
     // </editor-fold>
+
 }
