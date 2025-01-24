@@ -127,12 +127,12 @@ public class FactoriaUsuarios {
         }
     }
 
-    public void cargarAyuda(Stage stage, String titulo) {
+    public void cargarAyuda(String titulo) {
         try {
             FXMLLoader cargador = new FXMLLoader(getClass().getResource("/crud/iu/vistas/Ayuda_" + titulo + ".fxml"));
             Parent root = cargador.load();
             ControladorAyuda controlador = cargador.getController();
-            controlador.setStage(stage);
+
             controlador.setTipo(titulo);
             controlador.initStage(root);
         } catch (Exception e) {

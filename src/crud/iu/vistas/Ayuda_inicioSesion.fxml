@@ -8,11 +8,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.WebView?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml/1" fx:controller="crud.iu.controladores.ControladorAyuda">
-    <stylesheets>
-        <URL value="@estilos.css"/>
-    </stylesheets>
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" styleClass="@estilos.css" xmlns:fx="http://javafx.com/fxml/1" fx:controller="crud.iu.controladores.ControladorAyuda">
     <children>
-      <WebView fx:id="webView" layoutX="9.0" layoutY="7.0" />
-   </children>
+        <WebView fx:id="webView" layoutX="9.0" layoutY="7.0" />
+    </children>
 </AnchorPane>

@@ -36,7 +36,7 @@ public class ControladorAyuda implements Initializable {
      */
     public void initStage(Parent root) {
         Scene scene = new Scene(root);
-        stage.setScene(scene);
+        stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setScene(scene);
         stage.setTitle("Ayuda para la Gestion de Usuarios");
@@ -51,17 +51,12 @@ public class ControladorAyuda implements Initializable {
         WebEngine webEngine = webView.getEngine();
         //Load help page.
         webEngine.load(getClass()
-                .getResource("/crud/recursos/ayuda/ayuda_" + tipo + ".html").toExternalForm());
+                .getResource("/recursos/ayuda/ayuda_" + tipo + ".html").toExternalForm());
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-    }
-
-    public void setStage(Stage stage) {
-        this.stage = stage;
-        LOGGER.info("Stage asignado.");
     }
 
     public void setTipo(String tipo) {

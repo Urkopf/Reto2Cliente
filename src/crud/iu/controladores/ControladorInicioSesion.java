@@ -78,6 +78,8 @@ public class ControladorInicioSesion implements Initializable {
     @FXML
     private Button botonRegistrar;  // Hipervínculo para ir a la página de registro
     @FXML
+    private Button botonSalir;
+    @FXML
     private GridPane gridPane;  // Contenedor de todos los campos del formulario
     @FXML
     private ImageView errorEmail;  // Icono de error para el campo de inicio de sesión
@@ -89,6 +91,8 @@ public class ControladorInicioSesion implements Initializable {
     private Button botonActualizar;
     @FXML
     private Button botonRecuperar;
+    @FXML
+    private ImageView botonAyuda;
 
     private ContextMenu contextMenu;  // Menú contextual personalizado
     private Boolean actualizar = false;
@@ -197,7 +201,10 @@ public class ControladorInicioSesion implements Initializable {
             botonIniciarSesion.addEventHandler(ActionEvent.ACTION, this::handleButtonLoginButton);
             botonRegistrar.addEventHandler(ActionEvent.ACTION, this::handleButtonRegistro);  // Manejar clic en el hipervínculo de registro
             botonRecuperar.addEventHandler(ActionEvent.ACTION, this::handleBotonRecuperar);
-
+            botonSalir.addEventHandler(ActionEvent.ACTION, this::handleButtonSalir);
+            botonAyuda.setOnMouseClicked(event -> {
+                mostrarAyuda();
+            });
             if (!campoEmail.getText().equals("")) {
                 campoContrasena.requestFocus();  // Establece el foco en el campo de contraseña
             }
@@ -220,6 +227,10 @@ public class ControladorInicioSesion implements Initializable {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al inicializar el stage", e);
         }
+    }
+
+    private void mostrarAyuda() {
+        factoria.cargarAyuda("inicioSesion");
     }
 
     /**
@@ -280,6 +291,10 @@ public class ControladorInicioSesion implements Initializable {
     @FXML
     private void handleButtonRegistro(ActionEvent event) {
         factoria.cargarRegistro(stage, null);  // Cargar la ventana de registro
+    }
+
+    private void handleButtonSalir(ActionEvent event) {
+        stage.close();
     }
 
     /**

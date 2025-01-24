@@ -624,10 +624,6 @@ public class ControladorRegistro implements Initializable {
         dialog.setHeaderText("Para registrar a un Trabajador, es necesaria una clave única.");
         dialog.setContentText("Introduce la clave única:");
 
-        // Estilos (si los usas)
-        dialog.getDialogPane().getStylesheets().add(
-                getClass().getResource("crud/iu/vistas/estilos.css").toExternalForm()
-        );
         dialog.getDialogPane().getStyleClass().add("myDialog");
 
         // Mostrar diálogo y esperar resultado
