@@ -64,6 +64,15 @@ public class ControladorArticulosDetalle implements Initializable {
     private TableColumn<Almacen, String> columnaEspacios;
 
     @FXML
+    private TableView<Almacen> tablaAlmacenesArticulo;
+    @FXML
+    private TableColumn<Almacen, Long> columnaId2;
+    @FXML
+    private TableColumn<Almacen, String> columnaDireccion2;
+    @FXML
+    private TableColumn<Almacen, String> columnaEspacios2;
+
+    @FXML
     private TextField campoId;
     @FXML
     private TextField campoNombre;
@@ -126,6 +135,11 @@ public class ControladorArticulosDetalle implements Initializable {
         LOGGER.info("Stage asignado.");
     }
 
+    public void setArticulo(Articulo articulo) {
+        this.articulo = articulo;
+        LOGGER.info("Articulo asignado.");
+    }
+
     private void configurarTablas() {
 
         columnaId.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -133,6 +147,12 @@ public class ControladorArticulosDetalle implements Initializable {
         columnaEspacios.setCellValueFactory(new PropertyValueFactory<>("espacio"));
 
         tablaAlmacenesDisponibles.getColumns().forEach(col -> col.setSortable(false));
+
+        columnaId2.setCellValueFactory(new PropertyValueFactory<>("id"));
+        columnaDireccion2.setCellValueFactory(new PropertyValueFactory<>("direccion"));
+        columnaEspacios2.setCellValueFactory(new PropertyValueFactory<>("espacio"));
+
+        tablaAlmacenesArticulo.getColumns().forEach(col -> col.setSortable(false));
     }
 
     private void cargarAlmacenesDisponibles() {
