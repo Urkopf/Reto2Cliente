@@ -10,6 +10,7 @@ import crud.objetosTransferibles.Almacen;
 import crud.rest.AlmacenRestFull;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.core.GenericType;
 
@@ -35,6 +36,19 @@ public class AlmacenImpl implements IAlmacen {
             });
         } catch (Exception e) {
             throw new LogicaNegocioException("Error");
+        }
+        return almacenes;
+    }
+
+    @Override
+    public Collection<Almacen> getAllAlmacenesById(Long id) throws LogicaNegocioException {
+        List<Almacen> almacenes;
+        try {
+            LOGGER.log(Level.INFO, "Estoy en la Implementacion {0}", id);
+            almacenes = cliente.findById_XML(new GenericType<List<Almacen>>() {
+            }, id);
+        } catch (Exception e) {
+            throw new LogicaNegocioException(e.getMessage());
         }
         return almacenes;
     }

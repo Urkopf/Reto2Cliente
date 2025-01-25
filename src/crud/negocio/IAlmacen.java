@@ -17,4 +17,5 @@ public interface IAlmacen {
 
     public Collection<Almacen> getAllAlmacenes() throws LogicaNegocioException;
 
+    public Collection<Almacen> getAllAlmacenesById(Long id) throws LogicaNegocioException;
 }

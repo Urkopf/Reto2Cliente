@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -39,7 +40,7 @@ public class ControladorArticulosDetalle implements Initializable {
     private Stage stage;
     private Articulo articulo;
     private Trabajador userTrabajador;
-    private ObservableList<Articulo> articulos;
+    private ObservableList<Almacen> almacenesPorArticulo;
     private ObservableList<Almacen> almacenesDisponibles;
 
     // Elementos FXML
@@ -88,6 +89,7 @@ public class ControladorArticulosDetalle implements Initializable {
     // Copia de seguridad de los datos originales
     private ObservableList<Articulo> articulosOriginales;
     private ObservableList<Almacen> almacenesOriginales;
+    private ObservableList<Almacen> almacenesDelArticulo;
 
     public void initStage(Parent root) {
         Scene scene = new Scene(root);
@@ -98,18 +100,8 @@ public class ControladorArticulosDetalle implements Initializable {
         stage.show();  // Mostrar el escenario
 
         if (articulo != null) {
-            campoId.setText(String.valueOf(articulo.getId()));
-            campoNombre.setText(articulo.getNombre());
-            campoPrecio.setText(articulo.getPrecio() + "€");
-            campoDescripcion.setText(articulo.getDescripcion());
-            campoStock.setText(articulo.getStock() + "unid.");
-
-            campoFecha.setValue(
-                    articulo.getFechaReposicion().toInstant()
-                            .atZone(ZoneId.systemDefault())
-                            .toLocalDate()
-            );
-
+            cargarArticuloEnFormulario();
+            cargarAlmacenesDelArticulo();
         }
 
     }
@@ -140,6 +132,23 @@ public class ControladorArticulosDetalle implements Initializable {
         LOGGER.info("Articulo asignado.");
     }
 
+    private void cargarArticuloEnFormulario() {
+        if (articulo != null) {
+            campoId.setText(String.valueOf(articulo.getId()));
+            campoNombre.setText(articulo.getNombre());
+            campoPrecio.setText(articulo.getPrecio() + "€");
+            campoDescripcion.setText(articulo.getDescripcion());
+            campoStock.setText(articulo.getStock() + "unid.");
+
+            campoFecha.setValue(
+                    articulo.getFechaReposicion().toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate()
+            );
+
+        }
+    }
+
     private void configurarTablas() {
 
         columnaId.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -166,6 +175,35 @@ public class ControladorArticulosDetalle implements Initializable {
             mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudieron cargar los almacenes disponibles.");
 
         }
+    }
+
+    private void cargarAlmacenesDelArticulo() {
+        try {
+            LOGGER.log(Level.INFO, "Articulo: {0}", articulo.getId());
+            Collection<Almacen> almacenes = factoriaAlmacenes.acceso().getAllAlmacenesById(articulo.getId());
+            if (almacenes != null) {
+                LOGGER.log(Level.INFO, "Estoy lleno");
+            }
+            if (almacenes != null && articulo != null && articulo.getId() != null) {
+                almacenesDelArticulo = FXCollections.observableArrayList(
+                        almacenes.stream()
+                                .filter(pa -> pa.getId() != null
+                                && pa.getId().equals(articulo.getId()))
+                                .collect(Collectors.toList())
+                );
+            } else {
+                almacenesDelArticulo = FXCollections.observableArrayList();
+            }
+
+            tablaAlmacenesArticulo.setItems(almacenesDelArticulo);
+            tablaAlmacenesArticulo.refresh();
+
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error al cargar los almacenes del articulo", e);
+            mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                    "No se pudieron cargar los almacenes del articulo.");
+        }
+
     }
 
     @FXML

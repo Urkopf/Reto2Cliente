@@ -129,6 +129,7 @@ public class ControladorArticulosPrincipal implements Initializable {
         botonReiniciar.addEventHandler(ActionEvent.ACTION, this::handleRecargarTabla);
         botonEliminar.addEventHandler(ActionEvent.ACTION, this::handleEliminarArticulo);
         botonBusqueda.addEventHandler(ActionEvent.ACTION, this::handleBusqueda);
+        botonDetalles.addEventHandler(ActionEvent.ACTION, this::handleDetalle);
 
         // Configurar listeners para habilitar/deshabilitar botones
         tablaArticulos.getSelectionModel().getSelectedItems().addListener((ListChangeListener<Articulo>) change -> {
@@ -444,7 +445,7 @@ public class ControladorArticulosPrincipal implements Initializable {
         }
 
         try {
-            //Falta la parte de llamar a la ventana
+            factoriaArticulos.cargarArticulosDetalle(stage, userTrabajador, articuloSeleccionado);
             LOGGER.info("Cargando detalles del articulo: " + articuloSeleccionado.getId());
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cargar detalles del articulo", e);

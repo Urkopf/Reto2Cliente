@@ -57,6 +57,12 @@ public class AlmacenRestFull {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
+    public <T> T findById_XML(GenericType<T> responseType, Long id) throws WebApplicationException {
+        WebTarget resource = webTarget;
+        resource = resource.path(java.text.MessageFormat.format("articulo/{0}", new Object[]{id}));
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+    }
+
     public void create_XML(Object requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Almacen.class);
     }
