@@ -244,25 +244,6 @@ public class ControladorArticulosPrincipal implements Initializable {
 
     }
 
-    private void configurarSalidaEdicion() {
-        // Salir del modo edición al hacer clic en el AnchorPane
-        anchorPane.setOnMouseClicked(event -> cancelarEdicionEnTabla());
-
-        // Listener para clics en la tabla
-        tablaArticulos.setOnMouseClicked(event -> cancelarEdicionEnTabla());
-
-        // Listener para teclas en la tabla
-        tablaArticulos.setOnKeyPressed(event -> {
-            switch (event.getCode()) {
-                case ENTER:
-                    cancelarEdicionEnTabla();
-                    break;
-                default:
-                    break;
-            }
-        });
-    }
-
     //Eventos
     @FXML
     private void handleNuevoArticulo(ActionEvent event) {

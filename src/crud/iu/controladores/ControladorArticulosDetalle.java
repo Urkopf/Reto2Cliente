@@ -21,7 +21,10 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -47,11 +50,11 @@ public class ControladorArticulosDetalle implements Initializable {
     @FXML
     private AnchorPane anchorPane;
     @FXML
-    private Button botonNuevo;
+    private Button botonAlmacen;
     @FXML
-    private Button botonReiniciar;
+    private Button botonGuardar;
     @FXML
-    private Button botonBusqueda;
+    private Button botonAtras;
     @FXML
     private Button botonEliminar;
 
@@ -62,7 +65,7 @@ public class ControladorArticulosDetalle implements Initializable {
     @FXML
     private TableColumn<Almacen, String> columnaDireccion;
     @FXML
-    private TableColumn<Almacen, String> columnaEspacios;
+    private TableColumn<Almacen, Double> columnaEspacios;
 
     @FXML
     private TableView<Almacen> tablaAlmacenesArticulo;
@@ -71,7 +74,7 @@ public class ControladorArticulosDetalle implements Initializable {
     @FXML
     private TableColumn<Almacen, String> columnaDireccion2;
     @FXML
-    private TableColumn<Almacen, String> columnaEspacios2;
+    private TableColumn<Almacen, Double> columnaEspacios2;
 
     @FXML
     private TextField campoId;
@@ -90,6 +93,7 @@ public class ControladorArticulosDetalle implements Initializable {
     private ObservableList<Articulo> articulosOriginales;
     private ObservableList<Almacen> almacenesOriginales;
     private ObservableList<Almacen> almacenesDelArticulo;
+    private boolean cambiosNoGuardados = false;
 
     public void initStage(Parent root) {
         Scene scene = new Scene(root);
@@ -97,6 +101,7 @@ public class ControladorArticulosDetalle implements Initializable {
         stage.setTitle("Gestión de Articulos Detalle");
         // Configurar la escena y mostrar la ventana
         LOGGER.info("Inicializando la escena principal");
+        configurarHandlers();
         stage.show();  // Mostrar el escenario
 
         if (articulo != null) {
@@ -153,13 +158,43 @@ public class ControladorArticulosDetalle implements Initializable {
 
         columnaId.setCellValueFactory(new PropertyValueFactory<>("id"));
         columnaDireccion.setCellValueFactory(new PropertyValueFactory<>("direccion"));
+
         columnaEspacios.setCellValueFactory(new PropertyValueFactory<>("espacio"));
+        columnaEspacios.setCellFactory(tc -> new TableCell<Almacen, Double>() {
+
+            @Override
+            protected void updateItem(Double item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(String.format("%.2f", item));
+                    setStyle("-fx-alignment: CENTER-RIGHT;");
+                }
+            }
+        });
 
         tablaAlmacenesDisponibles.getColumns().forEach(col -> col.setSortable(false));
 
+        //TablaAlmacenesArticulo
         columnaId2.setCellValueFactory(new PropertyValueFactory<>("id"));
         columnaDireccion2.setCellValueFactory(new PropertyValueFactory<>("direccion"));
+
         columnaEspacios2.setCellValueFactory(new PropertyValueFactory<>("espacio"));
+        columnaEspacios2.setCellFactory(tc -> new TableCell<Almacen, Double>() {
+
+            @Override
+            protected void updateItem(Double item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                    setGraphic(null);
+                    return;
+                }
+
+                Almacen al = (Almacen) getTableRow().getItem();
+                Almacen almacen = buscarAlmacenPorId(al.getId());
+            }
+        });
 
         tablaAlmacenesArticulo.getColumns().forEach(col -> col.setSortable(false));
     }
@@ -206,19 +241,29 @@ public class ControladorArticulosDetalle implements Initializable {
 
     }
 
+    private void configurarHandlers() {
+        botonAlmacen.setOnAction(this::handleAsignarAlmacen);
+        //botonEliminar.setOnAction(this::handleEliminar);
+        //botonGuardar.setOnAction(this::handleGuardarCambios);
+        botonAtras.setOnAction(this::handleAtras);
+    }
+
     @FXML
     private void handleAsignarAlmacen(ActionEvent event) {
+        Almacen almacenSeleccionado = tablaAlmacenesDisponibles.getSelectionModel().getSelectedItem();
+        if (almacenSeleccionado == null) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Agregar almacen",
+                    "Seleccione un almacen para agregar.");
+            return;
+        }
 
-    }
+        //Tendria que manejar la excepcion en el if
+        almacenSeleccionado.setArticuloId(articulo.getId());
+        almacenSeleccionado.setEspacio(almacenSeleccionado.getEspacio() - articulo.getStock());
 
-    @FXML
-    private void handleEliminar(ActionEvent event) {
+        tablaAlmacenesArticulo.refresh();
+        cambiosNoGuardados = true;
 
-    }
-
-    @FXML
-    private void handleAtras(ActionEvent event) {
-        factoriaArticulos.cargarArticulosPrincipal(stage, userTrabajador);
     }
 
     @FXML
@@ -227,11 +272,79 @@ public class ControladorArticulosDetalle implements Initializable {
 
     }
 
+    @FXML
+    private void handleEliminar(ActionEvent event) {
+        Almacen almacenSeleccionado = tablaAlmacenesArticulo.getSelectionModel().getSelectedItem();
+        if (almacenSeleccionado == null) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Eliminar almacen",
+                    "Seleccione un almacen para eliminar.");
+            return;
+        }
+        //tengo que ver bien la logica -- Revisar ||||||||||||
+        if (almacenSeleccionado.getEspacio() > 1) {
+            almacenSeleccionado.setEspacio(almacenSeleccionado.getEspacio() - 1);
+        } else {
+            almacenesDelArticulo.remove(almacenSeleccionado);
+        }
+
+        tablaAlmacenesArticulo.refresh();
+        cambiosNoGuardados = true;
+    }
+
+    @FXML
+    private void handleAtras(ActionEvent event) {
+        if (cambiosNoGuardados) {
+            // Preguntar confirmación
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Cambios sin guardar");
+            alert.setHeaderText(null);
+            alert.setContentText("Hay cambios sin guardar. ¿Qué desea hacer?");
+
+            // Botones Guardar, No guardar, Cancelar
+            ButtonType guardarButton = new ButtonType("Guardar");
+            ButtonType noGuardarButton = new ButtonType("No guardar");
+            ButtonType cancelarButton = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
+            alert.getButtonTypes().setAll(guardarButton, noGuardarButton, cancelarButton);
+
+            // Mostrar y esperar la respuesta del usuario
+            alert.showAndWait().ifPresent(response -> {
+                if (response == guardarButton) {
+                    // Guardar cambios y salir
+                    handleGuardarCambios(event);
+                    irAPantallaPrincipal();
+                } else if (response == noGuardarButton) {
+                    // Salir sin guardar
+                    irAPantallaPrincipal();
+                }
+                // Si es Cancelar, no hacemos nada
+            });
+        } else {
+            // Si no hay cambios, volver directamente
+            irAPantallaPrincipal();
+        }
+
+        factoriaArticulos.cargarArticulosPrincipal(stage, userTrabajador);
+    }
+
+    private void irAPantallaPrincipal() {
+        factoriaArticulos.cargarArticulosPrincipal(stage, userTrabajador);
+    }
+
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
         Alert alerta = new Alert(tipo);
         alerta.setTitle(titulo);
         alerta.setContentText(mensaje);
         alerta.showAndWait();
+    }
+
+    private Almacen buscarAlmacenPorId(Long almacenId) {
+        if (almacenesDisponibles == null) {
+            return null;
+        }
+        return almacenesDisponibles.stream()
+                .filter(a -> a.getId().equals(almacenId))
+                .findFirst()
+                .orElse(null);
     }
 
 }

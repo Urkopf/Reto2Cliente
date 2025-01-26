@@ -32,6 +32,9 @@ public class Almacen implements Serializable {
 
     private double espacio;
 
+    //Solo se usa para ayudar en la relacion Articulo,Almacen
+    private Long articuloId;
+
     public Almacen() {
     }
 
@@ -90,6 +93,14 @@ public class Almacen implements Serializable {
 
     public void setArticulos(Set<Articulo> articulos) {
         this.articulos = articulos;
+    }
+
+    public Long getArticuloId() {
+        return articuloId;
+    }
+
+    public void setArticuloId(Long articuloId) {
+        this.articuloId = articuloId;
     }
 
     private Set<Articulo> articulos = new HashSet<>();
