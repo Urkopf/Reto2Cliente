@@ -57,6 +57,7 @@ public class ControladorArticulosPrincipal implements Initializable {
     private Trabajador userTrabajador;
     private ObservableList<Articulo> articulosObservableList;
     private static final int FILAS_POR_PAGINA = 14;
+    private Collection<Articulo> listaBusqueda;
 
     @FXML
     private Button botonNuevo;
@@ -114,6 +115,12 @@ public class ControladorArticulosPrincipal implements Initializable {
     public void setStage(Stage stage) {
         this.stage = stage;
         LOGGER.info("Stage asignado.");
+    }
+
+    public void setBusqueda(Collection<Articulo> lista) {
+        this.listaBusqueda = lista;
+        LOGGER.info("Lista Busqueda asignada. Elementos: "
+                + ((lista != null) ? lista.size() : "Null"));
     }
 
     public void initStage(Parent root) {

@@ -5,8 +5,7 @@ import crud.negocio.FactoriaPedidos;
 import crud.negocio.FactoriaUsuarios;
 import crud.objetosTransferibles.Cliente;
 import crud.objetosTransferibles.Trabajador;
-import crud.objetosTransferibles.Usuario;
-import crud.utilidades.AlertUtilities;
+import static crud.utilidades.AlertUtilities.showErrorDialog;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -14,18 +13,16 @@ import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.stage.Stage;
-import static crud.utilidades.AlertUtilities.showErrorDialog;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 
 /**
  * Controlador para la ventana del Menú Principal.
@@ -252,7 +249,7 @@ public class ControladorMenuPrincipal implements Initializable {
         try {
 
             LOGGER.info("Botón 'Gestión de Artículos' presionado.");
-            factoriaArticulos.cargarArticulosPrincipal(stage, userTrabajador);
+            factoriaArticulos.cargarArticulosPrincipal(stage, userTrabajador, null);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al gestionar artículos", e);
             showErrorDialog(AlertType.ERROR, "No se pudo gestionar los artículos", "Inténtelo de nuevo más tarde.");

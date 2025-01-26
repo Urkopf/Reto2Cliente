@@ -323,11 +323,11 @@ public class ControladorArticulosDetalle implements Initializable {
             irAPantallaPrincipal();
         }
 
-        factoriaArticulos.cargarArticulosPrincipal(stage, userTrabajador);
+        factoriaArticulos.cargarArticulosPrincipal(stage, userTrabajador, null);
     }
 
     private void irAPantallaPrincipal() {
-        factoriaArticulos.cargarArticulosPrincipal(stage, userTrabajador);
+        factoriaArticulos.cargarArticulosPrincipal(stage, userTrabajador, null);
     }
 
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
