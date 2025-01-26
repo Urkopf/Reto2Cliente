@@ -76,6 +76,20 @@ public class AlmacenRestFull {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete(Almacen.class);
     }
 
+    public void remove_Relacion(Object requestEntity) throws WebApplicationException {
+        webTarget
+                .path("borrar") // Define el endpoint 'borrar'
+                .request(javax.ws.rs.core.MediaType.APPLICATION_XML) // Solicita una respuesta en formato XML
+                .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Almacen.class);
+    }
+
+    public void createRelacion_XML(Object requestEntity) throws WebApplicationException {
+        webTarget
+                .path("relacion") // Define el endpoint 'borrar'
+                .request(javax.ws.rs.core.MediaType.APPLICATION_XML) // Solicita una respuesta en formato XML
+                .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Almacen.class);
+    }
+
     public void close() {
         client.close();
     }

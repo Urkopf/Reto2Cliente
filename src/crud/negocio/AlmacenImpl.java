@@ -53,4 +53,24 @@ public class AlmacenImpl implements IAlmacen {
         return almacenes;
     }
 
+    @Override
+    public void CrearActualizarRelacion(Almacen almacen) throws LogicaNegocioException {
+        try {
+            LOGGER.log(Level.INFO, "Estoy en la Implementacion {0}", almacen.getId());
+            cliente.createRelacion_XML(almacen);
+        } catch (Exception e) {
+            throw new LogicaNegocioException(e.getMessage());
+        }
+    }
+
+    @Override
+    public void BorrarRelacion(Almacen almacen) throws LogicaNegocioException {
+        try {
+            LOGGER.log(Level.INFO, "Estoy en la Implementacion {0}", almacen.getId());
+            cliente.remove_Relacion(almacen);
+        } catch (Exception e) {
+            throw new LogicaNegocioException(e.getMessage());
+        }
+    }
+
 }

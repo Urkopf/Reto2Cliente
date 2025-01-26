@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -179,20 +178,18 @@ public class ControladorArticulosDetalle implements Initializable {
         //TablaAlmacenesArticulo
         columnaId2.setCellValueFactory(new PropertyValueFactory<>("id"));
         columnaDireccion2.setCellValueFactory(new PropertyValueFactory<>("direccion"));
-
         columnaEspacios2.setCellValueFactory(new PropertyValueFactory<>("espacio"));
         columnaEspacios2.setCellFactory(tc -> new TableCell<Almacen, Double>() {
 
             @Override
             protected void updateItem(Double item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
-                    setGraphic(null);
-                    return;
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(String.format("%.2f", item));
+                    setStyle("-fx-alignment: CENTER-RIGHT;");
                 }
-
-                Almacen al = (Almacen) getTableRow().getItem();
-                Almacen almacen = buscarAlmacenPorId(al.getId());
             }
         });
 
@@ -219,18 +216,9 @@ public class ControladorArticulosDetalle implements Initializable {
             if (almacenes != null) {
                 LOGGER.log(Level.INFO, "Estoy lleno");
             }
-            if (almacenes != null && articulo != null && articulo.getId() != null) {
-                almacenesDelArticulo = FXCollections.observableArrayList(
-                        almacenes.stream()
-                                .filter(pa -> pa.getId() != null
-                                && pa.getId().equals(articulo.getId()))
-                                .collect(Collectors.toList())
-                );
-            } else {
-                almacenesDelArticulo = FXCollections.observableArrayList();
-            }
 
-            tablaAlmacenesArticulo.setItems(almacenesDelArticulo);
+            ObservableList<Almacen> observableListAlmacenes = FXCollections.observableArrayList(almacenes);
+            tablaAlmacenesArticulo.setItems(observableListAlmacenes);
             tablaAlmacenesArticulo.refresh();
 
         } catch (Exception e) {
@@ -269,6 +257,7 @@ public class ControladorArticulosDetalle implements Initializable {
     @FXML
     private void handleGuardarCambios(ActionEvent event) {
         LOGGER.info("Botón Guardar Cambios presionado");
+        //Cuando guarde, comprobar lo que cambia y si se añade
 
     }
 
@@ -341,6 +330,7 @@ public class ControladorArticulosDetalle implements Initializable {
         if (almacenesDisponibles == null) {
             return null;
         }
+
         return almacenesDisponibles.stream()
                 .filter(a -> a.getId().equals(almacenId))
                 .findFirst()
