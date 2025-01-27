@@ -8,6 +8,7 @@ import crud.objetosTransferibles.Trabajador;
 import java.net.URL;
 import java.time.ZoneId;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.logging.Level;
@@ -46,6 +47,8 @@ public class ControladorArticulosDetalle implements Initializable {
     private Trabajador userTrabajador;
     private ObservableList<Almacen> almacenesPorArticulo;
     private ObservableList<Almacen> almacenesDisponibles;
+    private ObservableList<Almacen> almacenesDisponiblesOriginales;
+    private ObservableList<Almacen> almacenesDelArticuloOriginal;
 
     // Elementos FXML
     @FXML
@@ -90,10 +93,6 @@ public class ControladorArticulosDetalle implements Initializable {
     @FXML
     private TextField campoStock;
 
-    // Copia de seguridad de los datos originales
-    private ObservableList<Articulo> articulosOriginales;
-    private ObservableList<Almacen> almacenesOriginales;
-    private ObservableList<Almacen> almacenesDelArticulo;
     private boolean cambiosNoGuardados = false;
 
     public void initStage(Parent root) {
@@ -106,9 +105,9 @@ public class ControladorArticulosDetalle implements Initializable {
         stage.show();  // Mostrar el escenario
 
         if (articulo != null) {
-            cargarAlmacenesDisponibles();
             cargarArticuloEnFormulario();
             cargarAlmacenesDelArticulo();
+            cargarAlmacenesDisponibles();
         }
 
     }
@@ -117,6 +116,13 @@ public class ControladorArticulosDetalle implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         LOGGER.info("Inicializando controlador ArticulosDetalle");
         configurarTablas();
+
+
+        almacenesPorArticulo = FXCollections.observableArrayList();
+        almacenesDelArticuloOriginal = FXCollections.observableArrayList(
+                almacenesPorArticulo.stream()
+                        .map(Almacen::clone)
+                        .collect(Collectors.toList()));
 
 
     }
@@ -201,38 +207,40 @@ public class ControladorArticulosDetalle implements Initializable {
 
     private void cargarAlmacenesDisponibles() {
         try {
-            Collection<Almacen> almacenesDisponibles = factoriaAlmacenes.acceso().getAllAlmacenes();
-            Collection<Almacen> almacenes = factoriaAlmacenes.acceso().getAllAlmacenesById(articulo.getId());
+            Collection<Almacen> almacenes = factoriaAlmacenes.acceso().getAllAlmacenes();
 
-            Set<Long> idsAlmacenes = almacenes.stream()
+            Set<Long> idsAlmacenes = almacenesPorArticulo.stream()
                     .map(Almacen::getId)
                     .collect(Collectors.toSet());
 
+            almacenes.removeIf(almacen -> idsAlmacenes.contains(almacen.getId()));
 
-            // Remover los elementos con IDs que estén en idsAlmacenes
-            almacenesDisponibles.removeIf(almacen -> idsAlmacenes.contains(almacen.getId()));
+            almacenesDisponibles = FXCollections.observableArrayList(almacenes);
 
-            ObservableList<Almacen> observableListAlmacenes = FXCollections.observableArrayList(almacenesDisponibles);
-
-            tablaAlmacenesDisponibles.setItems(observableListAlmacenes);
+            // Ordenar por ID para mayor claridad
+            FXCollections.sort(almacenesDisponibles, Comparator.comparing(Almacen::getId));
+            tablaAlmacenesDisponibles.setItems(almacenesDisponibles);
 
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al cargar los alamcenes disponibles", e);
-            mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudieron cargar los almacenes disponibles.");
-
+            LOGGER.log(Level.SEVERE, "Error al cargar los Almacenes disponibles", e);
+            mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                    "No se pudieron cargar los Almacenes disponibles.");
         }
     }
 
     private void cargarAlmacenesDelArticulo() {
         try {
-            LOGGER.log(Level.INFO, "Articulo: {0}", articulo.getId());
             Collection<Almacen> almacenes = factoriaAlmacenes.acceso().getAllAlmacenesById(articulo.getId());
-            if (almacenes != null) {
-                LOGGER.log(Level.INFO, "Estoy lleno");
-            }
 
-            ObservableList<Almacen> observableListAlmacenes = FXCollections.observableArrayList(almacenes);
-            tablaAlmacenesArticulo.setItems(observableListAlmacenes);
+            almacenesDelArticuloOriginal = FXCollections.observableArrayList(
+                    almacenes.stream()
+                            .map(Almacen::clone)
+                            .collect(Collectors.toList()));
+
+            almacenesPorArticulo = FXCollections.observableArrayList(almacenes);
+
+
+            tablaAlmacenesArticulo.setItems(almacenesPorArticulo);
             tablaAlmacenesArticulo.refresh();
 
         } catch (Exception e) {
@@ -245,7 +253,7 @@ public class ControladorArticulosDetalle implements Initializable {
 
     private void configurarHandlers() {
         botonAlmacen.setOnAction(this::handleAsignarAlmacen);
-        //botonEliminar.setOnAction(this::handleEliminar);
+        botonEliminar.setOnAction(this::handleEliminar);
         //botonGuardar.setOnAction(this::handleGuardarCambios);
         botonAtras.setOnAction(this::handleAtras);
     }
@@ -259,11 +267,9 @@ public class ControladorArticulosDetalle implements Initializable {
             return;
         }
 
-        //Tendria que manejar la excepcion en el if
-        almacenSeleccionado.setArticuloId(articulo.getId());
-        almacenSeleccionado.setEspacio(almacenSeleccionado.getEspacio() - articulo.getStock());
-
+        almacenesPorArticulo.add(almacenSeleccionado);
         tablaAlmacenesArticulo.refresh();
+        cargarAlmacenesDisponibles();
         cambiosNoGuardados = true;
 
     }
@@ -283,14 +289,11 @@ public class ControladorArticulosDetalle implements Initializable {
                     "Seleccione un almacen para eliminar.");
             return;
         }
-        //tengo que ver bien la logica -- Revisar ||||||||||||
-        if (almacenSeleccionado.getEspacio() > 1) {
-            almacenSeleccionado.setEspacio(almacenSeleccionado.getEspacio() - 1);
-        } else {
-            almacenesDelArticulo.remove(almacenSeleccionado);
-        }
 
+        almacenesPorArticulo.remove(almacenSeleccionado);
+        almacenesDisponibles.add(almacenSeleccionado);
         tablaAlmacenesArticulo.refresh();
+        cargarAlmacenesDisponibles();
         cambiosNoGuardados = true;
     }
 

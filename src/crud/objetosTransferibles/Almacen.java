@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Urko
  */
 @XmlRootElement
-public class Almacen implements Serializable {
+public class Almacen implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 1L;
 
@@ -104,6 +104,18 @@ public class Almacen implements Serializable {
     }
 
     private Set<Articulo> articulos = new HashSet<>();
+
+    @Override
+    public Almacen clone() {
+        Almacen copia = new Almacen();
+        copia.setId(this.id);
+        copia.setDireccion(this.direccion);
+        copia.setEspacio(this.espacio);
+        copia.setPais(this.pais);
+        copia.setPoblacion(this.poblacion);
+        copia.setProvincia(this.provincia);
+        return copia;
+    }
 
     @Override
     public int hashCode() {
