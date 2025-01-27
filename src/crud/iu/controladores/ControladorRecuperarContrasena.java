@@ -36,8 +36,8 @@ public class ControladorRecuperarContrasena implements Initializable {
     private Button botonCancelar;
     @FXML
     private Button botonRecuperar;
-    //@FXML
-    //private ImageView botonAyuda;
+    @FXML
+    private ImageView botonAyuda;
 
     private Stage stage;
 
@@ -58,7 +58,16 @@ public class ControladorRecuperarContrasena implements Initializable {
 
             botonRecuperar.addEventHandler(ActionEvent.ACTION, this::manejarRecuperar);
 
-            //botonAyuda.addEventHandler(MouseEvent.MOUSE_CLICKED, this::manejarAyuda);
+            botonAyuda.setOnMouseClicked(event -> {
+                mostrarAyuda();
+            });
+            botonAyuda.setOnMouseEntered(event -> {
+                botonAyuda.setStyle("-fx-cursor: hand;"); // Cambia el cursor al pasar el ratón
+            });
+
+            botonAyuda.setOnMouseExited(event -> {
+                botonAyuda.setStyle("-fx-cursor: default;"); // Vuelve al cursor normal al salir
+            });
             //configurarTeclasMnemotecnicas();  // Configurar teclas mnemotécnicas
             stage.show();  // Mostrar el escenario
 
@@ -111,9 +120,8 @@ public class ControladorRecuperarContrasena implements Initializable {
      *
      * @param event Evento de clic del mouse.
      */
-    @FXML
-    private void manejarAyuda(MouseEvent event) {
-        showErrorDialog(Alert.AlertType.INFORMATION, "Ayuda", "Ingrese su correo electrónico registrado para recuperar su contraseña.");
+    private void mostrarAyuda() {
+        factoria.cargarAyuda("recuperarContrasena");
     }
 
     /**

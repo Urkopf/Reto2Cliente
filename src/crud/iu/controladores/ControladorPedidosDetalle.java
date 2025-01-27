@@ -181,6 +181,7 @@ public class ControladorPedidosDetalle implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         configurarTablas();
         cargarArticulosDisponibles();
+        cargarArticulosDelPedido();
 
         articulosDelPedido = FXCollections.observableArrayList();
         articulosDelPedidoOriginales = FXCollections.observableArrayList(
@@ -259,7 +260,7 @@ public class ControladorPedidosDetalle implements Initializable {
 
         // Configura un listener para cada opción dentro del menú "Menú"
         MenuItem opcionImprimir = menuPrincipal.getItems().get(0); // "Imprimir informe"
-        opcionImprimir.setOnAction(event -> imprimirInforme());
+        opcionImprimir.setVisible(false);
 
         MenuItem opcionCerrarSesion = menuPrincipal.getItems().get(1); // "Cerrar sesión"
         opcionCerrarSesion.setOnAction(event -> cerrarSesion());
@@ -280,16 +281,11 @@ public class ControladorPedidosDetalle implements Initializable {
             opcionIrArticulos.setVisible(false);
             opcionIrArticulos.setOnAction(event -> irVistaArticulos());
         }
-        MenuItem botonAyuda = menuIr.getItems().get(0);
+        MenuItem botonAyuda = menuAyuda.getItems().get(0);
         botonAyuda.setOnAction(event -> {
             mostrarAyuda();
         });
 
-    }
-
-    // Métodos de acción
-    private void imprimirInforme() {
-        System.out.println("Imprimiendo informe...");
     }
 
     private void cerrarSesion() {
@@ -922,6 +918,7 @@ public class ControladorPedidosDetalle implements Initializable {
         double total = articulosDelPedido.stream()
                 .mapToDouble(pa -> pa.getCantidad() * pa.getPrecioCompra())
                 .sum();
+
         campoTotal.setText(String.format("%.2f €", total));
     }
 

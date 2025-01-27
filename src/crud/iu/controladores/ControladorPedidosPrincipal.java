@@ -22,6 +22,8 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -55,6 +57,13 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  * <h1>ControladorPedidosPrincipal</h1>
@@ -210,7 +219,7 @@ public class ControladorPedidosPrincipal implements Initializable {
             opcionIrArticulos.setVisible(false);
             opcionIrArticulos.setOnAction(event -> irVistaArticulos());
         }
-        MenuItem botonAyuda = menuIr.getItems().get(0);
+        MenuItem botonAyuda = menuAyuda.getItems().get(0);
         botonAyuda.setOnAction(event -> {
             mostrarAyuda();
         });
@@ -220,6 +229,7 @@ public class ControladorPedidosPrincipal implements Initializable {
     // Métodos de acción
     private void imprimirInforme() {
         System.out.println("Imprimiendo informe...");
+        crearInforme();
     }
 
     private void cerrarSesion() {
@@ -238,6 +248,36 @@ public class ControladorPedidosPrincipal implements Initializable {
 
     private void irVistaArticulos() {
         factoriaArticulos.cargarArticulosPrincipal(stage, (userCliente != null) ? userCliente : userTrabajador);
+    }
+
+    public void crearInforme() {
+        try {
+            LOGGER.info("Beginning printing action...");
+            JasperReport report
+                    = JasperCompileManager.compileReport(getClass()
+                            .getResourceAsStream("/crud/iu/reportes/PedidosReport.jrxml"));
+            //Data for the report: a collection of UserBean passed as a JRDataSource
+            //implementation
+            JRBeanCollectionDataSource dataItems
+                    = new JRBeanCollectionDataSource((Collection<Pedido>) this.tablaPedidos.getItems());
+            //Map of parameter to be passed to the report
+            Map<String, Object> parameters = new HashMap<>();
+            //Fill report with data
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+            //Create and show the report window. The second parameter false value makes
+            //report window not to close app.
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+            jasperViewer.setVisible(true);
+            // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        } catch (JRException ex) {
+            //If there is an error show message and
+            //log it.
+            LOGGER.log(Level.SEVERE,
+                    "UI GestionUsuariosController: Error printing report: {0}",
+                    ex.getMessage());
+            clasificadorExcepciones(ex, ex.getMessage());
+
+        }
     }
 
     /**
@@ -486,8 +526,7 @@ public class ControladorPedidosPrincipal implements Initializable {
      * cambiar de ventana), comprueba si hay cambios sin guardar.
      */
     @FXML
-    private void handleDetalles(ActionEvent event
-    ) {
+    private void handleDetalles(ActionEvent event) {
         confirmarCambiosSinGuardar(this::handleDetallesInterno);
     }
 

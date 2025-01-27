@@ -52,7 +52,7 @@ public class FactoriaPedidoArticulo {
             controlador.setPedido(pedido);
             controlador.initStage(root);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al abrir la ventnaa de PedidosDetalle: {0}", e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error al abrir la ventana de PedidosDetalle: {0}", e.getMessage());
             showErrorDialog(Alert.AlertType.ERROR, "Error", "No se puede cargar la ventana de Pedidos Detalle.");
         }
     }

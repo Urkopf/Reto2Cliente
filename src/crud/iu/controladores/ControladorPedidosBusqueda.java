@@ -28,6 +28,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javafx.scene.image.ImageView;
 
 /**
  * <h1>ControladorPedidosBusqueda</h1>
@@ -98,6 +99,8 @@ public class ControladorPedidosBusqueda implements Initializable {
     private Button botonReiniciarCampos;
     @FXML
     private Button botonAtras;
+    @FXML
+    private ImageView botonAyuda;
     // </editor-fold>
 
     /**
@@ -125,6 +128,16 @@ public class ControladorPedidosBusqueda implements Initializable {
         botonBuscar.setOnAction(this::handleBuscar);
         botonReiniciarCampos.setOnAction(this::handleReiniciarCampos);
         botonAtras.setOnAction(this::handleAtras);
+        botonAyuda.setOnMouseClicked(event -> {
+            mostrarAyuda();
+        });
+        botonAyuda.setOnMouseEntered(event -> {
+            botonAyuda.setStyle("-fx-cursor: hand;"); // Cambia el cursor al pasar el ratón
+        });
+
+        botonAyuda.setOnMouseExited(event -> {
+            botonAyuda.setStyle("-fx-cursor: default;"); // Vuelve al cursor normal al salir
+        });
     }
 
     /**
@@ -498,6 +511,10 @@ public class ControladorPedidosBusqueda implements Initializable {
         } else {
             LOGGER.info("Configurado estado inicial para trabajador.");
         }
+    }
+
+    private void mostrarAyuda() {
+        factoriaUsuarios.cargarAyuda("pedidosBusqueda");
     }
 
 }

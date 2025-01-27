@@ -114,6 +114,16 @@ public class ControladorCambiarContrasena implements Initializable {
             stage.show();  // Mostrar el escenario
             botonCancelar.addEventHandler(ActionEvent.ACTION, this::handleButtonCancel);
             botonGuardar.addEventHandler(ActionEvent.ACTION, this::handleButtonRegister);
+            botonAyuda.setOnMouseClicked(event -> {
+                mostrarAyuda();
+            });
+            botonAyuda.setOnMouseEntered(event -> {
+                botonAyuda.setStyle("-fx-cursor: hand;"); // Cambia el cursor al pasar el ratón
+            });
+
+            botonAyuda.setOnMouseExited(event -> {
+                botonAyuda.setStyle("-fx-cursor: default;"); // Vuelve al cursor normal al salir
+            });
         } catch (Exception e) {
             clasificadorExcepciones(e, e.getMessage());
         }
@@ -233,6 +243,10 @@ public class ControladorCambiarContrasena implements Initializable {
             LOGGER.log(Level.SEVERE, "Error al cambiar la contraseña.", e);
             clasificadorExcepciones(e, e.getMessage());
         }
+    }
+
+    private void mostrarAyuda() {
+        factoria.cargarAyuda("cambiarContrasena");
     }
 
 }
