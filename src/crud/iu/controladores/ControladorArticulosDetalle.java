@@ -7,8 +7,10 @@ import crud.objetosTransferibles.Articulo;
 import crud.objetosTransferibles.Trabajador;
 import java.net.URL;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.logging.Level;
@@ -94,7 +96,7 @@ public class ControladorArticulosDetalle implements Initializable {
     private TextField campoStock;
 
     private boolean cambiosNoGuardados = false;
-
+    List<Almacen> almacenesCambiar = new ArrayList<>();
     public void initStage(Parent root) {
         Scene scene = new Scene(root);
         stage.setScene(scene);
@@ -254,7 +256,7 @@ public class ControladorArticulosDetalle implements Initializable {
     private void configurarHandlers() {
         botonAlmacen.setOnAction(this::handleAsignarAlmacen);
         botonEliminar.setOnAction(this::handleEliminar);
-        //botonGuardar.setOnAction(this::handleGuardarCambios);
+        botonGuardar.setOnAction(this::handleGuardarCambios);
         botonAtras.setOnAction(this::handleAtras);
     }
 
@@ -268,6 +270,7 @@ public class ControladorArticulosDetalle implements Initializable {
         }
 
         almacenesPorArticulo.add(almacenSeleccionado);
+        almacenesCambiar.add(almacenSeleccionado);
         tablaAlmacenesArticulo.refresh();
         cargarAlmacenesDisponibles();
         cambiosNoGuardados = true;
@@ -277,8 +280,27 @@ public class ControladorArticulosDetalle implements Initializable {
     @FXML
     private void handleGuardarCambios(ActionEvent event) {
         LOGGER.info("Botón Guardar Cambios presionado");
-        //Cuando guarde, comprobar lo que cambia y si se añade
+        try {
+            for (Almacen almacen : almacenesCambiar) {
+                almacen.setArticuloId(articulo.getId());
+                factoriaAlmacenes.acceso().CrearActualizarRelacion(almacen);
+            }
 
+            cambiosNoGuardados = false;
+            reiniciar();
+
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error al guardar cambios", e);
+        }
+
+    }
+
+    private void reiniciar() {
+        configurarTablas();
+        cargarAlmacenesDisponibles();
+        cargarAlmacenesDelArticulo();
+        tablaAlmacenesDisponibles.refresh();
+        tablaAlmacenesArticulo.refresh();
     }
 
     @FXML

@@ -231,9 +231,15 @@ public class ControladorArticulosPrincipal implements Initializable {
     }
 
     private void cargarDatosArticulos() {
+        Collection<Articulo> articulos = null;
         try {
             LOGGER.info("Cargando datos de articulos...");
-            Collection<Articulo> articulos = factoriaArticulos.acceso().getAllArticulos();
+            if (listaBusqueda == null) {
+                articulos = factoriaArticulos.acceso().getAllArticulos();
+            } else {
+                listaBusqueda = articulos;
+            }
+
             if (articulos == null || articulos.isEmpty()) {
                 LOGGER.warning("No se encontraron articulos.");
                 articulos = new ArrayList<>();
