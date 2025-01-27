@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="70184d2d-7f44-4da1-af00-04c762e56409">
     <property name="ireport.zoom" value="1.4641000000000006"/>
     <property name="ireport.x" value="0"/>
-    <property name="ireport.y" value="0"/>
+    <property name="ireport.y" value="12"/>
     <field name="id" class="java.lang.Long"/>
     <field name="direccion" class="java.lang.String"/>
     <field name="cifCliente" class="java.lang.String"/>
@@ -33,6 +33,19 @@
     </pageHeader>
     <columnHeader>
         <band height="61" splitType="Stretch">
+
+            <rectangle>
+                <reportElement
+                    x="0" y="41" width="555" height="20"
+                    uuid="db082677-098b-49c7-8de9-5faec49f8b9e"
+                    mode="Opaque"
+                    backcolor="#ff9900"/>
+                <graphicElement>
+
+                    <pen lineWidth="1.0" lineStyle="Solid" lineColor="#0000FF"/>
+                </graphicElement>
+            </rectangle>
+
             <staticText>
                 <reportElement x="0" y="41" width="34" height="20" uuid="5cabf7e7-acfb-4f31-bc1c-f5af51d0313d"/>
                 <box>
