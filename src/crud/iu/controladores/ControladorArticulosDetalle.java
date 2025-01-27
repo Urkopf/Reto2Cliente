@@ -9,8 +9,10 @@ import java.net.URL;
 import java.time.ZoneId;
 import java.util.Collection;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -104,6 +106,7 @@ public class ControladorArticulosDetalle implements Initializable {
         stage.show();  // Mostrar el escenario
 
         if (articulo != null) {
+            cargarAlmacenesDisponibles();
             cargarArticuloEnFormulario();
             cargarAlmacenesDelArticulo();
         }
@@ -114,7 +117,7 @@ public class ControladorArticulosDetalle implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         LOGGER.info("Inicializando controlador ArticulosDetalle");
         configurarTablas();
-        cargarAlmacenesDisponibles();
+
 
     }
 
@@ -198,10 +201,21 @@ public class ControladorArticulosDetalle implements Initializable {
 
     private void cargarAlmacenesDisponibles() {
         try {
-            Collection<Almacen> almacenes = factoriaAlmacenes.acceso().getAllAlmacenes();
-            almacenesDisponibles = FXCollections.observableArrayList(almacenes);
+            Collection<Almacen> almacenesDisponibles = factoriaAlmacenes.acceso().getAllAlmacenes();
+            Collection<Almacen> almacenes = factoriaAlmacenes.acceso().getAllAlmacenesById(articulo.getId());
 
-            tablaAlmacenesDisponibles.setItems(almacenesDisponibles);
+            Set<Long> idsAlmacenes = almacenes.stream()
+                    .map(Almacen::getId)
+                    .collect(Collectors.toSet());
+
+
+            // Remover los elementos con IDs que estén en idsAlmacenes
+            almacenesDisponibles.removeIf(almacen -> idsAlmacenes.contains(almacen.getId()));
+
+            ObservableList<Almacen> observableListAlmacenes = FXCollections.observableArrayList(almacenesDisponibles);
+
+            tablaAlmacenesDisponibles.setItems(observableListAlmacenes);
+
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cargar los alamcenes disponibles", e);
             mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudieron cargar los almacenes disponibles.");
