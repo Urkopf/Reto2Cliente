@@ -209,8 +209,8 @@ public class ControladorArticulosBusqueda implements Initializable {
 
     }
 
-    private void mostrarResultados(Collection<Articulo> pedidosFiltrados) {
-        factoriaArticulos.cargarArticulosPrincipal(stage, userTrabajador, pedidosFiltrados);
+    private void mostrarResultados(Collection<Articulo> articulosFiltrados) {
+        factoriaArticulos.cargarArticulosPrincipal(stage, userTrabajador, articulosFiltrados);
     }
 
     private Date convertToDate(LocalDate localDate) {

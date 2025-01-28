@@ -66,7 +66,6 @@ public class FactoriaArticulos {
             ControladorArticulosBusqueda controlador = cargador.getController();
             controlador.setStage(stage);
             controlador.setUser(user);
-
             controlador.initStage(root);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al abrir la ventana de ArticulosBusqueda: {0}", e.getMessage());

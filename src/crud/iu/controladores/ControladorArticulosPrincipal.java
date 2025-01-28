@@ -99,8 +99,7 @@ public class ControladorArticulosPrincipal implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         LOGGER.info("Inicializando controlador ArticulosPrincipal");
         configurarTabla();
-        cargarDatosArticulos();
-        configurarPaginador();
+
         //configurarSalidaEdicion();
     }
 
@@ -142,7 +141,11 @@ public class ControladorArticulosPrincipal implements Initializable {
         tablaArticulos.getSelectionModel().getSelectedItems().addListener((ListChangeListener<Articulo>) change -> {
             actualizarEstadoBotones();
         });
+
         stage.show();  // Mostrar el escenario
+
+        cargarDatosArticulos();
+        configurarPaginador();
     }
 
     private void configurarPaginador() {
@@ -237,7 +240,7 @@ public class ControladorArticulosPrincipal implements Initializable {
             if (listaBusqueda == null) {
                 articulos = factoriaArticulos.acceso().getAllArticulos();
             } else {
-                listaBusqueda = articulos;
+                articulos = listaBusqueda;
             }
 
             if (articulos == null || articulos.isEmpty()) {
@@ -409,6 +412,7 @@ public class ControladorArticulosPrincipal implements Initializable {
     }
 
     private void reiniciar() {
+        listaBusqueda = null;
         cargarDatosArticulos();
     }
 
