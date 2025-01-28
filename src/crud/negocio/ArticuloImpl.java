@@ -54,6 +54,15 @@ public class ArticuloImpl implements IArticulo {
     }
 
     @Override
+    public void actualizarArticuloDetalle(Articulo articulo) throws LogicaNegocioException {
+        try {
+
+            cliente.editDetalle_XML(articulo);
+        } catch (Exception e) {
+        }
+    }
+
+    @Override
     public void borrarArticulo(Articulo articulo) throws LogicaNegocioException {
         try {
             cliente.remove(articulo.getId());

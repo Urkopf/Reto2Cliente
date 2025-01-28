@@ -32,6 +32,7 @@ public class AlmacenImpl implements IAlmacen {
     public Collection<Almacen> getAllAlmacenes() throws LogicaNegocioException {
         List<Almacen> almacenes = null;
         try {
+            LOGGER.log(Level.INFO, "Estoy en la Implementacion completa");
             almacenes = cliente.findAll_XML(new GenericType<List<Almacen>>() {
             });
         } catch (Exception e) {

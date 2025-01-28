@@ -280,11 +280,19 @@ public class ControladorArticulosDetalle implements Initializable {
     @FXML
     private void handleGuardarCambios(ActionEvent event) {
         LOGGER.info("Botón Guardar Cambios presionado");
+        List<Almacen> almacenes = tablaAlmacenesArticulo.getItems();
+        List<Articulo> articulos = new ArrayList<>();
         try {
-            for (Almacen almacen : almacenesCambiar) {
-                almacen.setArticuloId(articulo.getId());
-                factoriaAlmacenes.acceso().CrearActualizarRelacion(almacen);
+
+            articulos.add(articulo);
+            articulo.setAlmacenes((Set<Almacen>) almacenes);
+            LOGGER.log(Level.INFO, "TAMAÑO TABLA {0}", articulo.getAlmacenes().size());
+            
+            for (Almacen almacen : almacenes) {
+                almacen.setArticulos((Set<Articulo>) articulos);
             }
+
+            factoriaArticulos.acceso().actualizarArticuloDetalle(articulo);
 
             cambiosNoGuardados = false;
             reiniciar();
@@ -297,8 +305,8 @@ public class ControladorArticulosDetalle implements Initializable {
 
     private void reiniciar() {
         configurarTablas();
-        cargarAlmacenesDisponibles();
         cargarAlmacenesDelArticulo();
+        cargarAlmacenesDisponibles();
         tablaAlmacenesDisponibles.refresh();
         tablaAlmacenesArticulo.refresh();
     }

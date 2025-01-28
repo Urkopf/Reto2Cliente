@@ -108,12 +108,11 @@ public class Articulo implements Serializable {
 
     private Set<Almacen> almacenes = new HashSet<>();
 
-    @XmlTransient
     public Set<Almacen> getAlmacenes() {
         return almacenes;
     }
 
-    public void setAlmacen(Set<Almacen> almacenes) {
+    public void setAlmacenes(Set<Almacen> almacenes) {
         this.almacenes = almacenes;
     }
 

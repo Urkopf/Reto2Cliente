@@ -9,7 +9,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -86,7 +85,6 @@ public class Almacen implements Serializable, Cloneable {
         this.espacio = espacio;
     }
 
-    @XmlTransient
     public Set<Articulo> getArticulos() {
         return articulos;
     }
