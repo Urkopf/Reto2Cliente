@@ -53,12 +53,12 @@ public class ArticulosRestFull {
                 .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Articulo.class);
     }
 
-    public void editDetalle_XML(Articulo articulo) throws WebApplicationException {
-        LOGGER.log(Level.INFO, "Actualizando articulo DETALLES con ID {0}", articulo.getAlmacenes().size());
-        WebTarget resource = webTarget;
-        resource = resource.path("detalle");
-        resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                .post(javax.ws.rs.client.Entity.entity(articulo, javax.ws.rs.core.MediaType.APPLICATION_XML), Articulo.class);
+    public void editDetalle_XML(Object requestEntity) throws WebApplicationException {
+        LOGGER.log(Level.INFO, "Actualizando articulo DETALLES con ID {0}", requestEntity.getClass());
+        webTarget
+                .path("detalle")
+                .request(javax.ws.rs.core.MediaType.APPLICATION_XML) // Solicita una respuesta en formato XML
+                .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Articulo.class);
     }
 
     public <T> T find_XML(Class<T> responseType, String id) throws WebApplicationException {

@@ -283,16 +283,12 @@ public class ControladorArticulosDetalle implements Initializable {
         List<Almacen> almacenes = tablaAlmacenesArticulo.getItems();
         List<Articulo> articulos = new ArrayList<>();
         try {
-
             articulos.add(articulo);
-            articulo.setAlmacenes((Set<Almacen>) almacenes);
-            LOGGER.log(Level.INFO, "TAMAÑO TABLA {0}", articulo.getAlmacenes().size());
-            
             for (Almacen almacen : almacenes) {
-                almacen.setArticulos((Set<Articulo>) articulos);
-            }
+                almacen.setArticuloId(articulo.getId());
+                factoriaAlmacenes.acceso().CrearActualizarRelacion(almacen);
 
-            factoriaArticulos.acceso().actualizarArticuloDetalle(articulo);
+            }
 
             cambiosNoGuardados = false;
             reiniciar();
@@ -300,8 +296,8 @@ public class ControladorArticulosDetalle implements Initializable {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al guardar cambios", e);
         }
-
     }
+
 
     private void reiniciar() {
         configurarTablas();
