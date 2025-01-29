@@ -5,10 +5,12 @@
  */
 package crud.objetosTransferibles;
 
+import crud.objetosTransferibles.Articulo;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -30,9 +32,6 @@ public class Almacen implements Serializable, Cloneable {
     private String pais;
 
     private double espacio;
-
-    //Solo se usa para ayudar en la relacion Articulo,Almacen
-    private Long articuloId;
 
     public Almacen() {
     }
@@ -85,6 +84,7 @@ public class Almacen implements Serializable, Cloneable {
         this.espacio = espacio;
     }
 
+    @XmlTransient
     public Set<Articulo> getArticulos() {
         return articulos;
     }
@@ -93,27 +93,7 @@ public class Almacen implements Serializable, Cloneable {
         this.articulos = articulos;
     }
 
-    public Long getArticuloId() {
-        return articuloId;
-    }
-
-    public void setArticuloId(Long articuloId) {
-        this.articuloId = articuloId;
-    }
-
     private Set<Articulo> articulos = new HashSet<>();
-
-    @Override
-    public Almacen clone() {
-        Almacen copia = new Almacen();
-        copia.setId(this.id);
-        copia.setDireccion(this.direccion);
-        copia.setEspacio(this.espacio);
-        copia.setPais(this.pais);
-        copia.setPoblacion(this.poblacion);
-        copia.setProvincia(this.provincia);
-        return copia;
-    }
 
     @Override
     public int hashCode() {
@@ -138,6 +118,19 @@ public class Almacen implements Serializable, Cloneable {
     @Override
     public String toString() {
         return "crud.entidades.Almacen[ id=" + id + " ]";
+    }
+
+    @Override
+    public Almacen clone() {
+        Almacen copia = new Almacen();
+        copia.setId(this.id);
+        copia.setPais(this.pais);
+        copia.setDireccion(this.direccion);
+        copia.setEspacio(this.espacio);
+        copia.setPoblacion(this.poblacion);
+        copia.setProvincia(this.provincia);
+        copia.setArticulos(this.articulos);
+        return copia;
     }
 
 }

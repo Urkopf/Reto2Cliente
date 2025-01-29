@@ -10,6 +10,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -283,12 +284,11 @@ public class ControladorArticulosDetalle implements Initializable {
         List<Almacen> almacenes = tablaAlmacenesArticulo.getItems();
         List<Articulo> articulos = new ArrayList<>();
         try {
-            articulos.add(articulo);
-            for (Almacen almacen : almacenes) {
-                almacen.setArticuloId(articulo.getId());
-                factoriaAlmacenes.acceso().CrearActualizarRelacion(almacen);
 
-            }
+            Set<Almacen> almacenesSet = new HashSet<>(almacenes);
+            articulo.setAlmacenes(almacenesSet);
+            factoriaArticulos.acceso().actualizarArticulo(articulo);
+
 
             cambiosNoGuardados = false;
             reiniciar();
@@ -367,17 +367,6 @@ public class ControladorArticulosDetalle implements Initializable {
         alerta.setTitle(titulo);
         alerta.setContentText(mensaje);
         alerta.showAndWait();
-    }
-
-    private Almacen buscarAlmacenPorId(Long almacenId) {
-        if (almacenesDisponibles == null) {
-            return null;
-        }
-
-        return almacenesDisponibles.stream()
-                .filter(a -> a.getId().equals(almacenId))
-                .findFirst()
-                .orElse(null);
     }
 
 }

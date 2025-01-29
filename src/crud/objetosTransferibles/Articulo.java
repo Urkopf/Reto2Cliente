@@ -5,6 +5,8 @@
  */
 package crud.objetosTransferibles;
 
+import crud.objetosTransferibles.Almacen;
+import crud.objetosTransferibles.PedidoArticulo;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
@@ -20,7 +22,6 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Articulo implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
     private Long id;
 
     private String nombre;
@@ -40,12 +41,13 @@ public class Articulo implements Serializable {
     }
 
     public Articulo(Articulo articulo) {
-        this.id = articulo.id;
-        this.nombre = articulo.nombre;
-        this.precio = articulo.precio;
-        this.descripcion = articulo.descripcion;
-        this.stock = articulo.stock;
-        this.fechaReposicion = articulo.fechaReposicion;
+        this.id = id;
+        this.nombre = nombre;
+        this.precio = precio;
+        this.descripcion = descripcion;
+        this.fechaReposicion = fechaReposicion;
+        this.stock = stock;
+        this.almacenes = new HashSet<>(articulo.almacenes);
     }
 
     // Getters y setters
@@ -108,6 +110,7 @@ public class Articulo implements Serializable {
 
     private Set<Almacen> almacenes = new HashSet<>();
 
+    @XmlTransient
     public Set<Almacen> getAlmacenes() {
         return almacenes;
     }

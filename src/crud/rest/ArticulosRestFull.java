@@ -55,9 +55,9 @@ public class ArticulosRestFull {
 
     public void editDetalle_XML(Object requestEntity) throws WebApplicationException {
         LOGGER.log(Level.INFO, "Actualizando articulo DETALLES con ID {0}", requestEntity.getClass());
-        webTarget
-                .path("detalle")
-                .request(javax.ws.rs.core.MediaType.APPLICATION_XML) // Solicita una respuesta en formato XML
+        WebTarget resource = webTarget;
+        resource = resource.path("detalle");
+        resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML) // Solicita una respuesta en formato XML
                 .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Articulo.class);
     }
 
