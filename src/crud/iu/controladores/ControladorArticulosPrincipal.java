@@ -6,6 +6,7 @@
 package crud.iu.controladores;
 
 import crud.negocio.FactoriaArticulos;
+import crud.negocio.FactoriaPedidos;
 import crud.negocio.FactoriaUsuarios;
 import crud.objetosTransferibles.Articulo;
 import crud.objetosTransferibles.Trabajador;
@@ -16,6 +17,8 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,6 +35,9 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
@@ -42,7 +48,15 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  *
@@ -53,6 +67,7 @@ public class ControladorArticulosPrincipal implements Initializable {
     private static final Logger LOGGER = Logger.getLogger(ControladorArticulosPrincipal.class.getName());
     private FactoriaArticulos factoriaArticulos = FactoriaArticulos.getInstance();
     private FactoriaUsuarios factoriaUsuarios = FactoriaUsuarios.getInstance();
+    private FactoriaPedidos factoriaPedidos = FactoriaPedidos.getInstance();
     private Stage stage = new Stage();
     private Trabajador userTrabajador;
     private ObservableList<Articulo> articulosObservableList;
@@ -181,6 +196,99 @@ public class ControladorArticulosPrincipal implements Initializable {
 
         // Mostrar la primera página
         actualizarPagina(0);
+    }
+
+    public void configurarMenu() {
+        // Obtiene el BorderPane de la raíz
+        BorderPane borderPane = (BorderPane) anchorPane.getChildrenUnmodifiable().get(0);
+
+        // Obtiene el menú incluido desde el BorderPane (posición superior)
+        MenuBar menuBar = (MenuBar) borderPane.getTop();
+
+        // Accede a los menús dentro del menú incluido
+        Menu menuPrincipal = menuBar.getMenus().get(0); // Primer menú ("Menú")
+        Menu menuIr = menuBar.getMenus().get(1);
+        Menu menuAyuda = menuBar.getMenus().get(2);
+
+        // Configura un listener para cada opción dentro del menú "Menú"
+        MenuItem opcionImprimir = menuPrincipal.getItems().get(0); // "Imprimir informe"
+        opcionImprimir.setOnAction(event -> imprimirInforme());
+
+        MenuItem opcionCerrarSesion = menuPrincipal.getItems().get(1); // "Cerrar sesión"
+        opcionCerrarSesion.setOnAction(event -> cerrarSesion());
+
+        MenuItem opcionSalir = menuPrincipal.getItems().get(2); // "Salir del programa"
+        opcionSalir.setOnAction(event -> salirPrograma());
+
+        MenuItem opcionVolver = menuPrincipal.getItems().get(3); // "Volver al Menú principal"
+        opcionVolver.setOnAction(event -> volverAlMenuPrincipal());
+
+        // Configura un listener para las opciones del menú "Ir a"
+        MenuItem opcionIrPedidos = menuIr.getItems().get(0); // "Vista Pedido"
+        opcionIrPedidos.setVisible(true);
+        opcionIrPedidos.setOnAction(event -> irVistaPedidos());
+
+        MenuItem opcionIrArticulos = menuIr.getItems().get(1); // "Vista Artículo"
+        opcionIrArticulos.setVisible(false);
+
+//        MenuItem botonAyuda = menuAyuda.getItems().get(0);
+//        botonAyuda.setOnAction(event -> {
+//            mostrarAyuda();
+//        });
+    }
+
+    // Métodos de acción
+    private void imprimirInforme() {
+        System.out.println("Imprimiendo informe...");
+        crearInforme();
+    }
+
+    private void cerrarSesion() {
+        System.out.println("Cerrando sesión...");
+        stage.close();
+    }
+
+    private void salirPrograma() {
+        System.out.println("Saliendo del programa...");
+        System.exit(0);
+    }
+
+    private void volverAlMenuPrincipal() {
+        factoriaUsuarios.cargarMenuPrincipal(stage, userTrabajador);
+    }
+
+    private void irVistaPedidos() {
+        factoriaPedidos.cargarPedidosPrincipal(stage, userTrabajador, null);
+    }
+
+    public void crearInforme() {
+        try {
+            LOGGER.info("Beginning printing action...");
+            JasperReport report
+                    = JasperCompileManager.compileReport(getClass()
+                            .getResourceAsStream("/crud/iu/reportes/PedidosReport.jrxml"));
+            //Data for the report: a collection of UserBean passed as a JRDataSource
+            //implementation
+            JRBeanCollectionDataSource dataItems
+                    = new JRBeanCollectionDataSource((Collection<Articulo>) this.tablaArticulos.getItems());
+            //Map of parameter to be passed to the report
+            Map<String, Object> parameters = new HashMap<>();
+            //Fill report with data
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+            //Create and show the report window. The second parameter false value makes
+            //report window not to close app.
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+            jasperViewer.setVisible(true);
+            // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        } catch (JRException ex) {
+            //If there is an error show message and
+            //log it.
+//            LOGGER.log(Level.SEVERE,
+//                    "UI GestionUsuariosController: Error printing report: {0}",
+//                    ex.getMessage());
+//            clasificadorExcepciones(ex, ex.getMessage());
+
+        }
     }
 
     private void configurarTabla() {

@@ -2,6 +2,8 @@ package crud.iu.controladores;
 
 import crud.negocio.FactoriaAlmacen;
 import crud.negocio.FactoriaArticulos;
+import crud.negocio.FactoriaPedidos;
+import crud.negocio.FactoriaUsuarios;
 import crud.objetosTransferibles.Almacen;
 import crud.objetosTransferibles.Articulo;
 import crud.objetosTransferibles.Trabajador;
@@ -28,12 +30,16 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 /**
@@ -44,6 +50,8 @@ public class ControladorArticulosDetalle implements Initializable {
     private static final Logger LOGGER = Logger.getLogger(ControladorArticulosDetalle.class.getName());
     private FactoriaArticulos factoriaArticulos = FactoriaArticulos.getInstance();
     private FactoriaAlmacen factoriaAlmacenes = FactoriaAlmacen.getInstance();
+    private FactoriaUsuarios factoriaUsuarios = FactoriaUsuarios.getInstance();
+    private FactoriaPedidos factoriaPedidos = FactoriaPedidos.getInstance();
     private Stage stage;
     private Articulo articulo;
     private Trabajador userTrabajador;
@@ -161,6 +169,64 @@ public class ControladorArticulosDetalle implements Initializable {
             );
 
         }
+    }
+
+    public void configurarMenu() {
+        // Obtiene el BorderPane de la raíz
+        BorderPane borderPane = (BorderPane) anchorPane.getChildrenUnmodifiable().get(0);
+
+        // Obtiene el menú incluido desde el BorderPane (posición superior)
+        MenuBar menuBar = (MenuBar) borderPane.getTop();
+
+        // Accede a los menús dentro del menú incluido
+        Menu menuPrincipal = menuBar.getMenus().get(0); // Primer menú ("Menú")
+        Menu menuIr = menuBar.getMenus().get(1);
+        Menu menuAyuda = menuBar.getMenus().get(2);
+
+        // Configura un listener para cada opción dentro del menú "Menú"
+        MenuItem opcionImprimir = menuPrincipal.getItems().get(0); // "Imprimir informe"
+        opcionImprimir.setVisible(false);
+
+        MenuItem opcionCerrarSesion = menuPrincipal.getItems().get(1); // "Cerrar sesión"
+        opcionCerrarSesion.setOnAction(event -> cerrarSesion());
+
+        MenuItem opcionSalir = menuPrincipal.getItems().get(2); // "Salir del programa"
+        opcionSalir.setOnAction(event -> salirPrograma());
+
+        MenuItem opcionVolver = menuPrincipal.getItems().get(3); // "Volver al Menú principal"
+        opcionVolver.setOnAction(event -> volverAlMenuPrincipal());
+
+        // Configura un listener para las opciones del menú "Ir a"
+        MenuItem opcionIrPedidos = menuIr.getItems().get(0); // "Vista Pedido"
+        opcionIrPedidos.setVisible(true);
+        opcionIrPedidos.setOnAction(event -> irVistaPedidos());
+
+        MenuItem opcionIrArticulos = menuIr.getItems().get(1); // "Vista Artículo"
+        opcionIrArticulos.setVisible(false);
+
+//        MenuItem botonAyuda = menuAyuda.getItems().get(0);
+//        botonAyuda.setOnAction(event -> {
+//            mostrarAyuda();
+//        });
+    }
+
+    // Métodos de acción
+    private void cerrarSesion() {
+        System.out.println("Cerrando sesión...");
+        stage.close();
+    }
+
+    private void salirPrograma() {
+        System.out.println("Saliendo del programa...");
+        System.exit(0);
+    }
+
+    private void volverAlMenuPrincipal() {
+        factoriaUsuarios.cargarMenuPrincipal(stage, userTrabajador);
+    }
+
+    private void irVistaPedidos() {
+        factoriaPedidos.cargarPedidosPrincipal(stage, userTrabajador, null);
     }
 
     private void configurarTablas() {
