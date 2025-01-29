@@ -5,11 +5,11 @@
  */
 package crud.objetosTransferibles;
 
-import crud.objetosTransferibles.Almacen;
-import crud.objetosTransferibles.PedidoArticulo;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -35,6 +35,8 @@ public class Articulo implements Serializable {
     private Date fechaReposicion;
 
     private Set<PedidoArticulo> pedidoArticulos = new HashSet<>();
+
+    private List<Almacen> almacenTrump = new ArrayList<>();
 
     public Articulo() {
 
@@ -117,6 +119,14 @@ public class Articulo implements Serializable {
 
     public void setAlmacenes(Set<Almacen> almacenes) {
         this.almacenes = almacenes;
+    }
+
+    public List<Almacen> getAlmacenTrump() {
+        return almacenTrump;
+    }
+
+    public void setAlmacenTrump(List<Almacen> almacenTrump) {
+        this.almacenTrump = almacenTrump;
     }
 
     @Override

@@ -10,7 +10,6 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -98,6 +97,7 @@ public class ControladorArticulosDetalle implements Initializable {
 
     private boolean cambiosNoGuardados = false;
     List<Almacen> almacenesCambiar = new ArrayList<>();
+
     public void initStage(Parent root) {
         Scene scene = new Scene(root);
         stage.setScene(scene);
@@ -120,13 +120,11 @@ public class ControladorArticulosDetalle implements Initializable {
         LOGGER.info("Inicializando controlador ArticulosDetalle");
         configurarTablas();
 
-
         almacenesPorArticulo = FXCollections.observableArrayList();
         almacenesDelArticuloOriginal = FXCollections.observableArrayList(
                 almacenesPorArticulo.stream()
                         .map(Almacen::clone)
                         .collect(Collectors.toList()));
-
 
     }
 
@@ -242,7 +240,6 @@ public class ControladorArticulosDetalle implements Initializable {
 
             almacenesPorArticulo = FXCollections.observableArrayList(almacenes);
 
-
             tablaAlmacenesArticulo.setItems(almacenesPorArticulo);
             tablaAlmacenesArticulo.refresh();
 
@@ -285,10 +282,8 @@ public class ControladorArticulosDetalle implements Initializable {
         List<Articulo> articulos = new ArrayList<>();
         try {
 
-            Set<Almacen> almacenesSet = new HashSet<>(almacenes);
-            articulo.setAlmacenes(almacenesSet);
+            articulo.setAlmacenTrump(almacenes);
             factoriaArticulos.acceso().actualizarArticulo(articulo);
-
 
             cambiosNoGuardados = false;
             reiniciar();
@@ -297,7 +292,6 @@ public class ControladorArticulosDetalle implements Initializable {
             LOGGER.log(Level.SEVERE, "Error al guardar cambios", e);
         }
     }
-
 
     private void reiniciar() {
         configurarTablas();
