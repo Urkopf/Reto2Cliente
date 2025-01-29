@@ -30,7 +30,7 @@ import crud.objetosTransferibles.Cliente;
 import crud.objetosTransferibles.Trabajador;
 import crud.seguridad.UtilidadesCifrado;
 import static crud.seguridad.UtilidadesCifrado.cargarClavePublica;
-import static crud.seguridad.UtilidadesCifrado.encriptarConClavePublica;
+import static crud.seguridad.UtilidadesCifrado.cifrarConClavePublica;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
 import crud.utilidades.ExcepcionesUtilidad;
 import static crud.utilidades.ExcepcionesUtilidad.centralExcepciones;
@@ -365,7 +365,7 @@ public class ControladorInicioSesion implements Initializable {
             String contraseña = campoContrasena.getText();
 
             // Cliente encripta la contraseña
-            contraseñaEncriptada = encriptarConClavePublica(contraseña, clavePublica);
+            contraseñaEncriptada = cifrarConClavePublica(contraseña, clavePublica);
 
             // Preparar el usuario con la contraseña cifrada
             usuario = new Usuario();

@@ -4,8 +4,6 @@ import static crud.seguridad.UtilidadesCifrado.cargarClavePrivada;
 import static crud.seguridad.UtilidadesCifrado.cargarClavePublica;
 import static crud.seguridad.UtilidadesCifrado.cargarClaveSimetrica;
 import static crud.seguridad.UtilidadesCifrado.cifrarConClaveSimetrica;
-import static crud.seguridad.UtilidadesCifrado.encriptarConClavePrivada;
-import static crud.seguridad.UtilidadesCifrado.encriptarConClavePublica;
 import static crud.seguridad.UtilidadesCifrado.generarYGuardarClaveSimetrica;
 import static crud.seguridad.UtilidadesCifrado.generarYGuardarClaves;
 import static crud.seguridad.UtilidadesCifrado.hashearContraseña;
@@ -18,7 +16,7 @@ public class GeneradorClaves {
     public static void main(String[] args) {
         try {
             // Generar y guardar claves en archivos
-            //generarYGuardarClaves();
+            generarYGuardarClaves();
             /*
             // Cargar claves desde archivos
             PublicKey clavePublica = cargarClavePublica();
@@ -38,7 +36,7 @@ public class GeneradorClaves {
              */
             // Servidor hashea la contraseña antes de almacenarla
             // Generar y guardar clave simétrica
-            generarYGuardarClaveSimetrica();
+            /*generarYGuardarClaveSimetrica();
 
             // Cargar clave simétrica
             SecretKey claveSimetrica = cargarClaveSimetrica();
@@ -50,7 +48,7 @@ public class GeneradorClaves {
             System.out.println("Pass cifrado: " + textoCifradoPass);
 
             String contraseñaHasheada = hashearContraseña("trabajadoreficiente2025");
-            System.out.println("Contraseña hasheada: " + contraseñaHasheada);
+            System.out.println("Contraseña hasheada: " + contraseñaHasheada);*/
 
         } catch (Exception e) {
             e.printStackTrace();

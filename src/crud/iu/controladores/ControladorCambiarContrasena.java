@@ -6,7 +6,7 @@ import crud.objetosTransferibles.Cliente;
 import crud.objetosTransferibles.Trabajador;
 import crud.objetosTransferibles.Usuario;
 import static crud.seguridad.UtilidadesCifrado.cargarClavePublica;
-import static crud.seguridad.UtilidadesCifrado.encriptarConClavePublica;
+import static crud.seguridad.UtilidadesCifrado.cifrarConClavePublica;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
 import static crud.utilidades.ExcepcionesUtilidad.clasificadorExcepciones;
 import static crud.utilidades.ValidateUtilities.isValid;
@@ -230,8 +230,8 @@ public class ControladorCambiarContrasena implements Initializable {
                 clavePublica = cargarClavePublica();
 
                 // Contraseña del cliente
-                usuario.setContrasena(encriptarConClavePublica(contrasenaVieja, clavePublica));
-                usuario.setCalle(encriptarConClavePublica(contrasenaNueva, clavePublica));
+                usuario.setContrasena(cifrarConClavePublica(contrasenaVieja, clavePublica));
+                usuario.setCalle(cifrarConClavePublica(contrasenaNueva, clavePublica));
             } catch (Exception ex) {
                 Logger.getLogger(ControladorRegistro.class.getName()).log(Level.SEVERE, null, ex);
             }

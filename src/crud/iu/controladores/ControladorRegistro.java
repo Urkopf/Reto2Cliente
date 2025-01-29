@@ -36,7 +36,7 @@ import crud.objetosTransferibles.Departamento;
 import crud.objetosTransferibles.Trabajador;
 import crud.seguridad.UtilidadesCifrado;
 import static crud.seguridad.UtilidadesCifrado.cargarClavePublica;
-import static crud.seguridad.UtilidadesCifrado.encriptarConClavePublica;
+import static crud.seguridad.UtilidadesCifrado.cifrarConClavePublica;
 import static crud.utilidades.AlertUtilities.showConfirmationDialog;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
 import static crud.utilidades.ExcepcionesUtilidad.clasificadorExcepciones;
@@ -537,7 +537,7 @@ public class ControladorRegistro implements Initializable {
                 String contraseña = campoContrasena.getText();
 
                 // Cliente encripta la contraseña
-                contraseñaEncriptada = encriptarConClavePublica(contraseña, clavePublica);
+                contraseñaEncriptada = cifrarConClavePublica(contraseña, clavePublica);
             } catch (Exception ex) {
                 Logger.getLogger(ControladorRegistro.class.getName()).log(Level.SEVERE, null, ex);
             }
