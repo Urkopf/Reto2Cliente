@@ -11,6 +11,7 @@ import crud.negocio.FactoriaUsuarios;
 import crud.objetosTransferibles.Articulo;
 import crud.objetosTransferibles.Trabajador;
 import crud.utilidades.AlertUtilities;
+import static crud.utilidades.ExcepcionesUtilidad.clasificadorExcepciones;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
@@ -231,10 +232,10 @@ public class ControladorArticulosPrincipal implements Initializable {
         MenuItem opcionIrArticulos = menuIr.getItems().get(1); // "Vista Artículo"
         opcionIrArticulos.setVisible(false);
 
-//        MenuItem botonAyuda = menuAyuda.getItems().get(0);
-//        botonAyuda.setOnAction(event -> {
-//            mostrarAyuda();
-//        });
+        MenuItem botonAyuda = menuAyuda.getItems().get(0);
+        botonAyuda.setOnAction(event -> {
+            mostrarAyuda();
+        });
     }
 
     // Métodos de acción
@@ -283,10 +284,10 @@ public class ControladorArticulosPrincipal implements Initializable {
         } catch (JRException ex) {
             //If there is an error show message and
             //log it.
-//            LOGGER.log(Level.SEVERE,
-//                    "UI GestionUsuariosController: Error printing report: {0}",
-//                    ex.getMessage());
-//            clasificadorExcepciones(ex, ex.getMessage());
+            LOGGER.log(Level.SEVERE,
+                    "UI GestionUsuariosController: Error printing report: {0}",
+                    ex.getMessage());
+            clasificadorExcepciones(ex, ex.getMessage());
 
         }
     }
@@ -958,6 +959,10 @@ public class ControladorArticulosPrincipal implements Initializable {
                 return stock + " unid"; // Agrega el sufijo "unid"
             }
         });
+    }
+
+    private void mostrarAyuda() {
+        factoriaUsuarios.cargarAyuda("pedidosDetalle");
     }
 
 }

@@ -11,9 +11,6 @@ import crud.objetosTransferibles.Estado;
 import crud.objetosTransferibles.Pedido;
 import crud.objetosTransferibles.PedidoArticulo;
 import crud.objetosTransferibles.Trabajador;
-import crud.utilidades.AlertUtilities;
-
-import static crud.utilidades.AlertUtilities.showErrorDialog;
 import static crud.utilidades.ExcepcionesUtilidad.clasificadorExcepciones;
 
 import java.net.URL;
@@ -47,7 +44,6 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -303,7 +299,7 @@ public class ControladorPedidosDetalle implements Initializable {
     }
 
     private void irVistaArticulos() {
-        factoriaArticulos.cargarArticulosPrincipal(stage, (userCliente != null) ? userCliente : userTrabajador);
+        factoriaArticulos.cargarArticulosPrincipal(stage, (userCliente != null) ? userCliente : userTrabajador, null);
     }
 
     /**

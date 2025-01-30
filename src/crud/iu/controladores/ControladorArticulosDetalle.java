@@ -204,10 +204,10 @@ public class ControladorArticulosDetalle implements Initializable {
         MenuItem opcionIrArticulos = menuIr.getItems().get(1); // "Vista Artículo"
         opcionIrArticulos.setVisible(false);
 
-//        MenuItem botonAyuda = menuAyuda.getItems().get(0);
-//        botonAyuda.setOnAction(event -> {
-//            mostrarAyuda();
-//        });
+        MenuItem botonAyuda = menuAyuda.getItems().get(0);
+        botonAyuda.setOnAction(event -> {
+            mostrarAyuda();
+        });
     }
 
     // Métodos de acción
@@ -427,6 +427,10 @@ public class ControladorArticulosDetalle implements Initializable {
         alerta.setTitle(titulo);
         alerta.setContentText(mensaje);
         alerta.showAndWait();
+    }
+
+    private void mostrarAyuda() {
+        factoriaUsuarios.cargarAyuda("pedidosDetalle");
     }
 
 }

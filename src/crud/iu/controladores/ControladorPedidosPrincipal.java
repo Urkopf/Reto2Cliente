@@ -55,7 +55,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -247,7 +246,7 @@ public class ControladorPedidosPrincipal implements Initializable {
     }
 
     private void irVistaArticulos() {
-        factoriaArticulos.cargarArticulosPrincipal(stage, (userCliente != null) ? userCliente : userTrabajador);
+        factoriaArticulos.cargarArticulosPrincipal(stage, (userCliente != null) ? userCliente : userTrabajador, null);
     }
 
     public void crearInforme() {
