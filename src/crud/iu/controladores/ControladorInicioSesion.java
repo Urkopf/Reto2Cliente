@@ -28,14 +28,23 @@ import javafx.stage.Stage;
 import crud.objetosTransferibles.Usuario;
 import crud.objetosTransferibles.Cliente;
 import crud.objetosTransferibles.Trabajador;
+import crud.seguridad.UtilidadesCifrado;
+import static crud.seguridad.UtilidadesCifrado.cargarClavePublica;
+import static crud.seguridad.UtilidadesCifrado.cifrarConClavePublica;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
+import crud.utilidades.ExcepcionesUtilidad;
+import static crud.utilidades.ExcepcionesUtilidad.centralExcepciones;
+import static crud.utilidades.ExcepcionesUtilidad.clasificadorExcepciones;
 import static crud.utilidades.ValidateUtilities.isValid;
 import java.awt.Cursor;
+import java.security.PublicKey;
+import java.util.Base64;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.WebApplicationException;
 
 /**
  * Controlador FXML para la vista de inicio de sesión (SignIn). Este controlador
@@ -69,6 +78,8 @@ public class ControladorInicioSesion implements Initializable {
     @FXML
     private Button botonRegistrar;  // Hipervínculo para ir a la página de registro
     @FXML
+    private Button botonSalir;
+    @FXML
     private GridPane gridPane;  // Contenedor de todos los campos del formulario
     @FXML
     private ImageView errorEmail;  // Icono de error para el campo de inicio de sesión
@@ -78,6 +89,10 @@ public class ControladorInicioSesion implements Initializable {
     private Button botonOjo;  // Botón para alternar la visibilidad de la contraseña
     @FXML
     private Button botonActualizar;
+    @FXML
+    private Button botonRecuperar;
+    @FXML
+    private ImageView botonAyuda;
 
     private ContextMenu contextMenu;  // Menú contextual personalizado
     private Boolean actualizar = false;
@@ -185,11 +200,23 @@ public class ControladorInicioSesion implements Initializable {
             botonIniciarSesion.setOnAction(null);
             botonIniciarSesion.addEventHandler(ActionEvent.ACTION, this::handleButtonLoginButton);
             botonRegistrar.addEventHandler(ActionEvent.ACTION, this::handleButtonRegistro);  // Manejar clic en el hipervínculo de registro
+            botonRecuperar.addEventHandler(ActionEvent.ACTION, this::handleBotonRecuperar);
+            botonSalir.addEventHandler(ActionEvent.ACTION, this::handleButtonSalir);
+            botonAyuda.setOnMouseClicked(event -> {
+                mostrarAyuda();
+            });
+            botonAyuda.setOnMouseEntered(event -> {
+                botonAyuda.setStyle("-fx-cursor: hand;"); // Cambia el cursor al pasar el ratón
+            });
+
+            botonAyuda.setOnMouseExited(event -> {
+                botonAyuda.setStyle("-fx-cursor: default;"); // Vuelve al cursor normal al salir
+            });
 
             if (!campoEmail.getText().equals("")) {
                 campoContrasena.requestFocus();  // Establece el foco en el campo de contraseña
             }
-
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/recursos/icon.png")));
             // Configurar la visibilidad de la contraseña
             botonOjo.setOnMousePressed(event -> {
                 if (event.getButton() == MouseButton.PRIMARY) {
@@ -208,6 +235,10 @@ public class ControladorInicioSesion implements Initializable {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al inicializar el stage", e);
         }
+    }
+
+    private void mostrarAyuda() {
+        factoria.cargarAyuda("inicioSesion");
     }
 
     /**
@@ -252,8 +283,12 @@ public class ControladorInicioSesion implements Initializable {
      *
      * @param event El evento de acción.
      */
-    private void handleWindowShowing(javafx.event.Event event) {
+    private void handleWindowShowing(javafx.stage.WindowEvent event) {
         LOGGER.info("Mostrando Ventana de Inicio de Sesión");
+    }
+
+    private void handleBotonRecuperar(ActionEvent event) {
+        factoria.cargarRecuperarContrasena(stage);
     }
 
     /**
@@ -264,6 +299,10 @@ public class ControladorInicioSesion implements Initializable {
     @FXML
     private void handleButtonRegistro(ActionEvent event) {
         factoria.cargarRegistro(stage, null);  // Cargar la ventana de registro
+    }
+
+    private void handleButtonSalir(ActionEvent event) {
+        stage.close();
     }
 
     /**
@@ -279,14 +318,11 @@ public class ControladorInicioSesion implements Initializable {
         } else {
             actualizar = false;
         }
-        if (actualizar) {
-            LOGGER.info("Botón Actualizar Sesion presionado");
-        } else {
-            LOGGER.info("Botón Iniciar Sesion presionado");
-        }
+        LOGGER.info(actualizar ? "Botón Actualizar Sesion presionado" : "Botón Iniciar Sesion presionado");
 
         hasError = false;
-        // Verificar si todos los campos están llenos
+
+        // Verificar que los campos estén completos
         if (!comprobarCamposCompletos()) {
             LOGGER.severe("Error: Todos los campos deben ser completados.");
             for (Node node : gridPane.getChildren()) {
@@ -299,7 +335,7 @@ public class ControladorInicioSesion implements Initializable {
             }
         }
 
-        // Validar campos específicos como contraseña y nombre de usuario
+        // Validar campos específicos (contraseña y correo electrónico)
         campoContrasena.setText(campoContrasena.getText().trim());
         if (!isValid(campoContrasena.getText(), "pass")) {
             mostrarImagenError(campoContrasena);
@@ -314,44 +350,54 @@ public class ControladorInicioSesion implements Initializable {
         // Si hay errores, no continuar
         if (hasError) {
             LOGGER.severe("Hay errores en el formulario.");
-            showErrorDialog(AlertType.ERROR, "Error", "Uno o varios campos incorrectos o vacíos. Mantenga el cursor encima de los campos para más información.");
-        } else {
-            // Si no hay errores, proceder con el formulario
-            usuario = new Usuario();  // Crear un nuevo usuario
-            usuario.setCorreo(campoEmail.getText());
-            usuario.setContrasena(campoContrasena.getText());
+            showErrorDialog(AlertType.ERROR, "Error", "Uno o varios campos incorrectos o vacíos. Revise los campos marcados.");
+            return;
+        }
 
-            try {
-                respuesta = factoria.inicioSesion().getInicioSesion(usuario); // Nos tiene que devolver los datos del usuario salvo su contraseña
-                if (respuesta instanceof Cliente) {
-                    System.out.println("Cliente recibido: " + ((Cliente) respuesta).getNombre());
-                    cliente = (Cliente) respuesta;
-                } else if (respuesta instanceof Trabajador) {
-                    System.out.println("Trabajador recibido: " + ((Trabajador) respuesta).getNombre());
-                    trabajador = (Trabajador) respuesta;
-                } else {
-                    throw new Exception("Tipo de respuesta desconocido.");
-                }
-                if ((cliente != null) ? !cliente.getActivo() : !trabajador.getActivo()) {
-                    showErrorDialog(AlertType.ERROR, "Usuario no activo", "Su usuario está desactivado. ACtualice su estado antes de iniciar sesión.");
-                } else {
-                    if (!actualizar) {
-                        factoria.cargarMenuPrincipal(stage, respuesta);  // Cargar la ventana principal
-                    } else {
-                        factoria.cargarRegistro(stage, respuesta);  // Cargar el SignUP
-                    }
-                }
-            } catch (ForbiddenException e) {
-                showErrorDialog(AlertType.ERROR, "Inicio de sesión fallido", "Su usuario está desactivado.");
-            } catch (NotAuthorizedException e) {
-                showErrorDialog(AlertType.ERROR, "Inicio de sesión fallido", "El correo electrónico (login) y/o la contraseña incorrect@/s.");
-            } catch (InternalServerErrorException e) {
-                showErrorDialog(AlertType.ERROR, "Inicio de sesión fallido", "Error en el servidor.");
-            } catch (Exception e) {
-                showErrorDialog(AlertType.ERROR, "Inicio de sesión fallido", "Error en el metaverso." + e);
+        // Cargar clave pública y cifrar contraseña
+        try {
+            // Cargar claves desde archivos
+            String contraseñaEncriptada = "";
+            PublicKey clavePublica;
+
+            clavePublica = cargarClavePublica();
+            // Contraseña del cliente
+            String contraseña = campoContrasena.getText();
+
+            // Cliente encripta la contraseña
+            contraseñaEncriptada = cifrarConClavePublica(contraseña, clavePublica);
+
+            // Preparar el usuario con la contraseña cifrada
+            usuario = new Usuario();
+            usuario.setCorreo(campoEmail.getText());
+            usuario.setContrasena(contraseñaEncriptada);
+
+            // Enviar la solicitud al servidor
+            respuesta = factoria.inicioSesion().getInicioSesion(usuario);
+
+            // Procesar la respuesta del servidor
+            if (respuesta instanceof Cliente) {
+                LOGGER.info("Cliente recibido: " + ((Cliente) respuesta).getNombre());
+                cliente = (Cliente) respuesta;
+            } else if (respuesta instanceof Trabajador) {
+                LOGGER.info("Trabajador recibido: " + ((Trabajador) respuesta).getNombre());
+                trabajador = (Trabajador) respuesta;
             }
 
-            //  messageManager(response);  // Manejar la respuesta del servidor
+            // Verificar si el usuario está activo
+            if ((cliente != null) ? !cliente.getActivo() : !trabajador.getActivo()) {
+                showErrorDialog(AlertType.ERROR, "Usuario no activo", "Su usuario está desactivado. Contacte con soporte.");
+            } else {
+                // Cargar la siguiente ventana dependiendo de la acción
+                if (!actualizar) {
+                    factoria.cargarMenuPrincipal(stage, respuesta);
+                } else {
+                    factoria.cargarRegistro(stage, respuesta);
+                }
+            }
+
+        } catch (Exception e) {
+            clasificadorExcepciones(e, e.getMessage());
         }
     }
 

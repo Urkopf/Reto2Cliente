@@ -13,6 +13,11 @@ import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.stage.Stage;
+import static crud.utilidades.AlertUtilities.showErrorDialog;
+import static crud.utilidades.ExcepcionesUtilidad.clasificadorExcepciones;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
@@ -20,6 +25,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -42,6 +48,8 @@ public class ControladorMenuPrincipal implements Initializable {
     private Label labelTitulo;
     @FXML
     private Button botonSalir;
+    @FXML
+    private ImageView botonAyuda;
     @FXML
     private Button botonCerrarSesion;
     @FXML
@@ -128,7 +136,16 @@ public class ControladorMenuPrincipal implements Initializable {
             botonCerrarSesion.addEventHandler(ActionEvent.ACTION, this::manejarBotonCerrarSesion);
             botonSalir.setOnAction(null);
             botonSalir.addEventHandler(ActionEvent.ACTION, this::manejarBotonSalir);
+            botonAyuda.setOnMouseClicked(event -> {
+                mostrarAyuda();
+            });
+            botonAyuda.setOnMouseEntered(event -> {
+                botonAyuda.setStyle("-fx-cursor: hand;"); // Cambia el cursor al pasar el ratón
+            });
 
+            botonAyuda.setOnMouseExited(event -> {
+                botonAyuda.setStyle("-fx-cursor: default;"); // Vuelve al cursor normal al salir
+            });
             //configurarTeclasMnemotecnicas();  // Configurar teclas mnemotécnicas
             stage.show();  // Mostrar el escenario
 
@@ -214,10 +231,10 @@ public class ControladorMenuPrincipal implements Initializable {
     private void manejarBotonCambiarContrasena(ActionEvent event) {
         try {
             LOGGER.info("Botón 'Cambiar Contraseña' presionado.");
-            showErrorDialog(AlertType.ERROR, "Funcionalidad en desarrollo", "Próximamente estará disponible.");
+            factoriaUsuarios.cargarCambiarContrasena(stage, (userCliente != null) ? userCliente : userTrabajador);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cambiar contraseña", e);
-            showErrorDialog(AlertType.ERROR, "No se pudo cambiar la contraseña", "Inténtelo de nuevo más tarde.");
+            clasificadorExcepciones(e, e.getMessage());
         }
     }
 
@@ -235,7 +252,7 @@ public class ControladorMenuPrincipal implements Initializable {
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al gestionar pedidos", e);
-            showErrorDialog(AlertType.ERROR, "No se pudo gestionar los pedidos", "Inténtelo de nuevo más tarde.");
+            clasificadorExcepciones(e, e.getMessage());
         }
     }
 
@@ -262,5 +279,9 @@ public class ControladorMenuPrincipal implements Initializable {
 
     private void salir() {
         stage.close();
+    }
+
+    private void mostrarAyuda() {
+        factoriaUsuarios.cargarAyuda("menuPrincipal");
     }
 }

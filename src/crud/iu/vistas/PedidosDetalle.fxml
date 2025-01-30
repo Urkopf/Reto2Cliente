@@ -16,12 +16,12 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="AnchorPane" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="crud.iu.controladores.ControladorPedidosDetalle">
+<AnchorPane fx:id="anchorPane" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="crud.iu.controladores.ControladorPedidosDetalle">
     <children>
-        <BorderPane fx:id="BorderPane" maxHeight="768.0" maxWidth="1024.0" prefWidth="1024">
+        <BorderPane fx:id="borderPane" maxHeight="768.0" maxWidth="1024.0" prefWidth="1024">
             <top>
 
-                <fx:include source="MenuVentanas.fxml" />
+                <fx:include fx:id="menuBar" source="MenuVentanas.fxml" />
                 
             </top>
 

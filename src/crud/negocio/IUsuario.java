@@ -18,4 +18,8 @@ public interface IUsuario<T> {
 
     public Object getInicioSesion(Usuario usuario);
 
+    public Object getCambiarContrasena(Usuario usuario);
+
+    public Object getRecuperarContrasena(Usuario usuario);
+
 }

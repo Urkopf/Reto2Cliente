@@ -8,15 +8,15 @@
 <?import javafx.scene.layout.*?>
 
 
-<MenuBar stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<MenuBar stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" >
     <menus>
         <!-- Menú principal -->
         <Menu text="Menú">
             <items>
                 <MenuItem  text="Imprimir informe" fx:id="opcionImprimir"/>
-                <MenuItem  text="Volver al Menú principal" fx:id="opcionVolver" />
-                <MenuItem  text="Cerrar Sesión" fx:id="opcionCerrarSesion"/>
-                <MenuItem  text="Salir del programa" fx:id="opcionSalir"/>
+                <MenuItem fx:id="opcionCerrarSesion" text="Cerrar Sesión" />
+                <MenuItem fx:id="opcionSalir" text="Salir del programa"/>
+                <MenuItem fx:id="opcionVolver" text="Volver al Menú principal" />
             </items>
         </Menu>
 
@@ -24,14 +24,14 @@
         <Menu fx:id="pestanaIr" text="Ir a">
             <items>
                 <MenuItem fx:id="opcionIrPedidos" text="Vista Pedido" />
-                <MenuItem fx:id="opcionIrArticulos" text="Vista Artículo"/>
+                <MenuItem fx:id="opcionIrArticulos" text="Vista Artículo" />
             </items>
         </Menu>
 
         <!-- Menú Ayuda -->
         <Menu text="Ayuda">
             <items>
-                <MenuItem text="Ver manual" />
+                <MenuItem fx:id="opcionAyuda" text="Ver manual" />
             </items>
         </Menu>
     </menus>

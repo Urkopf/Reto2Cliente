@@ -8,6 +8,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -18,62 +20,62 @@
 
 <AnchorPane fx:id="AnchorPane" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="crud.iu.controladores.ControladorPedidosBusqueda">
     <children>
-        <BorderPane fx:id="BorderPane" prefHeight="500" prefWidth="800">
+        <BorderPane fx:id="BorderPane" prefHeight="571.0" prefWidth="801.0">
             <top>
 
             </top>
 
             <center>
                 <VBox prefWidth="801.0" spacing="10">
-               <VBox alignment="CENTER_LEFT" prefHeight="438.0" prefWidth="761.0" spacing="30.0">
-                  <children>
-                     <HBox alignment="CENTER_LEFT">
+                    <VBox alignment="CENTER_LEFT" prefHeight="438.0" prefWidth="761.0" spacing="30.0">
                         <children>
-                           <CheckBox fx:id="checkBoxIdPedido" mnemonicParsing="false" text="Por ID de pedido, desde  " />
-                           <Spinner fx:id="spinnerIdDesde" prefHeight="35.0" prefWidth="180.0" />
-                           <Label text=" hasta " />
-                           <Spinner fx:id="spinnerIdHasta" prefHeight="35.0" prefWidth="180.0" />
+                            <HBox alignment="CENTER_LEFT">
+                                <children>
+                                    <CheckBox fx:id="checkBoxIdPedido" mnemonicParsing="false" text="Por ID de pedido, desde  " />
+                                    <Spinner fx:id="spinnerIdDesde" prefHeight="35.0" prefWidth="180.0" />
+                                    <Label text=" hasta " />
+                                    <Spinner fx:id="spinnerIdHasta" prefHeight="35.0" prefWidth="180.0" />
+                                </children>
+                            </HBox>
+                            <HBox fx:id="hBoxCif" alignment="CENTER_LEFT">
+                                <children>
+                                    <CheckBox fx:id="checkBoxCIF" mnemonicParsing="false" text="Por CIF  " />
+                                    <ComboBox fx:id="comboBoxCIF" prefHeight="35.0" prefWidth="180.0" />
+                                </children>
+                            </HBox>
+                            <HBox alignment="CENTER_LEFT">
+                                <children>
+                                    <CheckBox fx:id="checkBoxDireccion" mnemonicParsing="false" text="Por dirección  " />
+                                    <TextField fx:id="textFieldDireccion" prefHeight="37.0" prefWidth="531.0" />
+                                </children>
+                            </HBox>
+                            <HBox alignment="CENTER_LEFT" prefWidth="200.0">
+                                <children>
+                                    <CheckBox fx:id="checkBoxFecha" mnemonicParsing="false" text="Por Fecha de pedido, desde  " />
+                                    <DatePicker fx:id="datePickerDesde" prefHeight="35.0" prefWidth="180.0" />
+                                    <Label text=" hasta " />
+                                    <DatePicker fx:id="datePickerHasta" prefHeight="35.0" prefWidth="180.0" />
+                                </children>
+                            </HBox>
+                            <HBox alignment="CENTER_LEFT" prefWidth="200.0">
+                                <children>
+                                    <CheckBox fx:id="checkBoxEstado" mnemonicParsing="false" text="Por estado del pedido  " />
+                                    <ComboBox fx:id="comboBoxEstado" prefHeight="35.0" prefWidth="180.0" />
+                                </children>
+                            </HBox>
+                            <HBox alignment="CENTER_LEFT">
+                                <children>
+                                    <CheckBox fx:id="checkBoxPrecio" mnemonicParsing="false" text="Por Precio total del pedido, desde  " />
+                                    <Spinner fx:id="spinnerPrecioDesde" prefWidth="180.0" />
+                                    <Label text=" hasta " />
+                                    <Spinner fx:id="spinnerPrecioHasta" prefWidth="180.0" />
+                                </children>
+                            </HBox>
                         </children>
-                     </HBox>
-                     <HBox alignment="CENTER_LEFT">
-                        <children>
-                           <CheckBox fx:id="checkBoxCIF" mnemonicParsing="false" text="Por CIF  " />
-                           <ComboBox fx:id="comboBoxCIF" prefHeight="35.0" prefWidth="180.0" />
-                        </children>
-                     </HBox>
-                     <HBox alignment="CENTER_LEFT">
-                        <children>
-                           <CheckBox fx:id="checkBoxDireccion" mnemonicParsing="false" text="Por dirección  " />
-                           <TextField fx:id="textFieldDireccion" prefHeight="37.0" prefWidth="531.0" />
-                        </children>
-                     </HBox>
-                     <HBox alignment="CENTER_LEFT" prefWidth="200.0">
-                        <children>
-                           <CheckBox fx:id="checkBoxFecha" mnemonicParsing="false" text="Por Fecha de pedido, desde  " />
-                           <DatePicker fx:id="datePickerDesde" prefHeight="35.0" prefWidth="180.0" />
-                           <Label text=" hasta " />
-                           <DatePicker fx:id="datePickerHasta" prefHeight="35.0" prefWidth="180.0" />
-                        </children>
-                     </HBox>
-                     <HBox alignment="CENTER_LEFT" prefWidth="200.0">
-                        <children>
-                           <CheckBox fx:id="checkBoxEstado" mnemonicParsing="false" text="Por estado del pedido  " />
-                           <ComboBox fx:id="comboBoxEstado" prefHeight="35.0" prefWidth="180.0" />
-                        </children>
-                     </HBox>
-                     <HBox alignment="CENTER_LEFT">
-                        <children>
-                           <CheckBox fx:id="checkBoxPrecio" mnemonicParsing="false" text="Por Precio total del pedido, desde  " />
-                           <Spinner fx:id="spinnerPrecioDesde" prefWidth="180.0" />
-                           <Label text=" hasta " />
-                           <Spinner fx:id="spinnerPrecioHasta" prefWidth="180.0" />
-                        </children>
-                     </HBox>
-                  </children>
-                  <VBox.margin>
-                     <Insets left="25.0" />
-                  </VBox.margin>
-               </VBox>
+                        <VBox.margin>
+                            <Insets left="25.0" />
+                        </VBox.margin>
+                    </VBox>
                 </VBox>
             </center>
 
@@ -109,11 +111,21 @@
                     <rowConstraints>
                         <RowConstraints />
                     </rowConstraints>
-               <padding>
-                  <Insets bottom="20.0" left="20.0" />
-               </padding>
+                    <padding>
+                        <Insets bottom="20.0" left="20.0" />
+                    </padding>
                 </GridPane>
             </bottom>
+         <top>
+              <ImageView fx:id="botonAyuda" fitHeight="43.0" fitWidth="43.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER_RIGHT">
+                  <image>
+                      <Image url="@../../../recursos/iconos/ayuda.png" />
+                  </image>
+               <BorderPane.margin>
+                  <Insets right="8.0" top="8.0" />
+               </BorderPane.margin>
+              </ImageView>
+         </top>
         </BorderPane>
     </children>
 </AnchorPane>

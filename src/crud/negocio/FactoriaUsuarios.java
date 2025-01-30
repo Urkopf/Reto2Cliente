@@ -5,13 +5,13 @@
  */
 package crud.negocio;
 
-import crud.iu.controladores.ControladorInicioSesion;
-import crud.iu.controladores.ControladorRegistro;
+import crud.iu.controladores.ControladorAyuda;
+import crud.iu.controladores.ControladorCambiarContrasena;
 
 import crud.iu.controladores.ControladorInicioSesion;
 import crud.iu.controladores.ControladorMenuPrincipal;
+import crud.iu.controladores.ControladorRecuperarContrasena;
 import crud.iu.controladores.ControladorRegistro;
-import crud.objetosTransferibles.Usuario;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -97,6 +97,47 @@ public class FactoriaUsuarios {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al abrir la ventnaa de  Menú principal: {0}", e.getMessage());
             showErrorDialog(AlertType.ERROR, "Error", "No se puede cargar la ventana de Menú principal");
+        }
+    }
+
+    public void cargarCambiarContrasena(Stage stage, Object usuario) {
+        try {
+            FXMLLoader cargador = new FXMLLoader(getClass().getResource("/crud/iu/vistas/CambiarContrasena.fxml"));
+            Parent root = cargador.load();
+            ControladorCambiarContrasena controlador = cargador.getController();
+            controlador.setStage(stage);
+            controlador.setUser(usuario);
+            controlador.initStage(root);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error al abrir la ventnaa de  CambiarContrasena: {0}", e.getMessage());
+            showErrorDialog(AlertType.ERROR, "Error", "No se puede cargar la ventana de CambiarContrasena");
+        }
+    }
+
+    public void cargarRecuperarContrasena(Stage stage) {
+        try {
+            FXMLLoader cargador = new FXMLLoader(getClass().getResource("/crud/iu/vistas/RecuperarContrasena.fxml"));
+            Parent root = cargador.load();
+            ControladorRecuperarContrasena controlador = cargador.getController();
+            controlador.setStage(stage);
+            controlador.initStage(root);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error al abrir la ventnaa de  Recuperar Contrasena: {0}", e.getMessage());
+            showErrorDialog(AlertType.ERROR, "Error", "No se puede cargar la ventana de Recuperar Contrasena");
+        }
+    }
+
+    public void cargarAyuda(String titulo) {
+        try {
+            FXMLLoader cargador = new FXMLLoader(getClass().getResource("/crud/iu/vistas/Ayuda_inicioSesion.fxml"));
+            Parent root = cargador.load();
+            ControladorAyuda controlador = cargador.getController();
+
+            controlador.setTipo(titulo);
+            controlador.initStage(root);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error al abrir la ventana de  Ayuda: {0}", e.getMessage());
+            showErrorDialog(AlertType.ERROR, "Error", "No se puede cargar la ventana de Ayuda");
         }
     }
 
