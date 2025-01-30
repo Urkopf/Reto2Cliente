@@ -6,6 +6,7 @@ import crud.objetosTransferibles.Trabajador;
 import crud.objetosTransferibles.Usuario;
 import crud.utilidades.AlertUtilities;
 import java.net.URL;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,6 +40,7 @@ public class ControladorArticulosBusqueda implements Initializable {
     private FactoriaArticulos factoriaArticulos = FactoriaArticulos.getInstance();
     private ObservableList<Articulo> articulosObservableList;
     private Stage stage;
+    private Collection<Articulo> articuloBusqueda;
     private Usuario usuario;
 
     // Elementos FXML
@@ -85,7 +87,7 @@ public class ControladorArticulosBusqueda implements Initializable {
         // Configurar la escena y mostrar la ventana
         LOGGER.info("Inicializando la escena principal");
 
-        //botonBuscar.addEventHandler(ActionEvent.ACTION, this::handleBuscar);
+        botonBuscar.addEventHandler(ActionEvent.ACTION, this::handleBuscar);
         botonReiniciar.addEventHandler(ActionEvent.ACTION, this::handleReiniciarFiltros);
         botonAtras.addEventHandler(ActionEvent.ACTION, this::handleAtras);
 
@@ -107,6 +109,10 @@ public class ControladorArticulosBusqueda implements Initializable {
             this.userTrabajador = (Trabajador) user;
             LOGGER.info("Usuario asignado: " + userTrabajador.getNombre());
         }
+    }
+
+    public void setBusqueda(Collection<Articulo> articuloBusqueda) {
+        this.articuloBusqueda = articuloBusqueda;
     }
 
     public void setStage(Stage stage) {
@@ -154,7 +160,7 @@ public class ControladorArticulosBusqueda implements Initializable {
     @FXML
     private void handleAtras(ActionEvent event) {
         LOGGER.info("Regresando a ArticulosPrincipal.");
-        factoriaArticulos.cargarArticulosPrincipal(stage, userTrabajador);
+        factoriaArticulos.cargarArticulosPrincipal(stage, userTrabajador, null);
 
     }
 
@@ -162,33 +168,56 @@ public class ControladorArticulosBusqueda implements Initializable {
     private void handleBuscar(ActionEvent event) {
 
         try {
-            //Obtenemos lo puesto por el usuario
-            Long idDesde = checkBoxId.isSelected() ? spinnerIdDesde.getValue() : null;
-            Long idHasta = checkBoxId.isSelected() ? spinnerIdHasta.getValue() : null;
+            Collection<Articulo> articulosFiltrados = new ArrayList<>(factoriaArticulos.acceso().getAllArticulos());
 
-            if (idDesde != null && idHasta != null && idDesde > idHasta) {
-                throw new IllegalArgumentException("El ID desde no puede ser mayor que el ID hasta.");
+            if (checkBoxId.isSelected()) {
+                Long idDesde = spinnerIdDesde.getValue();
+                Long idHasta = spinnerIdHasta.getValue();
+                articulosFiltrados.removeIf(articulo
+                        -> articulo.getId().intValue() < idDesde || articulo.getId().intValue() > idHasta);
             }
 
-            String nombre = checkBoxNombre.isSelected() ? comboBoxNombre.getValue() : null;
-            //Manejo de Fechas con Date() no con LocalDate()
-            Date fechaDesde = checkBoxFecha.isSelected() && datePickerDesde.getValue() != null
-                    ? Date.from(datePickerDesde.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant())
-                    : null;
+            if (checkBoxNombre.isSelected()) {
+                String nombre = comboBoxNombre.getValue();
+                articulosFiltrados.removeIf(articulo -> !articulo.getNombre().equalsIgnoreCase(nombre));
+            }
 
-            Date fechaHasta = checkBoxFecha.isSelected() && datePickerHasta.getValue() != null
-                    ? Date.from(datePickerHasta.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant())
-                    : null;
-            Double precioMin = checkBoxPrecio.isSelected() ? validarMin(parseDouble(textFieldPrecioMin.getText())) : null;
-            Double precioMax = checkBoxPrecio.isSelected() ? validarMax(parseDouble(textFieldPrecioMax.getText()), precioMin) : null;
-            Integer stock = checkBoxStock.isSelected() ? validarStock(parseInteger(textFieldStock.getText())) : null;
+            if (checkBoxFecha.isSelected()) {
+                Date fechaDesde = convertToDate(datePickerDesde.getValue());
+                Date fechaHasta = convertToDate(datePickerHasta.getValue());
+                articulosFiltrados.removeIf(articulo -> articulo.getFechaReposicion().before(fechaDesde)
+                        || articulo.getFechaReposicion().after(fechaHasta));
+            }
 
-            //Aqui la logica de filtros, ya sea con lista o con Query
+            if (checkBoxPrecio.isSelected()) {
+                Double precioMin = parseDouble(textFieldPrecioMin.getText());
+                Double precioMax = parseDouble(textFieldPrecioMax.getText());
+                articulosFiltrados.removeIf(articulo -> articulo.getPrecio() < precioMin || articulo.getPrecio() > precioMax);
+            }
+
+            if (checkBoxStock.isSelected()) {
+                Integer stock = validarStock(parseInteger(textFieldStock.getText()));
+                articulosFiltrados.removeIf(articulo -> articulo.getStock() != stock);
+            }
+
+            mostrarResultados(articulosFiltrados);
+
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al realizar la búsqueda", e);
             AlertUtilities.showErrorDialog(Alert.AlertType.ERROR, "Error de Búsqueda", "No se pudo completar la búsqueda. Intente nuevamente.");
         }
 
+    }
+
+    private void mostrarResultados(Collection<Articulo> articulosFiltrados) {
+        factoriaArticulos.cargarArticulosPrincipal(stage, userTrabajador, articulosFiltrados);
+    }
+
+    private Date convertToDate(LocalDate localDate) {
+        if (localDate == null) {
+            return null;
+        }
+        return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
 
     //Configuraciones
@@ -237,20 +266,6 @@ public class ControladorArticulosBusqueda implements Initializable {
             LOGGER.warning("Error al parsear Double: " + valor);
             return null;
         }
-    }
-
-    private Double validarMin(Double valor) {
-        if (valor != null && valor < 0) {
-            throw new IllegalArgumentException("El valor mínimo no puede ser menor que 0.");
-        }
-        return valor;
-    }
-
-    private Double validarMax(Double valorMax, Double valorMin) {
-        if (valorMax != null && valorMin != null && valorMax < valorMin) {
-            throw new IllegalArgumentException("El valor máximo no puede ser menor que el mínimo.");
-        }
-        return valorMax;
     }
 
     private Integer parseInteger(String valor) {

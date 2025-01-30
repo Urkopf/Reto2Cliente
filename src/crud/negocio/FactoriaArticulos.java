@@ -6,8 +6,11 @@
 package crud.negocio;
 
 import crud.iu.controladores.ControladorArticulosBusqueda;
+import crud.iu.controladores.ControladorArticulosDetalle;
 import crud.iu.controladores.ControladorArticulosPrincipal;
+import crud.objetosTransferibles.Articulo;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.fxml.FXMLLoader;
@@ -41,13 +44,14 @@ public class FactoriaArticulos {
     }
 
     //Ventanas
-    public void cargarArticulosPrincipal(Stage stage, Object user) {
+    public void cargarArticulosPrincipal(Stage stage, Object user, Collection<Articulo> articuloBusqueda) {
         try {
             FXMLLoader cargador = new FXMLLoader(getClass().getResource("/crud/iu/vistas/ArticulosPrincipal.fxml"));
             Parent root = cargador.load();
             ControladorArticulosPrincipal controlador = cargador.getController();
             controlador.setStage(stage);
             controlador.setUser(user);
+            controlador.setBusqueda(articuloBusqueda);
             controlador.initStage(root);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al abrir la ventana de ArticulosPrincipal: {0}", e.getMessage());
@@ -66,6 +70,21 @@ public class FactoriaArticulos {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al abrir la ventana de ArticulosBusqueda: {0}", e.getMessage());
             showErrorDialog(Alert.AlertType.ERROR, "Error", "No se puede cargar la ventana de Articulos busqueda.");
+        }
+    }
+
+    public void cargarArticulosDetalle(Stage stage, Object user, Articulo articulo) {
+        try {
+            FXMLLoader cargador = new FXMLLoader(getClass().getResource("/crud/iu/vistas/ArticulosDetalle.fxml"));
+            Parent root = cargador.load();
+            ControladorArticulosDetalle controlador = cargador.getController();
+            controlador.setStage(stage);
+            controlador.setUser(user);
+            controlador.setArticulo(articulo);
+            controlador.initStage(root);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error al abrir la ventana de Articulos Detalle: {0}", e.getMessage());
+            showErrorDialog(Alert.AlertType.ERROR, "Error", "No se puede cargar la ventana de Articulos Detalle.");
         }
     }
 }

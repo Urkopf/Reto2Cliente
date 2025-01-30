@@ -21,5 +21,7 @@ public interface IArticulo {
 
     public void actualizarArticulo(Articulo articulo) throws LogicaNegocioException;
 
+    public void actualizarArticuloDetalle(Articulo articulo) throws LogicaNegocioException;
+
     public void borrarArticulo(Articulo articulo) throws LogicaNegocioException;
 }

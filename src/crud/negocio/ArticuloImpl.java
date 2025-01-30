@@ -10,6 +10,8 @@ import crud.objetosTransferibles.Articulo;
 import crud.rest.ArticulosRestFull;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.core.GenericType;
 
 /**
@@ -17,6 +19,8 @@ import javax.ws.rs.core.GenericType;
  * @author 2dam
  */
 public class ArticuloImpl implements IArticulo {
+
+    private static final Logger LOGGER = Logger.getLogger(ArticuloImpl.class.getName());
 
     private ArticulosRestFull cliente;
 
@@ -49,6 +53,15 @@ public class ArticuloImpl implements IArticulo {
     public void actualizarArticulo(Articulo articulo) throws LogicaNegocioException {
         try {
             cliente.edit_XML(articulo);
+        } catch (Exception e) {
+        }
+    }
+
+    @Override
+    public void actualizarArticuloDetalle(Articulo articulo) throws LogicaNegocioException {
+        try {
+            LOGGER.log(Level.INFO, "TAMAÑO TABLA en IMPL {0}", articulo.getAlmacenes().size());
+            cliente.editDetalle_XML(articulo);
         } catch (Exception e) {
         }
     }

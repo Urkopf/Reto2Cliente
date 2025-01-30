@@ -5,6 +5,7 @@
  */
 package crud.objetosTransferibles;
 
+import crud.objetosTransferibles.Articulo;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,7 +17,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Urko
  */
 @XmlRootElement
-public class Almacen implements Serializable {
+public class Almacen implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 1L;
 
@@ -117,6 +118,19 @@ public class Almacen implements Serializable {
     @Override
     public String toString() {
         return "crud.entidades.Almacen[ id=" + id + " ]";
+    }
+
+    @Override
+    public Almacen clone() {
+        Almacen copia = new Almacen();
+        copia.setId(this.id);
+        copia.setPais(this.pais);
+        copia.setDireccion(this.direccion);
+        copia.setEspacio(this.espacio);
+        copia.setPoblacion(this.poblacion);
+        copia.setProvincia(this.provincia);
+        copia.setArticulos(this.articulos);
+        return copia;
     }
 
 }

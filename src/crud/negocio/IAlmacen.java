@@ -17,4 +17,9 @@ public interface IAlmacen {
 
     public Collection<Almacen> getAllAlmacenes() throws LogicaNegocioException;
 
+    public Collection<Almacen> getAllAlmacenesById(Long id) throws LogicaNegocioException;
+
+    public void CrearActualizarRelacion(Almacen almacen) throws LogicaNegocioException;
+
+    public void BorrarRelacion(Almacen almacen) throws LogicaNegocioException;
 }

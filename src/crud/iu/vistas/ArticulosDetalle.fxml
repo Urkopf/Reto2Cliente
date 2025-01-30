@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="AnchorPane" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="crud.iu.controladores.ControladorArticulosDetalle">
+<AnchorPane fx:id="anchorPane" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="crud.iu.controladores.ControladorArticulosDetalle">
     <children>
         <BorderPane fx:id="BorderPane" maxHeight="768.0" prefWidth="1024">
             <top>
@@ -84,12 +84,12 @@
                         <Label text="Descripción" GridPane.columnIndex="4" />
                         <TextField fx:id="campoId" disable="true" GridPane.rowIndex="1" />
                         <DatePicker fx:id="campoFecha" minHeight="37.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-                        <TextField fx:id="campoId1" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <TextField fx:id="campoNombre" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <Label text="Precio" GridPane.columnIndex="2" />
                         <Label text="Stock" GridPane.columnIndex="5" />
-                        <TextField fx:id="campoId12" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                        <TextField fx:id="campoId121" GridPane.columnIndex="4" GridPane.rowIndex="1" />
-                        <TextField fx:id="campoId1211" GridPane.columnIndex="5" GridPane.rowIndex="1" />
+                        <TextField fx:id="campoPrecio" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                        <TextField fx:id="campoDescripcion" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+                        <TextField fx:id="campoStock" GridPane.columnIndex="5" GridPane.rowIndex="1" />
                      </children>
                      <padding>
                         <Insets left="20.0" right="20.0" top="20.0" />
@@ -109,14 +109,14 @@
                                           </children>
                                       </HBox>
       
-                                            <TableView fx:id="tablaArticulosDisponibles">
+                                            <TableView fx:id="tablaAlmacenesDisponibles">
                                           <columns>
-                                              <TableColumn fx:id="columnaId" prefWidth="93.49563491344452" resizable="false" text="ID" />
-                                              <TableColumn fx:id="columnaNombre" prefWidth="166.12178802490234" resizable="false" text="Dirección" />
-                                              <TableColumn fx:id="columnaPrecio" prefWidth="147.75653076171875" resizable="false" text="Espacios" />
+                                              <TableColumn fx:id="columnaId" prefWidth="45.0" resizable="false" text="ID" />
+                                              <TableColumn fx:id="columnaDireccion" prefWidth="238.0" resizable="false" text="Dirección" />
+                                              <TableColumn fx:id="columnaEspacios" prefWidth="103.0" resizable="false" text="Espacios" />
                                           </columns>
                                       </TableView>
-                                      <Button fx:id="botonCompra" mnemonicParsing="false" styleClass="btnVerde" text="Asignar almacén">
+                                      <Button fx:id="botonAlmacen" mnemonicParsing="false" styleClass="btnVerde" text="Asignar almacén">
                                           <VBox.margin>
                                               <Insets top="10.0" />
                                           </VBox.margin>
@@ -140,10 +140,11 @@
                                     <Insets />
                                  </VBox.margin>
                                     </HBox>
-                                    <TableView fx:id="tablaArticulosPedidos" prefWidth="600.0">
+                                    <TableView fx:id="tablaAlmacenesArticulo" prefWidth="600.0">
                                         <columns>
-                                            <TableColumn fx:id="columnaId2" prefWidth="93.49563491344452" resizable="false" text="ID" />
-                                            <TableColumn fx:id="columnaNombre2" prefWidth="219.5478057861328" resizable="false" text="Dirección" />
+                                            <TableColumn fx:id="columnaId2" prefWidth="61.0" resizable="false" text="ID" />
+                                            <TableColumn fx:id="columnaDireccion2" prefWidth="428.0" resizable="false" text="Dirección" />
+                                            <TableColumn fx:id="columnaEspacios2" prefWidth="96.0" resizable="false" text="Espacios" />
                                         </columns>
                                  <VBox.margin>
                                     <Insets left="20.0" />

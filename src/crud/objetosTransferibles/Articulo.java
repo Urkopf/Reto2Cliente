@@ -6,8 +6,10 @@
 package crud.objetosTransferibles;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -20,7 +22,6 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Articulo implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
     private Long id;
 
     private String nombre;
@@ -35,17 +36,20 @@ public class Articulo implements Serializable {
 
     private Set<PedidoArticulo> pedidoArticulos = new HashSet<>();
 
+    private List<Almacen> almacenTrump = new ArrayList<>();
+
     public Articulo() {
 
     }
 
     public Articulo(Articulo articulo) {
-        this.id = articulo.id;
-        this.nombre = articulo.nombre;
-        this.precio = articulo.precio;
-        this.descripcion = articulo.descripcion;
-        this.stock = articulo.stock;
-        this.fechaReposicion = articulo.fechaReposicion;
+        this.id = id;
+        this.nombre = nombre;
+        this.precio = precio;
+        this.descripcion = descripcion;
+        this.fechaReposicion = fechaReposicion;
+        this.stock = stock;
+        this.almacenes = new HashSet<>(articulo.almacenes);
     }
 
     // Getters y setters
@@ -113,8 +117,16 @@ public class Articulo implements Serializable {
         return almacenes;
     }
 
-    public void setAlmacen(Set<Almacen> almacenes) {
+    public void setAlmacenes(Set<Almacen> almacenes) {
         this.almacenes = almacenes;
+    }
+
+    public List<Almacen> getAlmacenTrump() {
+        return almacenTrump;
+    }
+
+    public void setAlmacenTrump(List<Almacen> almacenTrump) {
+        this.almacenTrump = almacenTrump;
     }
 
     @Override

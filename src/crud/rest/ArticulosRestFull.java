@@ -7,6 +7,7 @@ package crud.rest;
 
 import crud.objetosTransferibles.Articulo;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
@@ -49,6 +50,14 @@ public class ArticulosRestFull {
 
     public void edit_XML(Object requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Articulo.class);
+    }
+
+    public void editDetalle_XML(Object requestEntity) throws WebApplicationException {
+        LOGGER.log(Level.INFO, "Actualizando articulo DETALLES con ID {0}", requestEntity.getClass());
+        WebTarget resource = webTarget;
+        resource = resource.path("detalle");
+        resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML) // Solicita una respuesta en formato XML
                 .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Articulo.class);
     }
 
