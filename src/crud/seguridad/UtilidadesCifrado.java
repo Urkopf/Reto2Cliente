@@ -10,9 +10,9 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class UtilidadesCifrado {
 
-    private static final String RUTA_CLAVE_PUBLICA = "crud/seguridad/clave_publica.key";
-    private static final String RUTA_CLAVE_PRIVADA = "crud/seguridad/clave_privada.key";
-    private static final String RUTA_CLAVE_SIMETRICA = "crud/seguridad/clave_simetrica.key";
+    private static final String RUTA_CLAVE_PUBLICA = "clave_publica.key";
+    private static final String RUTA_CLAVE_PRIVADA = "clave_privada.key";
+    private static final String RUTA_CLAVE_SIMETRICA = "clave_simetrica.key";
 
     static {
         Security.addProvider(new BouncyCastleProvider()); // Agregar soporte para ECIES
@@ -109,15 +109,16 @@ public class UtilidadesCifrado {
      * * 🔹 Utilidades 🔹 **
      */
     // Leer archivo desde el classpath
-    private static byte[] leerArchivo(String nombreArchivo) throws IOException {
-        try (InputStream is = UtilidadesCifrado.class.getResourceAsStream("/" + nombreArchivo);
+    private static byte[] leerArchivo(String ruta) throws IOException {
+        File archivo = new File(ruta);
+        if (!archivo.exists()) {
+            throw new FileNotFoundException("No se encontró el archivo: " + ruta);
+        }
+        try (FileInputStream fis = new FileInputStream(archivo);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            if (is == null) {
-                throw new FileNotFoundException("No se pudo encontrar el archivo: " + nombreArchivo);
-            }
             byte[] buffer = new byte[1024];
             int bytesRead;
-            while ((bytesRead = is.read(buffer)) != -1) {
+            while ((bytesRead = fis.read(buffer)) != -1) {
                 baos.write(buffer, 0, bytesRead);
             }
             return baos.toByteArray();

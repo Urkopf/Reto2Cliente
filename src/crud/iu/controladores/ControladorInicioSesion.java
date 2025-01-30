@@ -374,7 +374,7 @@ public class ControladorInicioSesion implements Initializable {
 
             // Enviar la solicitud al servidor
             respuesta = factoria.inicioSesion().getInicioSesion(usuario);
-
+            LOGGER.info("Cliente recibido: " + respuesta.toString());
             // Procesar la respuesta del servidor
             if (respuesta instanceof Cliente) {
                 LOGGER.info("Cliente recibido: " + ((Cliente) respuesta).getNombre());

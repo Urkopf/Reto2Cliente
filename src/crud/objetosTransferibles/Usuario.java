@@ -7,12 +7,15 @@ package crud.objetosTransferibles;
 
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 
 /**
  *
  * @author Urko
  */
 @XmlRootElement
+// Le indicamos a JAXB qué subtipos puede llegar a encontrar
+@XmlSeeAlso({Cliente.class, Trabajador.class})
 public class Usuario implements Serializable {
 
     private static final long serialVersionUID = 1L;
