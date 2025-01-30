@@ -10,9 +10,9 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class UtilidadesCifrado {
 
-    private static final String RUTA_CLAVE_PUBLICA = "clave_publica.key";
-    private static final String RUTA_CLAVE_PRIVADA = "clave_privada.key";
-    private static final String RUTA_CLAVE_SIMETRICA = "clave_simetrica.key";
+    private static final String RUTA_CLAVE_PUBLICA = "crud/seguridad/clave_publica.key";
+    private static final String RUTA_CLAVE_PRIVADA = "crud/seguridad/clave_privada.key";
+    private static final String RUTA_CLAVE_SIMETRICA = "crud/seguridad/clave_simetrica.key";
 
     static {
         Security.addProvider(new BouncyCastleProvider()); // Agregar soporte para ECIES
