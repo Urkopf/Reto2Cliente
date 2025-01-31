@@ -109,16 +109,15 @@ public class UtilidadesCifrado {
      * * 🔹 Utilidades 🔹 **
      */
     // Leer archivo desde el classpath
-    private static byte[] leerArchivo(String ruta) throws IOException {
-        File archivo = new File(ruta);
-        if (!archivo.exists()) {
-            throw new FileNotFoundException("No se encontró el archivo: " + ruta);
-        }
-        try (FileInputStream fis = new FileInputStream(archivo);
+    private static byte[] leerArchivo(String nombreArchivo) throws IOException {
+        try (InputStream is = UtilidadesCifrado.class.getResourceAsStream(nombreArchivo);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            if (is == null) {
+                throw new FileNotFoundException("No se pudo encontrar el archivo: " + nombreArchivo);
+            }
             byte[] buffer = new byte[1024];
             int bytesRead;
-            while ((bytesRead = fis.read(buffer)) != -1) {
+            while ((bytesRead = is.read(buffer)) != -1) {
                 baos.write(buffer, 0, bytesRead);
             }
             return baos.toByteArray();
