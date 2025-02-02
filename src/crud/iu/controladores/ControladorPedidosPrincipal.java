@@ -703,12 +703,10 @@ public class ControladorPedidosPrincipal implements Initializable {
         columnaUsuarioId.setCellValueFactory(new PropertyValueFactory<>("usuarioId"));
         columnaUsuarioId.setVisible(false);
 
-        // Columna Dirección (editable)
-        configurarColumnaDireccion();
-
         // Columna CIF (editable solo para Trabajador)
         configurarColumnaCif();
-
+        // Columna Dirección (editable)
+        configurarColumnaDireccion();
         // Columna Fecha (editable con DatePicker)
         configurarColumnaFecha();
 
@@ -1153,7 +1151,8 @@ public class ControladorPedidosPrincipal implements Initializable {
                 }
                 setGraphic(datePicker);
                 setText(null);
-
+                datePicker.requestFocus();
+                datePicker.getEditor().selectAll();
                 datePicker.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
                     if (!isNowFocused) {
                         cancelEdit();
@@ -1232,7 +1231,7 @@ public class ControladorPedidosPrincipal implements Initializable {
                     }
                     setGraphic(comboBox);
                     setText(null);
-
+                    comboBox.requestFocus();
                     comboBox.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
                         if (!isNowFocused) {
                             cancelEdit();
