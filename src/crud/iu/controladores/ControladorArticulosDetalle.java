@@ -112,6 +112,7 @@ public class ControladorArticulosDetalle implements Initializable {
         stage.setTitle("Gestión de Articulos Detalle");
         // Configurar la escena y mostrar la ventana
         LOGGER.info("Inicializando la escena principal");
+        configurarMenu();
         configurarHandlers();
         stage.show();  // Mostrar el escenario
 

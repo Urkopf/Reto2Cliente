@@ -116,7 +116,6 @@ public class ControladorArticulosPrincipal implements Initializable {
         LOGGER.info("Inicializando controlador ArticulosPrincipal");
         configurarTabla();
 
-        //configurarSalidaEdicion();
     }
 
     public void setUser(Object user) {
@@ -144,6 +143,8 @@ public class ControladorArticulosPrincipal implements Initializable {
         stage.setTitle("Gestión de Articulos");
         // Configurar la escena y mostrar la ventana
         LOGGER.info("Inicializando la escena principal");
+
+        configurarMenu();
 
         botonNuevo.addEventHandler(ActionEvent.ACTION, this::handleNuevoArticulo);
         botonGuardar.addEventHandler(ActionEvent.ACTION, this::handleGuardarCambios);
@@ -360,7 +361,7 @@ public class ControladorArticulosPrincipal implements Initializable {
             tablaArticulos.setItems(articulosObservableList);
 
             articulosOriginales = FXCollections.observableArrayList(
-                    articulos.stream().map(Articulo::new).collect(Collectors.toList()));
+                    articulos.stream().map(Articulo::clone).collect(Collectors.toList()));
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cargar los datos de articulos", e);
@@ -411,7 +412,7 @@ public class ControladorArticulosPrincipal implements Initializable {
             for (Articulo articulo : articulosObservableList) {
                 LOGGER.info("Revisando articulos" + articulo.getId());
                 Articulo articuloOriginal = articulosOriginales.stream()
-                        .filter(p -> p.getId().equals(articulo.getId()))
+                        .filter(p -> p.getId() != null && p.getId().equals(articulo.getId()))
                         .findFirst()
                         .orElse(null);
 
@@ -447,11 +448,20 @@ public class ControladorArticulosPrincipal implements Initializable {
         if (original == null || modificado == null) {
             return false;
         }
-        return !original.getNombre().equals(modificado.getNombre())
-                || Double.compare(original.getPrecio(), modificado.getPrecio()) != 0
-                || !original.getFechaReposicion().equals(modificado.getFechaReposicion())
-                || !original.getDescripcion().equals(modificado.getDescripcion())
-                || Integer.compare(original.getStock(), modificado.getStock()) != 0;
+        if (!original.getNombre().equals(modificado.getNombre())) {
+            return true;
+        }
+        if (original.getPrecio() != modificado.getPrecio()) {
+            return true;
+        }
+        if (!original.getFechaReposicion().equals(modificado.getFechaReposicion())) {
+            return true;
+        }
+        if (!original.getDescripcion().equals(modificado.getDescripcion())) {
+            return true;
+        }
+        return original.getStock() != modificado.getStock();
+
     }
 
     private boolean validarArticulo(Articulo articulo) {
