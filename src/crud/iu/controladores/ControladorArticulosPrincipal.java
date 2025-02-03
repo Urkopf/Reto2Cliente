@@ -371,6 +371,7 @@ public class ControladorArticulosPrincipal implements Initializable {
             actualizarTablaYPaginador();
             actualizarEstadoBotones();
             setHayCambiosNoGuardados(false);
+            tablaArticulos.refresh();
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cargar los datos de articulos", e);
@@ -693,7 +694,6 @@ public class ControladorArticulosPrincipal implements Initializable {
                 Articulo articulo = getTableView().getItems().get(getIndex());
                 articulo.setNombre(newValue);
                 setHayCambiosNoGuardados(true);
-                tablaArticulos.refresh();
 
             }
 
@@ -776,7 +776,7 @@ public class ControladorArticulosPrincipal implements Initializable {
                 Articulo articulo = getTableView().getItems().get(getIndex());
                 articulo.setPrecio(newValue); // Actualiza el modelo
                 setHayCambiosNoGuardados(true);
-                tablaArticulos.refresh();
+
             }
 
             @Override
@@ -879,7 +879,7 @@ public class ControladorArticulosPrincipal implements Initializable {
                 Articulo articulo = getTableView().getItems().get(getIndex());
                 articulo.setFechaReposicion(newValue); // Sincroniza el modelo
                 setHayCambiosNoGuardados(true);
-                tablaArticulos.refresh();
+
             }
 
             @Override
@@ -938,7 +938,7 @@ public class ControladorArticulosPrincipal implements Initializable {
                 Articulo articulo = getTableView().getItems().get(getIndex());
                 articulo.setDescripcion(newValue); // Actualiza la descripción del artículo
                 setHayCambiosNoGuardados(true);
-                tablaArticulos.refresh();
+
             }
 
             @Override
@@ -1020,7 +1020,7 @@ public class ControladorArticulosPrincipal implements Initializable {
                 Articulo articulo = getTableView().getItems().get(getIndex());
                 articulo.setStock(newValue); // Actualiza el modelo
                 setHayCambiosNoGuardados(true);
-                tablaArticulos.refresh();
+
             }
 
             @Override

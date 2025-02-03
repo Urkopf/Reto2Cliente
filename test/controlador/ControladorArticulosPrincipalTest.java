@@ -32,7 +32,6 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import static org.testfx.api.FxAssert.verifyThat;
 import org.testfx.framework.junit.ApplicationTest;
-import org.testfx.matcher.base.NodeMatchers;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
 
 /**
@@ -55,7 +54,7 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
 
     //Los test Aqui
     @Test
-    @Ignore
+    //@Ignore
     public void test_A_CrearArticulo() {
         // Contar filas iniciales
         int initialRowCount = tablaArticulos.getItems().size();
@@ -147,13 +146,13 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
         @SuppressWarnings("unchecked")
         List<Articulo> articulos = (List<Articulo>) tablaArticulos.getItems();
         long coincidencias = articulos.stream()
-                .filter(a -> a.getNombre() != null && a.getNombre().equals("ArticuloTest"))
+                .filter(a -> a.getNombre() != null && a.getNombre().equals(nombreArticulo))
                 .count();
         assertThat("El artículo creado debe estar en la tabla", coincidencias, is(1L));
     }
 
     @Test
-    //@Ignore
+    @Ignore
     public void test_B_EditarArticulo() {
         // Comprobar que existe al menos un artículo. Si no hay filas, no se puede editar nada.
         assertFalse("No hay artículos para editar", tablaArticulos.getItems().isEmpty());
@@ -199,7 +198,8 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
         Spinner<?> spinnerPrecio = lookup(".spinner").query();
         TextField precioField = spinnerPrecio.getEditor();
         precioField.clear();
-        write("99.99");
+        String precio = "99.99";
+        write(precio);
         push(KeyCode.ENTER);
 
         // ----- Edición de Fecha (columna 3) -----
@@ -216,7 +216,8 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
         doubleClickOn(celdas.get(4)); // Activa edición en la celda de Descripción
         TextField descField = lookup(".text-field").query();
         descField.clear();
-        write("Descripcion Editada");
+        String descripcion = "Descripcion Editada";
+        write(descripcion);
         push(KeyCode.ENTER);
 
         // ----- Edición de Stock (columna 5) -----
@@ -225,11 +226,19 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
         // Aquí asumimos un TextField tras activarse la edición.
         TextField stockField = lookup(".text-field").query();
         stockField.clear();
-        write("50");
+        String stock = "50";
+        write(stock);
         push(KeyCode.ENTER);
 
         // ----- Guardar cambios -----
         clickOn("#botonGuardar");
+
+        // 4. Verificar que el diálogo de confirmación aparece con el texto esperado
+        //    (Ajusta la cadena a exactamente lo que muestres en tu Alert).
+        verifyThat("Hay cambios sin guardar. ¿Qué desea hacer?", isVisible());
+
+        // 5. Ahora sí, hacer clic en el botón "Guardar" del diálogo
+        clickOn("Guardar");
 
         // Ahora verificamos que los cambios estén reflejados en el modelo
         @SuppressWarnings("unchecked")
@@ -239,11 +248,11 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
 
         // Verificamos cada campo editado (mirar Bien los errores)
         assertThat("El nombre debe ser actualizado", articuloEditado.getNombre(), is(nuevoNombre));
-        assertThat("El precio debe ser 99.99", articuloEditado.getPrecio(), is(99.99));
+        assertThat("El precio debe ser 99.99", articuloEditado.getPrecio(), is(precio));
         String fechaArticulo = new SimpleDateFormat("dd/MM/yyyy").format(articuloEditado.getFechaReposicion());
         assertThat("La fecha debe coincidir con la fecha de hoy", fechaArticulo, is(fecha));
-        assertThat("La descripción debe haberse actualizado", articuloEditado.getDescripcion(), is("Descripcion Editada"));
-        assertThat("El stock debe ser 50", articuloEditado.getStock(), is(50));
+        assertThat("La descripción debe haberse actualizado", articuloEditado.getDescripcion(), is(descripcion));
+        assertThat("El stock debe ser 50", articuloEditado.getStock(), is(stock));
     }
 
     @Test
@@ -260,9 +269,15 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
         // Presionar el botón de eliminar
         clickOn("#botonEliminar");
 
-        // Verificar que aparece una alerta de confirmación
-        verifyThat("¿Desea eliminar la fila seleccionada?", NodeMatchers.isVisible());
-        clickOn("Aceptar");
+        // ----- Guardar cambios -----
+        clickOn("#botonGuardar");
+
+        // 4. Verificar que el diálogo de confirmación aparece con el texto esperado
+        //    (Ajusta la cadena a exactamente lo que muestres en tu Alert).
+        verifyThat("Hay cambios sin guardar. ¿Qué desea hacer?", isVisible());
+
+        // 5. Ahora sí, hacer clic en el botón "Guardar" del diálogo
+        clickOn("Guardar");
 
         // Verificar que el conteo de filas ha disminuido
         int totalFilasFinal = tablaArticulos.getItems().size();
