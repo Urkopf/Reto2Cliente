@@ -47,20 +47,27 @@
                         </GridPane>
                     </HBox>
 
-                    <TableView fx:id="tablaPedidos" fixedCellSize="39.0" maxHeight="585.0" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="585.0" prefWidth="984.0" VBox.vgrow="NEVER">
+                    <TableView fx:id="tablaPedidos" fixedCellSize="39.0" prefHeight="585.0" prefWidth="984.0" VBox.vgrow="NEVER">
                         <columns>
-                            <TableColumn fx:id="columnaId" prefWidth="93.49563491344452" resizable="false" styleClass="tablas" text="ID" />
+                            <TableColumn fx:id="columnaId" prefWidth="93.49563491344452" resizable="false" styleClass="tablas" text="ID">
+                                <!-- Aquí también podrías meter un cellValueFactory si lo quisieras desde FXML. -->
+                            </TableColumn>
+
                             <TableColumn fx:id="columnaUsuarioId" prefWidth="166.12178802490234" resizable="false" styleClass="tablas" text="ID Usuario" />
+
                             <TableColumn fx:id="columnaCif" prefWidth="147.75653076171875" resizable="false" styleClass="tablas" text="CIF/NIF" />
-                     <TableColumn fx:id="columnaDireccion" prefWidth="147.75653076171875" resizable="false" styleClass="tablas" text="Dirección" />
+
+                            <!-- Aquí añadimos el cellValueFactory a la columna Direccion -->
+                            <TableColumn fx:id="columnaDireccion" prefWidth="147.75653076171875"
+                                         resizable="false" styleClass="tablas" text="Dirección">
+                            </TableColumn>
+
                             <TableColumn fx:id="columnaFecha" prefWidth="205.35665893554688" resizable="false" styleClass="tablas" text="Fecha pedido" />
                             <TableColumn fx:id="columnaEstado" prefWidth="177.80877685546875" resizable="false" styleClass="tablas" text="Estado" />
                             <TableColumn fx:id="columnaTotal" minWidth="0.0" prefWidth="138.57391357421875" resizable="false" styleClass="tablas" text="Total" />
                         </columns>
-                        <VBox.margin>
-                            <Insets left="20.0" right="20.0" top="10.0" />
-                        </VBox.margin>
                     </TableView>
+
                 </VBox>
             </center>
 
