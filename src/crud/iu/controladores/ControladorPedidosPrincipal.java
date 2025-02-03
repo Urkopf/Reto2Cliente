@@ -14,6 +14,7 @@ import crud.objetosTransferibles.Usuario;
 import crud.utilidades.AlertUtilities;
 
 import static crud.utilidades.AlertUtilities.showErrorDialog;
+import crud.utilidades.ExcepcionesUtilidad;
 import static crud.utilidades.ExcepcionesUtilidad.clasificadorExcepciones;
 
 import java.net.URL;
@@ -39,6 +40,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
@@ -419,17 +421,69 @@ public class ControladorPedidosPrincipal implements Initializable {
     private void handleEliminar(ActionEvent event) {
         cancelarEdicionEnTabla();
         LOGGER.info("Botón Eliminar presionado");
-
+        Boolean quiereBorrar = true;
         ObservableList<Pedido> seleccionados = tablaPedidos.getSelectionModel().getSelectedItems();
         if (seleccionados.isEmpty()) {
             AlertUtilities.showErrorDialog(Alert.AlertType.WARNING, "Eliminar Pedidos",
                     "Debe seleccionar al menos un pedido para eliminar.");
         } else {
-            pedidosObservableList.removeAll(seleccionados);
-            setHayCambiosNoGuardados(true); // <<--- Marcamos que hay cambios
-            actualizarTablaYPaginador();
-            LOGGER.info("Pedidos eliminados de la tabla.");
+            // Eliminar pedidos
+            try {
+                for (Pedido pedido : seleccionados) {
+
+                    Collection<PedidoArticulo> coleccion = FactoriaPedidoArticulo.getInstance().acceso().getAllPedidoArticulo();
+                    ObservableList<PedidoArticulo> lista = FXCollections.observableArrayList(coleccion);
+                    lista = FXCollections.observableArrayList(lista.stream()
+                            .filter(p -> p.getPedidoId().equals(pedido.getId()))
+                            .collect(Collectors.toList()));
+                    if (lista.size() == 0) {
+                        // Mostrar alerta de confirmación
+                        Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
+                        alerta.setTitle("Confirmación de eliminación");
+                        alerta.setHeaderText("El pedido " + pedido.getId() + ".");
+                        alerta.setContentText("¿Está seguro de que desea eliminar el pedido?");
+                        Optional<ButtonType> resultado = alerta.showAndWait();
+                        if (resultado.isPresent() && resultado.get() != ButtonType.OK) {
+                            quiereBorrar = false;
+                            break;
+                        }
+                    } else {
+                        // Mostrar alerta de confirmación
+                        Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
+                        alerta.setTitle("Confirmación de eliminación");
+                        alerta.setHeaderText("El pedido " + pedido.getId() + " contiene " + lista.size() + " artículo(s).");
+                        alerta.setContentText("¿Está seguro de que desea eliminar el pedido junto con sus artículos?");
+
+                        // Esperar la respuesta del usuario
+                        Optional<ButtonType> resultado = alerta.showAndWait();
+                        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+                            quiereBorrar = false;
+                            break;
+
+                        } else {
+                            LOGGER.info("Eliminación cancelada por el usuario para el pedido: " + pedido.getId());
+                        }
+
+                    }
+
+                }
+                if (quiereBorrar) {
+                    pedidosObservableList.removeAll(seleccionados);
+                    setHayCambiosNoGuardados(true); // <<--- Marcamos que hay cambios
+                    actualizarTablaYPaginador();
+                    LOGGER.info("Pedidos eliminados de la tabla.");
+                    AlertUtilities.showErrorDialog(Alert.AlertType.INFORMATION, "Información",
+                            "Pedidos borrados de la tabla actual. Si quiere aplicar los cambios en la base de datos no olvide guardar los cambios");
+                } else {
+                    AlertUtilities.showErrorDialog(Alert.AlertType.INFORMATION, "Información",
+                            "Se ha cancelado el borrado.");
+                }
+            } catch (LogicaNegocioException ex) {
+                clasificadorExcepciones(ex, ex.getMessage());
+            }
+
         }
+
     }
 
     /**
@@ -477,7 +531,12 @@ public class ControladorPedidosPrincipal implements Initializable {
             for (Pedido pedidoOriginal : pedidosOriginales) {
                 if (!pedidosObservableList.contains(pedidoOriginal) && pedidoOriginal.getId() != null) {
                     LOGGER.info("Eliminando pedido: " + pedidoOriginal.getId());
-                    ObservableList<PedidoArticulo> lista = (ObservableList<PedidoArticulo>) FactoriaPedidoArticulo.getInstance().acceso().getAllPedidoArticulo();
+                    Collection<PedidoArticulo> coleccion = FactoriaPedidoArticulo.getInstance().acceso().getAllPedidoArticulo();
+                    ObservableList<PedidoArticulo> lista = FXCollections.observableArrayList(
+                            coleccion.stream()
+                                    .filter(p -> p.getPedidoId().equals(pedidoOriginal.getId()))
+                                    .collect(Collectors.toList())
+                    );
                     lista = FXCollections.observableArrayList(
                             lista.stream()
                                     .filter(p -> p.getPedidoId().equals(pedidoOriginal.getId()))
@@ -485,24 +544,12 @@ public class ControladorPedidosPrincipal implements Initializable {
                     if (lista.size() == 0) {
                         factoriaPedidos.acceso().borrarPedido(pedidoOriginal);
                     } else {
-                        // Mostrar alerta de confirmación
-                        Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
-                        alerta.setTitle("Confirmación de eliminación");
-                        alerta.setHeaderText("El pedido " + pedidoOriginal.getId() + " contiene " + lista.size() + " artículo(s).");
-                        alerta.setContentText("¿Está seguro de que desea eliminar el pedido junto con sus artículos?");
 
-                        // Esperar la respuesta del usuario
-                        Optional<ButtonType> resultado = alerta.showAndWait();
-                        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
-                            // Eliminar los artículos asociados
-                            for (PedidoArticulo pa : lista) {
-                                FactoriaPedidoArticulo.getInstance().acceso().borrarPedidoArticulo(pa);
-                            }
-                            // Eliminar el pedido
-                            factoriaPedidos.acceso().borrarPedido(pedidoOriginal);
-                        } else {
-                            LOGGER.info("Eliminación cancelada por el usuario para el pedido: " + pedidoOriginal.getId());
+                        for (PedidoArticulo pa : lista) {
+                            FactoriaPedidoArticulo.getInstance().acceso().borrarPedidoArticulo(pa);
                         }
+                        // Eliminar el pedido
+                        factoriaPedidos.acceso().borrarPedido(pedidoOriginal);
 
                     }
 
@@ -513,10 +560,11 @@ public class ControladorPedidosPrincipal implements Initializable {
             LOGGER.info("Cambios guardados exitosamente.");
             reiniciarTabla();
             setHayCambiosNoGuardados(false); // <<--- Ya no hay cambios sin guardar
+            showErrorDialog(AlertType.INFORMATION, "Información", "Datos Guardados correctamente.");
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al guardar cambios", e);
             clasificadorExcepciones(e, e.getMessage());
-
+            showErrorDialog(AlertType.ERROR, "Error", "No se han guardado los cambios.");
         }
     }
 
@@ -776,6 +824,7 @@ public class ControladorPedidosPrincipal implements Initializable {
             actualizarTablaYPaginador();
             actualizarEstadoBotones();
             setHayCambiosNoGuardados(false); // Al cargar inicial no hay cambios
+            tablaPedidos.refresh();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cargar los datos de pedidos", e);
             clasificadorExcepciones(e, e.getMessage());
@@ -999,7 +1048,6 @@ public class ControladorPedidosPrincipal implements Initializable {
                 Pedido pedido = getTableView().getItems().get(getIndex());
                 pedido.setDireccion(newValue); // Actualiza el modelo
                 setHayCambiosNoGuardados(true); // Marca que hay cambios sin guardar
-                tablaPedidos.refresh(); // Refresca la tabla
             }
 
             private void validarYCommit(String newValue) {
@@ -1112,8 +1160,7 @@ public class ControladorPedidosPrincipal implements Initializable {
 
                 setText(newValue);
                 setGraphic(null);
-                setHayCambiosNoGuardados(true); // <<--- Marcamos que hay cambios
-                tablaPedidos.refresh();
+                setHayCambiosNoGuardados(true);
             }
 
             @Override
@@ -1188,8 +1235,8 @@ public class ControladorPedidosPrincipal implements Initializable {
                 super.commitEdit(newValue);
                 Pedido pedido = getTableView().getItems().get(getIndex());
                 pedido.setFechaPedido(newValue);
-                setHayCambiosNoGuardados(true); // <<--- Marcamos que hay cambios
-                tablaPedidos.refresh();
+                setHayCambiosNoGuardados(true);
+
             }
 
             @Override
@@ -1256,7 +1303,6 @@ public class ControladorPedidosPrincipal implements Initializable {
                 Pedido pedido = getTableView().getItems().get(getIndex());
                 pedido.setEstado(newValue);
                 setHayCambiosNoGuardados(true); // <<--- Marcamos que hay cambios
-                tablaPedidos.refresh();
 
             }
 

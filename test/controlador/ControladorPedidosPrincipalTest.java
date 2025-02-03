@@ -14,39 +14,31 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
 import static org.testfx.api.FxAssert.verifyThat;
 import org.testfx.matcher.base.NodeMatchers;
-import java.util.stream.Collectors;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextField;
-import org.junit.Ignore;
-import org.junit.runner.RunWith;
 
 /**
- * Clase de test para ControladorPedidosPrincipal. Se inicializa la aplicación
- * una única vez y se reutiliza la misma ventana para todos los tests. Se
- * localizan nodos por fx:id y se obtiene la celda de la tabla mediante
- * nth-of-type.
- *
- * Se asume que en el FXML: - La TableView tiene fx:id="tablaPedidos" - Las
- * columnas tienen fx:id="columnaId", "columnaCif", "columnaDireccion",
- * "columnaFecha", "columnaEstado" y "columnaTotal" - Los botones tienen
- * fx:id="botonNuevo", "botonReiniciar", "botonBusqueda", "botonEliminar",
- * "botonGuardar", "botonDetalles" y "botonAtras"
+ * Clase de test para ControladorPedidosPrincipal.
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ControladorPedidosPrincipalTest extends ApplicationTest {
@@ -56,25 +48,13 @@ public class ControladorPedidosPrincipalTest extends ApplicationTest {
 
     // Nodos de la UI
     private TableView<Pedido> tablaPedidos;
-    // Si las columnas tienen fx:id en el FXML, se pueden obtener:
-    private TableColumn<?, ?> columnaId, columnaCif, columnaDireccion, columnaFecha, columnaEstado, columnaTotal;
     private Button botonNuevo, botonReiniciar, botonBusqueda, botonEliminar, botonGuardar, botonDetalles, botonAtras;
 
-    @BeforeClass
-    public static void setUpClass() throws TimeoutException {
-        // Se registra la Stage principal y se lanza la aplicación una única vez
-        FxToolkit.registerPrimaryStage();
-        FxToolkit.setupApplication(MainTestPedidosPrincipal.class);
-    }
-
-    @Override
     public void start(Stage stage) throws Exception {
-        // Como ya se lanzó la aplicación en setUpClass, aquí solo esperamos y localizamos los nodos.
+        new MainTestPedidosPrincipal().start(stage);
         sleep(1000);
-        // Localizamos la TableView con fx:id="tablaPedidos"
         tablaPedidos = lookup("#tablaPedidos").queryTableView();
 
-        // Localizamos los botones
         botonNuevo = lookup("#botonNuevo").queryButton();
         botonReiniciar = lookup("#botonReiniciar").queryButton();
         botonBusqueda = lookup("#botonBusqueda").queryButton();
@@ -84,269 +64,407 @@ public class ControladorPedidosPrincipalTest extends ApplicationTest {
         botonAtras = lookup("#botonAtras").queryButton();
     }
 
-    /**
-     * Devuelve el nodo correspondiente a la celda en la fila rowIndex y columna
-     * colIndex usando selectores CSS nth-of-type. Se asume que no hay columnas
-     * ocultas ni reordenables. Nota: nth-of-type en CSS empieza en 1.
-     */
-    private Node getCellByRowColumn(int rowIndex, int colIndex) {
-        String rowSelector = String.format(".table-row-cell:nth-of-type(%d)", rowIndex + 1);
-        String cellSelector = String.format(".table-cell:nth-of-type(%d)", colIndex + 1);
-        Node rowNode = lookup(rowSelector).query();
-        return from(rowNode).lookup(cellSelector).query();
-    }
-
-    /**
-     * Selecciona la fila con el índice rowIndex.
-     */
-    private void selectRow(int rowIndex) {
-        String rowSelector = String.format(".table-row-cell:nth-of-type(%d)", rowIndex + 1);
-        Node rowNode = lookup(rowSelector).query();
-        clickOn(rowNode);
-    }
-
-    /**
-     * Test B: Crear un nuevo pedido. Se pulsa "Nuevo", se edita la última fila
-     * para configurar: - CIF (ComboBox) en columna 1: seleccionar "B87654321" -
-     * Dirección (TextField) en columna 2: "Calle Test, 20, 25º A" - Fecha
-     * (DatePicker) en columna 3: "31/12/2025" - Estado (ComboBox) en columna 4:
-     * seleccionar "COMPLETADO" Luego se pulsa "Guardar" y se verifica que el
-     * pedido se creó.
-     */
+    // ---------------------------------------------------------------------
+    // EJEMPLO: testA con creación + checks de botones y alert de confirmación
+    // ---------------------------------------------------------------------
+    //@Ignore
     @Test
-    public void testA_createNewOrder() {
+    public void testA_createNewOrderAndCheckButtons() {
+        // Reiniciamos para partir de la tabla original
+        clickOn(botonReiniciar);
+        sleep(300);
+
+        // Con 0 filas seleccionadas, Detalles y Eliminar deshabilitados
+        tablaPedidos.getSelectionModel().clearSelection();
+        sleep(300);
+        assertTrue("Detalles debería estar deshabilitado sin selección",
+                botonDetalles.isDisabled());
+        assertTrue("Eliminar debería estar deshabilitado sin selección",
+                botonEliminar.isDisabled());
+
+        // Creamos un nuevo pedido
         clickOn(botonNuevo);
-        sleep(500); // Esperar a que se añada la nueva fila
+        sleep(500);
 
-        // Verificar que se añadió una nueva fila
         int totalFilas = tablaPedidos.getItems().size();
-        assertTrue("No se añadió una nueva fila tras pulsar 'Nuevo'", totalFilas > 0);
+        assertTrue("No se añadió una nueva fila al pulsar 'Nuevo'", totalFilas > 0);
 
-        // Seleccionar la primera fila
+        // Seleccionamos la primera fila (nueva)
         tablaPedidos.getSelectionModel().select(0);
         tablaPedidos.scrollTo(0);
 
-        // Obtener todas las filas visibles
+        // Con 1 fila seleccionada, Detalles y Eliminar habilitados
+        assertFalse("Detalles debería estar habilitado con 1 fila seleccionada",
+                botonDetalles.isDisabled());
+        assertFalse("Eliminar debería estar habilitado con 1 fila seleccionada",
+                botonEliminar.isDisabled());
+
+        // Obtenemos la primera fila visible
+        List<Node> filas = lookup(".table-row-cell").queryAll().stream()
+                .filter(Node::isVisible)
+                .collect(Collectors.toList());
+        assertFalse("No se encontraron filas visibles", filas.isEmpty());
+        Node filaSeleccionada = filas.get(0);
+
+        // Ordenamos celdas según posición horizontal
+        Set<Node> celdasSet = filaSeleccionada.lookupAll(".table-cell");
+        List<Node> celdas = new ArrayList<>(celdasSet);
+        celdas.sort(Comparator.comparingDouble(Node::getLayoutX));
+
+        // Celda CIF (ComboBox) -> índice 1
+        doubleClickOn(celdas.get(1));
+        sleep(200);
+        ComboBox<String> comboCif = lookup(".combo-box").query();
+        interact(() -> comboCif.getSelectionModel().select("B87654321"));
+        push(KeyCode.ENTER);
+
+        // Celda Dirección (TextField) -> índice 2
+        doubleClickOn(celdas.get(2));
+        TextField direccionField = lookup(".text-field").query();
+        direccionField.clear();
+        write("Calle Test, 20, 25º A");
+        push(KeyCode.ENTER);
+
+        // Celda Fecha (DatePicker) -> índice 3
+        doubleClickOn(celdas.get(3));
+        DatePicker datePicker = lookup(".date-picker").query();
+        TextField editor = datePicker.getEditor();
+        editor.clear();
+        write("31/12/2025");
+        push(KeyCode.ENTER);
+
+        // Celda Estado (ComboBox) -> índice 4
+        doubleClickOn(celdas.get(4));
+        ComboBox<Estado> comboEstado = lookup(".combo-box").query();
+        interact(() -> comboEstado.getSelectionModel().select(Estado.COMPLETADO));
+        push(KeyCode.ENTER);
+
+        // Probamos a seleccionar más de 1 fila si existe más filas
+        if (totalFilas > 1) {
+            // Ctrl+Click en la fila 1
+            press(KeyCode.CONTROL).clickOn(filas.get(1)).release(KeyCode.CONTROL);
+            sleep(300);
+
+            // Con varias filas, Detalles deshabilitado, Eliminar habilitado
+            assertTrue("Detalles debería estar deshabilitado con varias filas",
+                    botonDetalles.isDisabled());
+            assertFalse("Eliminar debería estar habilitado con varias filas",
+                    botonEliminar.isDisabled());
+        }
+
+        // Guardamos
+        clickOn(botonGuardar);
+        sleep(500);
+
+        // Verificamos mensaje de guardado correcto
+        verifyThat("Datos Guardados correctamente.", NodeMatchers.isVisible());
+        clickOn("Aceptar"); // Cerrar el Alert
+
+    }
+
+    // ---------------------------------------------------------------------
+    // TEST B: Leer el pedido recién creado
+    // ---------------------------------------------------------------------
+    //@Ignore
+    @Test
+    public void testB_readNewOrder() {
+
+        // Verificamos que el pedido con CIF=B87654321 existe
+        boolean existe = tablaPedidos.getItems().stream().anyMatch(p
+                -> "B87654321".equals(p.getCifCliente())
+                && "Calle Test, 20, 25º A".equals(p.getDireccion())
+                && p.getEstado() == Estado.COMPLETADO
+                && dateFormat.format(p.getFechaPedido()).equals("31/12/2025")
+        );
+        assertTrue("No se encontró el pedido recién creado en la tabla", existe);
+    }
+
+    // ---------------------------------------------------------------------
+    // TEST C: Actualizar la dirección de ese pedido
+    // ---------------------------------------------------------------------
+    //@Ignore
+    @Test
+    public void testC_updateOrder() {
+        // 1. Obtener el pedido con el ID más grande
+        ObservableList<Pedido> items = tablaPedidos.getItems();
+        assertFalse("La tabla está vacía", items.isEmpty());
+
+        Pedido ultimoPedido = items.stream()
+                .max(Comparator.comparing(Pedido::getId))
+                .orElseThrow(() -> new AssertionError("No se encontró ningún pedido en la tabla"));
+
+        // 2. Forzar al TableView a renderizar la fila del último pedido
+        interact(() -> {
+            tablaPedidos.scrollTo(ultimoPedido);
+            tablaPedidos.getSelectionModel().select(ultimoPedido);
+        });
+        sleep(500);
+        // Obtenemos la primera fila visible
         List<Node> filas = lookup(".table-row-cell").queryAll().stream()
                 .filter(Node::isVisible)
                 .collect(Collectors.toList());
         assertFalse("No se encontraron filas visibles", filas.isEmpty());
 
-        // La fila recién creada estará en la primera posición
-        Node filaSeleccionada = filas.get(0);
+        // 4. Calcular el índice del 'ultimoPedido' en la lista
+        int rowIndex = tablaPedidos.getItems().indexOf(ultimoPedido);
 
-        // Obtener todas las celdas de la fila y ordenarlas según la posición horizontal
+        // 5. Seleccionar la fila en base a ese índice
+        Node filaSeleccionada = filas.get(rowIndex);
+
+        // Ordenamos celdas según posición horizontal
         Set<Node> celdasSet = filaSeleccionada.lookupAll(".table-cell");
         List<Node> celdas = new ArrayList<>(celdasSet);
         celdas.sort(Comparator.comparingDouble(Node::getLayoutX));
 
-        // (1) Editar celda CIF (ComboBox)
-        doubleClickOn(celdas.get(1));
-        clickOn(celdas.get(1));
-        sleep(200); // Esperar a que el ComboBox esté listo
-        ComboBox<String> combo = lookup(".combo-box").query();
-        interact(() -> {
-            combo.getSelectionModel().select("B87654321");
-        });
-
-        // (2) Editar celda Dirección (TextField)
+        // 5. Editar la dirección
         doubleClickOn(celdas.get(2));
-        TextField nombreField = lookup(".text-field").query();
-        nombreField.clear();
-        write("Calle Test, 20, 25º A");
-        sleep(200); // Esperar a que el texto se escriba
-        push(KeyCode.ENTER);
-        sleep(200); // Esperar a que se confirme la edición
-
-        // (3) Editar celda Fecha (DatePicker)
-        tablaPedidos.scrollTo(0);
-        doubleClickOn(celdas.get(3));
-        sleep(200); // Esperar a que el DatePicker esté listo
-        DatePicker datePicker = lookup(".date-picker").query();
-        LocalDate nuevaFecha = LocalDate.of(2025, 12, 31); // 31 de diciembre de 2025
-        datePicker.setValue(nuevaFecha);
-        push(KeyCode.ENTER);
-        sleep(200); // Esperar a que la fecha se aplique
-
-        // (4) Editar celda Estado (ComboBox)
-        doubleClickOn(celdas.get(4));
-        sleep(200); // Esperar a que el ComboBox esté listo
-        ComboBox<Estado> combo2 = lookup(".combo-box").query();
-        combo2.getSelectionModel().select(Estado.COMPLETADO);
-        push(KeyCode.ENTER);
-        sleep(200); // Esperar a que la selección se aplique
-
-        // Verificar que el pedido se creó correctamente
-        boolean creado = tablaPedidos.getItems().stream().anyMatch(p
-                -> p.getCifCliente().equals("B87654321")
-                && p.getDireccion().equals("Calle Test, 20, 25º A")
-                && p.getEstado() == Estado.COMPLETADO
-                && dateFormat.format(p.getFechaPedido()).equals("31/12/2025")
-        );
-        assertTrue("El nuevo pedido no se creó correctamente", creado);
-    }
-
-    @Ignore
-    @Test
-    public void testB_readNewOrder() {
-
-        clickOn(botonReiniciar);
-        sleep(200);
-
-        boolean creado = tablaPedidos.getItems().stream().anyMatch(p
-                -> p.getCifCliente().equals("B87654321")
-                && p.getDireccion().equals("Calle Test, 20, 25º A")
-                && p.getEstado() == Estado.COMPLETADO
-                && dateFormat.format(p.getFechaPedido()).equals("31/12/2025")
-        );
-        assertTrue("El nuevo pedido no se creó correctamente", creado);
-    }
-
-    /**
-     * Test C: Actualizar la dirección del último pedido con CIF "B87654321".
-     */
-    @Ignore
-    @Test
-    public void testC_updateOrder() {
-        int totalFilas = tablaPedidos.getItems().size();
-        assertTrue("No hay filas en la tabla", totalFilas > 0);
-        // Buscamos el último pedido con CIF "B87654321"
-        List<Pedido> matching = tablaPedidos.getItems().stream()
-                .filter(p -> "B87654321".equals(p.getCifCliente()))
-                .collect(Collectors.toList());
-        assertFalse("No se encontró ningún pedido con CIF B87654321", matching.isEmpty());
-        Pedido pedidoAEditar = matching.get(matching.size() - 1);
-        int rowIndex = tablaPedidos.getItems().indexOf(pedidoAEditar);
-
-        // Se supone que la columna Dirección es la 2.
-        selectRow(rowIndex);
-        Node cellDireccion = getCellByRowColumn(rowIndex, 2);
-        doubleClickOn(cellDireccion);
-        eraseText(pedidoAEditar.getDireccion().length());
+        TextField direccionField = lookup(".text-field").query();
+        direccionField.clear();
         write("Calle Modificada, 10");
         type(KeyCode.ENTER);
 
+        // 6. Guardar cambios
         clickOn(botonGuardar);
         sleep(500);
+        verifyThat("Datos Guardados correctamente.", NodeMatchers.isVisible());
+        clickOn("Aceptar");
 
-        List<Pedido> updatedMatching = tablaPedidos.getItems().stream()
-                .filter(p -> "B87654321".equals(p.getCifCliente()))
-                .collect(Collectors.toList());
-        Pedido pedidoActualizado = updatedMatching.get(updatedMatching.size() - 1);
-        assertEquals("La dirección no se actualizó correctamente", "Calle Modificada, 10", pedidoActualizado.getDireccion());
+        boolean existe = tablaPedidos.getItems().stream().anyMatch(p
+                -> "B87654321".equals(p.getCifCliente())
+                && "Calle Modificada, 10".equals(p.getDireccion())
+                && p.getEstado() == Estado.COMPLETADO
+                && dateFormat.format(p.getFechaPedido()).equals("31/12/2025")
+        );
+        assertTrue("El pedido con CIF B87654321 no se ha modificado correctamente", existe);
     }
 
-    /**
-     * Test D: Eliminar el último pedido con CIF "B87654321".
-     */
-    @Ignore
+    // ---------------------------------------------------------------------
+    // TEST D: Eliminar el último pedido con CIF "B87654321"
+    // ---------------------------------------------------------------------
+    //@Ignore
     @Test
     public void testD_deleteOrder() {
-        int totalFilas = tablaPedidos.getItems().size();
-        assertTrue("No hay filas en la tabla", totalFilas > 0);
-        List<Pedido> matching = tablaPedidos.getItems().stream()
-                .filter(p -> "B87654321".equals(p.getCifCliente()))
-                .collect(Collectors.toList());
-        assertFalse("No se encontró ningún pedido con CIF B87654321", matching.isEmpty());
-        Pedido pedidoAEliminar = matching.get(matching.size() - 1);
-        int rowIndex = tablaPedidos.getItems().indexOf(pedidoAEliminar);
-        selectRow(rowIndex);
+        // 1. Obtener el pedido con el ID más grande
+        ObservableList<Pedido> items = tablaPedidos.getItems();
+        assertFalse("La tabla está vacía", items.isEmpty());
 
-        int totalAntes = tablaPedidos.getItems().size();
+        Pedido ultimoPedido = items.stream()
+                .max(Comparator.comparing(Pedido::getId))
+                .orElseThrow(() -> new AssertionError("No se encontró ningún pedido en la tabla"));
+
+        // 2. Forzar al TableView a renderizar la fila del último pedido
+        interact(() -> {
+            tablaPedidos.scrollTo(ultimoPedido);
+            tablaPedidos.getSelectionModel().select(ultimoPedido);
+        });
+        sleep(500);
+
+        // Eliminamos
         clickOn(botonEliminar);
         sleep(500);
-        // Se asume que el alert de confirmación tiene el botón con texto "OK"
-        clickOn("OK");
+        // Si sale algún alerta de confirmación interna (pedido con artículos), se asume "OK"
+        // Por si la ventana del controller pregunta "¿Está seguro?"
+        if (lookup("¿Está seguro de que desea eliminar el pedido?").tryQuery().isPresent()) {
+            clickOn("Aceptar");
+        }
+        if (lookup("Pedidos borrados de la tabla actual. Si quiere aplicar los cambios en la base de datos no olvide guardar los cambios").tryQuery().isPresent()) {
+            clickOn("Aceptar");
+        }
+        // Tras eliminar de la tabla, hay cambios sin guardar
+
+        // Guardamos para confirmar en BD
+        clickOn(botonGuardar);
         sleep(500);
-        int totalDespues = tablaPedidos.getItems().size();
-        assertEquals("El pedido no se eliminó correctamente", totalAntes - 1, totalDespues);
+        verifyThat("Datos Guardados correctamente.", NodeMatchers.isVisible());
+        clickOn("Aceptar");
+
+        boolean existe = tablaPedidos.getItems().stream().anyMatch(p
+                -> "B87654321".equals(p.getCifCliente())
+                && "Calle Modificada, 10".equals(p.getDireccion())
+                && p.getEstado() == Estado.COMPLETADO
+                && dateFormat.format(p.getFechaPedido()).equals("31/12/2025")
+        );
+        assertFalse("El pedido con CIF B87654321 sigue apareciendo tras eliminar", existe);
     }
 
-    /**
-     * Test E: Introducir una fecha inválida (anterior a hoy) en la celda Fecha
-     * de la última fila y comprobar que aparece el Alert con "Fecha inválida".
-     */
-    @Ignore
+    // ---------------------------------------------------------------------
+    // TEST E: Introducir una fecha inválida (anterior a hoy)
+    // ---------------------------------------------------------------------
     @Test
     public void testE_invalidDateEntry() {
         int totalFilas = tablaPedidos.getItems().size();
-        assertTrue("No hay filas en la tabla", totalFilas > 0);
+        assertTrue("No hay filas en la tabla para probar fecha inválida", totalFilas > 0);
+
+        // Seleccionamos la última fila (para asegurarnos de que existe)
         int rowIndex = totalFilas - 1;
-        selectRow(rowIndex);
-        // Se supone que la columna Fecha es la 3.
-        Node cellFecha = getCellByRowColumn(rowIndex, 3);
-        doubleClickOn(cellFecha);
+        interact(() -> {
+            tablaPedidos.scrollTo(rowIndex);
+            tablaPedidos.getSelectionModel().clearSelection();
+            tablaPedidos.getSelectionModel().select(rowIndex);
+        });
+        sleep(300);
+
+        // Obtenemos la fila visible
+        List<Node> filas = lookup(".table-row-cell").queryAll().stream()
+                .filter(Node::isVisible)
+                .collect(Collectors.toList());
+        assertFalse("No se encontraron filas visibles", filas.isEmpty());
+
+        // Suponiendo que el orden de las celdas es:
+        // Índice 0: ID, 1: CIF, 2: Dirección, 3: Fecha, 4: Estado, 5: Total (si existe)
+        // Obtenemos la celda de Fecha (índice 3)
+        Node filaSeleccionada = filas.get(Math.min(rowIndex, filas.size() - 1));
+        Set<Node> celdasSet = filaSeleccionada.lookupAll(".table-cell");
+        List<Node> celdas = new ArrayList<>(celdasSet);
+        celdas.sort(Comparator.comparingDouble(Node::getLayoutX));
+
+        // Double click en la celda de Fecha para entrar en modo edición
+        doubleClickOn(celdas.get(3));
+        sleep(300);
+
+        // Consultamos el DatePicker que se ha mostrado
+        DatePicker datePicker = lookup(".date-picker").query();
+        // Convertimos una fecha inválida: ayer
         LocalDate fechaInvalida = LocalDate.now().minusDays(1);
-        String fechaStr = dateFormat.format(Date.from(fechaInvalida.atStartOfDay(ZoneId.systemDefault()).toInstant()));
-        eraseText(10);
-        write(fechaStr);
-        type(KeyCode.ENTER);
+        // Convertir a String con formato dd/MM/yyyy (por ejemplo, "01/01/2000" o usando fechaInvalida)
+        // Aquí usaremos la fecha de ayer en formato dd/MM/yyyy
+        String fechaStr = new java.text.SimpleDateFormat("dd/MM/yyyy")
+                .format(Date.from(fechaInvalida.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+
+        // Actuamos sobre el editor del DatePicker
+        TextField editor = datePicker.getEditor();
+        interact(() -> {
+            editor.clear();
+            editor.appendText(fechaStr);
+        });
+        push(KeyCode.ENTER);
         sleep(500);
-        verifyThat("Fecha inválida", NodeMatchers.isVisible());
-        clickOn("OK");
+
+        // Verificamos que aparece el Alert con el mensaje "Fecha inválida"
+        verifyThat("No se permiten fechas anteriores al día actual.", NodeMatchers.isVisible());
+        clickOn("Aceptar");
+
     }
 
-    /**
-     * Test F: Intentar eliminar sin selección. Debe aparecer un Alert indicando
-     * que se debe seleccionar al menos un pedido para eliminar.
-     */
-    @Ignore
+    // ---------------------------------------------------------------------
+    // TEST F: Intentar eliminar sin selección
+    // ---------------------------------------------------------------------
     @Test
     public void testF_deleteWithoutSelection() {
-        tablaPedidos.getSelectionModel().clearSelection();
-        clickOn(botonEliminar);
-        sleep(500);
-        verifyThat("Debe seleccionar al menos un pedido para eliminar.", NodeMatchers.isVisible());
-        clickOn("OK");
+        // Aseguramos que no hay ninguna fila seleccionada
+        interact(() -> tablaPedidos.getSelectionModel().clearSelection());
+        sleep(300);
+
+        // Verificamos que el botón "Eliminar" está deshabilitado
+        assertTrue("El botón de eliminar debería estar deshabilitado sin selección", botonEliminar.isDisabled());
+
     }
 
-    /**
-     * Test G: Modificar algún campo (por ejemplo, Dirección) sin guardar y
-     * pulsar "Atrás". Debe aparecer un Alert preguntando "Hay cambios sin
-     * guardar. ¿Qué desea hacer?" y se cancela.
-     */
-    @Ignore
+    // ---------------------------------------------------------------------
+    // TEST G: Cambiar algo y pulsar "Atrás" -> debe saltar el alert de confirmación
+    // ---------------------------------------------------------------------
     @Test
     public void testG_unsavedChangesExitConfirmation() {
         int totalFilas = tablaPedidos.getItems().size();
-        assertTrue("No hay filas en la tabla", totalFilas > 0);
+        assertTrue("No hay filas para probar cambios sin guardar", totalFilas > 0);
+
+        // Seleccionamos la última fila
         int rowIndex = totalFilas - 1;
-        Pedido pedido = tablaPedidos.getItems().get(rowIndex);
-        // Suponemos que la columna Dirección es la 2.
-        selectRow(rowIndex);
-        Node cellDireccion = getCellByRowColumn(rowIndex, 2);
-        doubleClickOn(cellDireccion);
-        eraseText(pedido.getDireccion().length());
-        write("Direccion con cambio sin guardar");
-        type(KeyCode.ENTER);
+        interact(() -> {
+            tablaPedidos.scrollTo(rowIndex);
+            tablaPedidos.getSelectionModel().clearSelection();
+            tablaPedidos.getSelectionModel().select(rowIndex);
+        });
+        sleep(300);
+
+        // Obtenemos la fila visible y ordenamos las celdas para editar la Dirección (índice 2)
+        List<Node> filas = lookup(".table-row-cell").queryAll().stream()
+                .filter(Node::isVisible)
+                .collect(Collectors.toList());
+        assertFalse("No se encontraron filas visibles", filas.isEmpty());
+
+        Node filaSeleccionada = filas.get(Math.min(rowIndex, filas.size() - 1));
+        Set<Node> celdasSet = filaSeleccionada.lookupAll(".table-cell");
+        List<Node> celdas = new ArrayList<>(celdasSet);
+        celdas.sort(Comparator.comparingDouble(Node::getLayoutX));
+
+        // Editamos la celda de Dirección (índice 2)
+        doubleClickOn(celdas.get(2));
+        sleep(300);
+        TextField direccionField = lookup(".text-field").query();
+        interact(() -> {
+            direccionField.clear();
+            direccionField.appendText("Cambio sin guardar G");
+        });
+        push(KeyCode.ENTER);
+        sleep(300);
+
+        // Pulsamos el botón Atrás
         clickOn(botonAtras);
         sleep(500);
+
+        // Verificamos que aparece el diálogo de cambios sin guardar
         verifyThat("Hay cambios sin guardar. ¿Qué desea hacer?", NodeMatchers.isVisible());
-        clickOn("Cancel");
+        // Cancelamos la acción para continuar en la misma vista
+        clickOn("Cancelar");
+        sleep(300);
+
+        // Verificamos que seguimos en la vista de la tabla
+        verifyThat("#tablaPedidos", NodeMatchers.isVisible());
+
     }
 
-    /**
-     * Test H: Similar al anterior, pero al pulsar "Búsqueda" (o "Reiniciar") se
-     * muestra el Alert y se cancela, manteniéndose en la vista.
-     */
-    @Ignore
+    // ---------------------------------------------------------------------
+    // TEST H: Cambiar algo y pulsar "Búsqueda" o "Reiniciar" -> alert de cambios
+    // ---------------------------------------------------------------------
     @Test
     public void testH_cancelUnsavedChangesDialog() {
         int totalFilas = tablaPedidos.getItems().size();
-        assertTrue("No hay filas en la tabla", totalFilas > 0);
+        assertTrue("No hay filas para probar cambios sin guardar", totalFilas > 0);
+
+        // Seleccionamos la última fila
         int rowIndex = totalFilas - 1;
-        Pedido pedido = tablaPedidos.getItems().get(rowIndex);
-        // Editamos la columna Dirección (col 2)
-        selectRow(rowIndex);
-        Node cellDireccion = getCellByRowColumn(rowIndex, 2);
-        doubleClickOn(cellDireccion);
-        eraseText(pedido.getDireccion().length());
-        write("Otro cambio sin guardar");
-        type(KeyCode.ENTER);
-        clickOn(botonBusqueda);  // o botonReiniciar, según corresponda
+        interact(() -> {
+            tablaPedidos.scrollTo(rowIndex);
+            tablaPedidos.getSelectionModel().clearSelection();
+            tablaPedidos.getSelectionModel().select(rowIndex);
+        });
+        sleep(300);
+
+        // Obtenemos la fila visible y ordenamos las celdas para editar la Dirección (índice 2)
+        List<Node> filas = lookup(".table-row-cell").queryAll().stream()
+                .filter(Node::isVisible)
+                .collect(Collectors.toList());
+        assertFalse("No se encontraron filas visibles", filas.isEmpty());
+
+        Node filaSeleccionada = filas.get(Math.min(rowIndex, filas.size() - 1));
+        Set<Node> celdasSet = filaSeleccionada.lookupAll(".table-cell");
+        List<Node> celdas = new ArrayList<>(celdasSet);
+        celdas.sort(Comparator.comparingDouble(Node::getLayoutX));
+
+        // Editamos la celda de Dirección (índice 2)
+        doubleClickOn(celdas.get(2));
+        sleep(300);
+        TextField direccionField = lookup(".text-field").query();
+        interact(() -> {
+            direccionField.clear();
+            direccionField.appendText("Cambio sin guardar H");
+        });
+        push(KeyCode.ENTER);
+        sleep(300);
+
+        // Pulsamos el botón Búsqueda (puedes usar también Reiniciar, aquí ejemplificamos Búsqueda)
+        clickOn(botonBusqueda);
         sleep(500);
+
+        // Verificamos que aparece el diálogo de cambios sin guardar
         verifyThat("Hay cambios sin guardar. ¿Qué desea hacer?", NodeMatchers.isVisible());
-        clickOn("Cancel");
+        // Cancelamos la acción para permanecer en la vista actual
+        clickOn("Cancelar");
+        sleep(300);
+
+        // Confirmamos que seguimos en la vista de la tabla
         verifyThat("#tablaPedidos", NodeMatchers.isVisible());
+
     }
 }
