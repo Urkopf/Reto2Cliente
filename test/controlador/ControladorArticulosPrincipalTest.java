@@ -33,6 +33,7 @@ import org.junit.runners.MethodSorters;
 import static org.testfx.api.FxAssert.verifyThat;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.matcher.base.NodeMatchers;
+import static org.testfx.matcher.base.NodeMatchers.isVisible;
 
 /**
  *
@@ -54,7 +55,7 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
 
     //Los test Aqui
     @Test
-    //@Ignore
+    @Ignore
     public void test_A_CrearArticulo() {
         // Contar filas iniciales
         int initialRowCount = tablaArticulos.getItems().size();
@@ -66,7 +67,7 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
         tablaArticulos.getSelectionModel().select(0);
         tablaArticulos.scrollTo(0);
 
-        // Obtener todas las filas visibles (usando Java 8)
+        // Obtener todas las filas visibles
         List<Node> filas = lookup(".table-row-cell").queryAll().stream()
                 .filter(Node::isVisible)
                 .collect(Collectors.toList());
@@ -90,7 +91,7 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
 
          */
         // Celda 1: Nombre - asignar un nombre único para el artículo
-        String nombreArticulo = "ArticuloTest";
+        String nombreArticulo = "Test de prueba";
         doubleClickOn(celdas.get(1)); // Activa el modo edición en la celda
         // Se espera que aparezca un TextField en la celda
         TextField nombreField = lookup(".text-field").query();
@@ -99,13 +100,12 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
         push(KeyCode.ENTER);
 
         // Celda 2: Precio
-        doubleClickOn(celdas.get(2)); // Activa el modo edición en la celda del precio
-        // La celda de precio usa un Spinner; obtenemos el spinner (se asume que es el único en la escena)
+        doubleClickOn(celdas.get(2)); // activar edición
+        // Esperar a que aparezca el Spinner para que no falle el lookup
         Spinner<?> spinnerPrecio = lookup(".spinner").query();
-        // El Spinner tiene un editor que es un TextField:
         TextField precioField = spinnerPrecio.getEditor();
         precioField.clear();
-        write("50.0");
+        write("60");  // tu nuevo precio
         push(KeyCode.ENTER);
 
         // Celda 3: Fecha
@@ -132,6 +132,13 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
         // Hacer clic en el botón "Guardar"
         clickOn("#botonGuardar");
 
+        // 4. Verificar que el diálogo de confirmación aparece con el texto esperado
+        //    (Ajusta la cadena a exactamente lo que muestres en tu Alert).
+        verifyThat("Hay cambios sin guardar. ¿Qué desea hacer?", isVisible());
+
+        // 5. Ahora sí, hacer clic en el botón "Guardar" del diálogo
+        clickOn("Guardar");
+
         // Verificar que el artículo se ha añadido: la cantidad de filas debe incrementarse en 1
         int newRowCount = tablaArticulos.getItems().size();
         assertThat("El artículo debe añadirse a la tabla", newRowCount, is(initialRowCount + 1));
@@ -146,7 +153,7 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
     }
 
     @Test
-    @Ignore
+    //@Ignore
     public void test_B_EditarArticulo() {
         // Comprobar que existe al menos un artículo. Si no hay filas, no se puede editar nada.
         assertFalse("No hay artículos para editar", tablaArticulos.getItems().isEmpty());
