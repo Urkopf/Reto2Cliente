@@ -16,7 +16,7 @@
 		<band height="79" splitType="Stretch">
 			<image>
 				<reportElement x="0" y="0" width="555" height="79" uuid="dc0f6b17-c296-40a6-b593-94ad900c0def"/>
-				<imageExpression><![CDATA["C:\\Users\\2dam\\Documents\\NetBeansProjects\\Reto_2_DEV\\Reto2_CRUD_Cliente\\src\\recursos\\logoFullrecortado.jpg"]]></imageExpression>
+				<imageExpression><![CDATA["/src/recursos/logoFullrecortado.jpg"]]></imageExpression>
 			</image>
 		</band>
 	</title>

@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import static org.testfx.api.FxAssert.verifyThat;
 import org.testfx.framework.junit.ApplicationTest;
+import org.testfx.matcher.base.NodeMatchers;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
 
 /**
@@ -52,10 +53,19 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
     public ControladorArticulosPrincipalTest() {
     }
 
+    @Test
+    //@Ignore
+    public void test_A_EstadoInicial() {
+        // Comprobamos que la tabla está visible
+        verifyThat("#tablaArticulos", NodeMatchers.isVisible());
+        // Verificamos que la tabla no está vacía
+        assertFalse("La tabla no debería estar vacía.", tablaArticulos.getItems().isEmpty());
+    }
+
     //Los test Aqui
     @Test
     //@Ignore
-    public void test_A_CrearArticulo() {
+    public void test_B_CrearArticulo() {
         // Contar filas iniciales
         int initialRowCount = tablaArticulos.getItems().size();
 
@@ -153,7 +163,7 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
 
     @Test
     @Ignore
-    public void test_B_EditarArticulo() {
+    public void test_C_EditarArticulo() {
         // Comprobar que existe al menos un artículo. Si no hay filas, no se puede editar nada.
         assertFalse("No hay artículos para editar", tablaArticulos.getItems().isEmpty());
 
@@ -257,7 +267,7 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
 
     @Test
     @Ignore
-    public void test_C_DeleteRow() {
+    public void test_D_DeleteRow() {
         // Obtener el conteo inicial de filas
         int totalFilasInicial = tablaArticulos.getItems().size();
         assertTrue("La tabla debe tener al menos una fila para esta prueba.", totalFilasInicial > 0);
