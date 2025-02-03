@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,6 +36,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -110,13 +113,13 @@ public class ControladorArticulosPrincipal implements Initializable {
 
     // Copia de seguridad de los datos originales
     private ObservableList<Articulo> articulosOriginales;
+    private boolean hayCambiosNoGuardados = false;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         LOGGER.info("Inicializando controlador ArticulosPrincipal");
         configurarTabla();
 
-        //configurarSalidaEdicion();
     }
 
     public void setUser(Object user) {
@@ -144,6 +147,8 @@ public class ControladorArticulosPrincipal implements Initializable {
         stage.setTitle("Gestión de Articulos");
         // Configurar la escena y mostrar la ventana
         LOGGER.info("Inicializando la escena principal");
+
+        configurarMenu();
 
         botonNuevo.addEventHandler(ActionEvent.ACTION, this::handleNuevoArticulo);
         botonGuardar.addEventHandler(ActionEvent.ACTION, this::handleGuardarCambios);
@@ -267,7 +272,7 @@ public class ControladorArticulosPrincipal implements Initializable {
             LOGGER.info("Beginning printing action...");
             JasperReport report
                     = JasperCompileManager.compileReport(getClass()
-                            .getResourceAsStream("/crud/iu/reportes/PedidosReport.jrxml"));
+                            .getResourceAsStream("/crud/iu/reportes/ArticulosReport.jrxml"));
             //Data for the report: a collection of UserBean passed as a JRDataSource
             //implementation
             JRBeanCollectionDataSource dataItems
@@ -360,7 +365,7 @@ public class ControladorArticulosPrincipal implements Initializable {
             tablaArticulos.setItems(articulosObservableList);
 
             articulosOriginales = FXCollections.observableArrayList(
-                    articulos.stream().map(Articulo::new).collect(Collectors.toList()));
+                    articulos.stream().map(Articulo::clone).collect(Collectors.toList()));
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cargar los datos de articulos", e);
@@ -392,6 +397,10 @@ public class ControladorArticulosPrincipal implements Initializable {
 
     @FXML
     private void handleGuardarCambios(ActionEvent event) {
+        guardarCambios();
+    }
+
+    private void guardarCambios() {
         cancelarEdicionEnTabla();
         LOGGER.info("Botón Guardar Cambios presionado");
 
@@ -411,7 +420,7 @@ public class ControladorArticulosPrincipal implements Initializable {
             for (Articulo articulo : articulosObservableList) {
                 LOGGER.info("Revisando articulos" + articulo.getId());
                 Articulo articuloOriginal = articulosOriginales.stream()
-                        .filter(p -> p.getId().equals(articulo.getId()))
+                        .filter(p -> p.getId() != null && p.getId().equals(articulo.getId()))
                         .findFirst()
                         .orElse(null);
 
@@ -447,11 +456,20 @@ public class ControladorArticulosPrincipal implements Initializable {
         if (original == null || modificado == null) {
             return false;
         }
-        return !original.getNombre().equals(modificado.getNombre())
-                || Double.compare(original.getPrecio(), modificado.getPrecio()) != 0
-                || !original.getFechaReposicion().equals(modificado.getFechaReposicion())
-                || !original.getDescripcion().equals(modificado.getDescripcion())
-                || Integer.compare(original.getStock(), modificado.getStock()) != 0;
+        if (!original.getNombre().equals(modificado.getNombre())) {
+            return true;
+        }
+        if (original.getPrecio() != modificado.getPrecio()) {
+            return true;
+        }
+        if (!original.getFechaReposicion().equals(modificado.getFechaReposicion())) {
+            return true;
+        }
+        if (!original.getDescripcion().equals(modificado.getDescripcion())) {
+            return true;
+        }
+        return original.getStock() != modificado.getStock();
+
     }
 
     private boolean validarArticulo(Articulo articulo) {
@@ -503,9 +521,10 @@ public class ControladorArticulosPrincipal implements Initializable {
         LOGGER.info("Botón Eliminar presionado");
         ObservableList<Articulo> seleccionados = tablaArticulos.getSelectionModel().getSelectedItems();
         if (seleccionados.isEmpty()) {
-            AlertUtilities.showErrorDialog(Alert.AlertType.WARNING, "Eliminar Pedidos", "Debe seleccionar al menos un pedido para eliminar.");
+            AlertUtilities.showErrorDialog(Alert.AlertType.WARNING, "Eliminar Articulos", "Debe seleccionar al menos un articulo para eliminar.");
         } else {
             articulosObservableList.removeAll(seleccionados);
+            setHayCambiosNoGuardados(true);
             actualizarTablaYPaginador();
             LOGGER.info("Articulos eliminados de la tabla.");
         }
@@ -533,9 +552,13 @@ public class ControladorArticulosPrincipal implements Initializable {
 
     @FXML
     private void handleBusqueda(ActionEvent event) {
+        confirmarCambiosSinGuardar(this::botonBusqueda);
+
+    }
+
+    private void botonBusqueda() {
         LOGGER.info("Vamos a la Busqueda...");
         factoriaArticulos.cargarArticulosBusqueda(stage, userTrabajador);
-
     }
 
     @FXML
@@ -559,6 +582,55 @@ public class ControladorArticulosPrincipal implements Initializable {
             AlertUtilities.showErrorDialog(Alert.AlertType.ERROR, "Error", "No se pudieron cargar los detalles del articulo. Intentelo de nuevo.");
         }
 
+    }
+
+    private void confirmarCambiosSinGuardar(Runnable accionAEjecutar) {
+        if (!hayCambiosNoGuardados) {
+            // Si no hay cambios sin guardar, ejecutamos directamente la acción
+            accionAEjecutar.run();
+            return;
+        }
+
+        // Si hay cambios, mostramos un diálogo de confirmación
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Cambios sin guardar");
+        alert.setHeaderText(null);
+        alert.setContentText("Hay cambios sin guardar. ¿Qué desea hacer?");
+
+        ButtonType buttonGuardar = new ButtonType("Guardar");
+        ButtonType buttonSinGuardar = new ButtonType("No guardar");
+        ButtonType buttonCancelar = new ButtonType("Cancelar", ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(buttonGuardar, buttonSinGuardar, buttonCancelar);
+
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (!result.isPresent() || result.get() == buttonCancelar) {
+            // Opción "Cancelar": no hacemos nad
+            return;
+        } else if (result.get() == buttonGuardar) {
+            // Primero guardamos cambios
+            guardarCambios();
+            // Luego ejecutamos la acción (si el guardado no falló)
+            if (!hayCambiosNoGuardados) {
+                // Importante: solo continuar si realmente se guardó todo bien.
+                accionAEjecutar.run();
+            }
+        } else if (result.get() == buttonSinGuardar) {
+            // Descartamos cambios y ejecutamos la acción
+            // Para “descartar” en este ejemplo basta con recargar la tabla
+            // o seguir la acción. Aquí ejecutamos sin recargar.
+            accionAEjecutar.run();
+        }
+    }
+
+    /**
+     * Asigna el valor de la bandera que indica si hay cambios sin guardar.
+     *
+     * @param hayCambios true si hay cambios no guardados, false si no.
+     */
+    private void setHayCambiosNoGuardados(boolean hayCambios) {
+        this.hayCambiosNoGuardados = hayCambios;
     }
 
     //Editables de la tabla

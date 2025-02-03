@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Urko
  */
 @XmlRootElement
-public class Articulo implements Serializable {
+public class Articulo implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 1L;
     private Long id;
@@ -40,16 +40,6 @@ public class Articulo implements Serializable {
 
     public Articulo() {
 
-    }
-
-    public Articulo(Articulo articulo) {
-        this.id = id;
-        this.nombre = nombre;
-        this.precio = precio;
-        this.descripcion = descripcion;
-        this.fechaReposicion = fechaReposicion;
-        this.stock = stock;
-        this.almacenes = new HashSet<>(articulo.almacenes);
     }
 
     // Getters y setters
@@ -152,6 +142,19 @@ public class Articulo implements Serializable {
     @Override
     public String toString() {
         return "crud.entidades.Articulo[ id=" + id + " ]";
+    }
+
+    @Override
+    public Articulo clone() {
+        Articulo copia = new Articulo();
+        copia.setId(this.getId());
+        copia.setNombre(this.getNombre());
+        copia.setPrecio(this.getPrecio());
+        copia.setFechaReposicion(this.getFechaReposicion());
+        copia.setDescripcion(this.getDescripcion());
+        copia.setStock(this.getStock());
+        copia.setAlmacenes(this.getAlmacenes());
+        return copia;
     }
 
 }
