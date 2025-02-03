@@ -54,7 +54,7 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
 
     //Los test Aqui
     @Test
-    @Ignore
+    //@Ignore
     public void test_A_CrearArticulo() {
         // Contar filas iniciales
         int initialRowCount = tablaArticulos.getItems().size();
@@ -240,7 +240,7 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
     }
 
     @Test
-    //@Ignore
+    @Ignore
     public void test_C_DeleteRow() {
         // Obtener el conteo inicial de filas
         int totalFilasInicial = tablaArticulos.getItems().size();

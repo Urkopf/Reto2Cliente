@@ -132,8 +132,8 @@ public class ControladorArticulosBusqueda implements Initializable {
         spinnerIdDesde.getValueFactory().setValue(0L);
         spinnerIdHasta.getValueFactory().setValue(0L);
         comboBoxNombre.setValue(null);
-        setDatePickerDate(datePickerDesde, new Date());
-        setDatePickerDate(datePickerHasta, new Date());
+        //setDatePickerDate(datePickerDesde, new Date());
+        //setDatePickerDate(datePickerHasta, new Date());
         textFieldPrecioMin.clear();
         textFieldPrecioMax.clear();
         textFieldStock.clear();

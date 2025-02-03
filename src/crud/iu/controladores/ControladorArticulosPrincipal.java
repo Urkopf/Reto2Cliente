@@ -362,10 +362,15 @@ public class ControladorArticulosPrincipal implements Initializable {
                 articulos = new ArrayList<>();
             }
             articulosObservableList = FXCollections.observableArrayList(articulos);
+            tablaArticulos.getItems().clear();
             tablaArticulos.setItems(articulosObservableList);
 
             articulosOriginales = FXCollections.observableArrayList(
                     articulos.stream().map(Articulo::clone).collect(Collectors.toList()));
+
+            actualizarTablaYPaginador();
+            actualizarEstadoBotones();
+            setHayCambiosNoGuardados(false);
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cargar los datos de articulos", e);
@@ -385,6 +390,7 @@ public class ControladorArticulosPrincipal implements Initializable {
         nuevoArticulo.setStock(0);
 
         articulosObservableList.add(nuevoArticulo);
+        setHayCambiosNoGuardados(true);
 
         // Calcular la página donde está el nuevo pedido
         int indicePagina = (articulosObservableList.size() - 1) / FILAS_POR_PAGINA;
@@ -397,7 +403,8 @@ public class ControladorArticulosPrincipal implements Initializable {
 
     @FXML
     private void handleGuardarCambios(ActionEvent event) {
-        guardarCambios();
+        confirmarCambiosSinGuardar(this::guardarCambios);
+        recargarTabla();
     }
 
     private void guardarCambios() {
@@ -533,30 +540,52 @@ public class ControladorArticulosPrincipal implements Initializable {
 
     @FXML
     private void handleRecargarTabla(ActionEvent event) {
+        if (!hayCambiosNoGuardados) {
+            recargarTabla();
+        } else {
+            confirmarCambiosSinGuardar(this::recargarTabla);
+        }
+    }
+
+    private void recargarTabla() {
         cancelarEdicionEnTabla();
         LOGGER.info("Botón Reiniciar Tabla presionado");
         reiniciar();
         LOGGER.info("Tabla reiniciada a los datos originales.");
+
     }
 
     private void reiniciar() {
         listaBusqueda = null;
         cargarDatosArticulos();
+        setHayCambiosNoGuardados(false);
     }
 
     @FXML
     private void handleAtras(ActionEvent event) {
+        if (!hayCambiosNoGuardados) {
+            atras();
+        } else {
+            confirmarCambiosSinGuardar(this::atras);
+        }
+    }
+
+    private void atras() {
         LOGGER.info("Regresando al menu principal.");
         factoriaUsuarios.cargarMenuPrincipal(stage, userTrabajador);
     }
 
     @FXML
     private void handleBusqueda(ActionEvent event) {
-        confirmarCambiosSinGuardar(this::botonBusqueda);
+        if (!hayCambiosNoGuardados) {
+            busqueda();
+        } else {
+            confirmarCambiosSinGuardar(this::busqueda);
+        }
 
     }
 
-    private void botonBusqueda() {
+    private void busqueda() {
         LOGGER.info("Vamos a la Busqueda...");
         factoriaArticulos.cargarArticulosBusqueda(stage, userTrabajador);
     }
@@ -585,12 +614,6 @@ public class ControladorArticulosPrincipal implements Initializable {
     }
 
     private void confirmarCambiosSinGuardar(Runnable accionAEjecutar) {
-        if (!hayCambiosNoGuardados) {
-            // Si no hay cambios sin guardar, ejecutamos directamente la acción
-            accionAEjecutar.run();
-            return;
-        }
-
         // Si hay cambios, mostramos un diálogo de confirmación
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Cambios sin guardar");
@@ -669,6 +692,9 @@ public class ControladorArticulosPrincipal implements Initializable {
                 super.commitEdit(newValue);
                 Articulo articulo = getTableView().getItems().get(getIndex());
                 articulo.setNombre(newValue);
+                setHayCambiosNoGuardados(true);
+                tablaArticulos.refresh();
+
             }
 
             @Override
@@ -749,6 +775,8 @@ public class ControladorArticulosPrincipal implements Initializable {
                 super.commitEdit(newValue);
                 Articulo articulo = getTableView().getItems().get(getIndex());
                 articulo.setPrecio(newValue); // Actualiza el modelo
+                setHayCambiosNoGuardados(true);
+                tablaArticulos.refresh();
             }
 
             @Override
@@ -850,6 +878,8 @@ public class ControladorArticulosPrincipal implements Initializable {
                 super.commitEdit(newValue);
                 Articulo articulo = getTableView().getItems().get(getIndex());
                 articulo.setFechaReposicion(newValue); // Sincroniza el modelo
+                setHayCambiosNoGuardados(true);
+                tablaArticulos.refresh();
             }
 
             @Override
@@ -907,6 +937,8 @@ public class ControladorArticulosPrincipal implements Initializable {
                 super.commitEdit(newValue);
                 Articulo articulo = getTableView().getItems().get(getIndex());
                 articulo.setDescripcion(newValue); // Actualiza la descripción del artículo
+                setHayCambiosNoGuardados(true);
+                tablaArticulos.refresh();
             }
 
             @Override
@@ -987,6 +1019,8 @@ public class ControladorArticulosPrincipal implements Initializable {
                 super.commitEdit(newValue);
                 Articulo articulo = getTableView().getItems().get(getIndex());
                 articulo.setStock(newValue); // Actualiza el modelo
+                setHayCambiosNoGuardados(true);
+                tablaArticulos.refresh();
             }
 
             @Override
