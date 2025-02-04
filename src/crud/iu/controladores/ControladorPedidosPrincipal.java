@@ -16,6 +16,7 @@ import crud.utilidades.AlertUtilities;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
 import crud.utilidades.ExcepcionesUtilidad;
 import static crud.utilidades.ExcepcionesUtilidad.clasificadorExcepciones;
+import java.io.InputStream;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -25,6 +26,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -254,30 +256,34 @@ public class ControladorPedidosPrincipal implements Initializable {
     public void crearInforme() {
         try {
             LOGGER.info("Beginning printing action...");
-            JasperReport report
-                    = JasperCompileManager.compileReport(getClass()
-                            .getResourceAsStream("/crud/iu/reportes/PedidosReport.jrxml"));
-            //Data for the report: a collection of UserBean passed as a JRDataSource
-            //implementation
-            JRBeanCollectionDataSource dataItems
-                    = new JRBeanCollectionDataSource((Collection<Pedido>) this.tablaPedidos.getItems());
-            //Map of parameter to be passed to the report
+
+            // Cargar el informe desde el classpath
+            JasperReport report = JasperCompileManager.compileReport(getClass()
+                    .getResourceAsStream("/crud/iu/reportes/PedidosReport.jrxml"));
+
+            // Cargar la imagen desde el classpath
+            InputStream logoStream = getClass().getResourceAsStream("/recursos/logoFullrecortado.jpg");
+            if (logoStream == null) {
+                throw new RuntimeException("No se pudo cargar la imagen del logo desde el JAR.");
+            }
+
             Map<String, Object> parameters = new HashMap<>();
-            //Fill report with data
+            parameters.put("LOGO_PATH", logoStream);
+
+            // Crear los datos del informe
+            JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource(
+                    (Collection<Pedido>) this.tablaPedidos.getItems());
+
+            // Llenar el informe
             JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
-            //Create and show the report window. The second parameter false value makes
-            //report window not to close app.
+
+            // Mostrar el informe en una ventana
             JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
             jasperViewer.setVisible(true);
-            // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-        } catch (JRException ex) {
-            //If there is an error show message and
-            //log it.
-            LOGGER.log(Level.SEVERE,
-                    "UI GestionUsuariosController: Error printing report: {0}",
-                    ex.getMessage());
-            clasificadorExcepciones(ex, ex.getMessage());
 
+        } catch (JRException | NullPointerException ex) {
+            LOGGER.log(Level.SEVERE, "Error printing report: {0}", ex.getMessage());
+            clasificadorExcepciones(ex, ex.getMessage());
         }
     }
 
