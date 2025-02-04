@@ -7,6 +7,7 @@ import crud.objetosTransferibles.Articulo;
 import crud.objetosTransferibles.Trabajador;
 import crud.utilidades.AlertUtilities;
 import static crud.utilidades.ExcepcionesUtilidad.clasificadorExcepciones;
+import java.io.InputStream;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
@@ -332,7 +333,6 @@ public class ControladorArticulosPrincipal implements Initializable {
         });
     }
 
-
     /**
      * Configura el paginador con base en el tamaño de la lista de artículos y
      * establece la página inicial.
@@ -462,12 +462,23 @@ public class ControladorArticulosPrincipal implements Initializable {
             JasperReport report = JasperCompileManager.compileReport(
                     getClass().getResourceAsStream("/crud/iu/reportes/ArticulosReport.jrxml"));
 
+            // Cargar la imagen desde el classpath
+            InputStream logoStream = getClass().getResourceAsStream("/recursos/logoFullrecortado.jpg");
+            if (logoStream == null) {
+                throw new RuntimeException("No se pudo cargar la imagen del logo desde el JAR.");
+            }
+
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("LOGO_PATH", logoStream);
+
+            // Crear los datos del informe
             JRBeanCollectionDataSource dataItems
                     = new JRBeanCollectionDataSource((Collection<Articulo>) this.tablaArticulos.getItems());
 
-            Map<String, Object> parameters = new HashMap<>();
-
+            // Llenar el informe
             JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+
+            // Mostrar el informe en una ventana
             JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
             jasperViewer.setVisible(true);
 
