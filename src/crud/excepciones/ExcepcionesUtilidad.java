@@ -1,9 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package crud.utilidades;
+package crud.excepciones;
 
 import static crud.utilidades.AlertUtilities.showErrorDialog;
 import javax.ws.rs.BadRequestException;
@@ -16,36 +11,24 @@ import javax.ws.rs.RedirectionException;
 import javax.ws.rs.ServiceUnavailableException;
 import javax.ws.rs.ServerErrorException;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.Response;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
-/**
- * Clase utilitaria para manejar excepciones de aplicaciones RESTful.
- */
 public class ExcepcionesUtilidad {
 
     private static final Logger LOGGER = Logger.getLogger(ExcepcionesUtilidad.class.getName());
 
-    /**
-     * Maneja excepciones de WebApplicationException y muestra un mensaje de
-     * error adecuado.
-     *
-     * @param exception La excepción capturada.
-     * @param defaultMessage Mensaje predeterminado en caso de que la excepción
-     * no sea específica.
-     */
     public static void clasificadorExcepciones(Object excepcion, String mensaje) {
-        if (excepcion instanceof WebApplicationException) {
-            centralExcepciones((WebApplicationException) excepcion, mensaje);
-        } else {
-            centralExcepciones((Exception) excepcion, mensaje);
-        }
+
+        centralExcepciones((Exception) excepcion, mensaje);
+
     }
 
-    public static void centralExcepciones(WebApplicationException exception, String defaultMessage) {
+    public static void centralExcepciones(Exception exception, String defaultMessage) {
         if (exception instanceof BadRequestException) {
             showErrorDialog(AlertType.ERROR, "Error de solicitud", "La solicitud es inválida. Verifique los datos enviados.");
         } else if (exception instanceof NotAuthorizedException) {
@@ -70,16 +53,50 @@ public class ExcepcionesUtilidad {
         }
     }
 
-    /**
-     * Maneja excepciones genéricas que no son WebApplicationException.
-     *
-     * @param exception La excepción capturada.
-     * @param defaultMessage Mensaje predeterminado para excepciones
-     * desconocidas.
-     */
-    public static void centralExcepciones(Exception exception, String defaultMessage) {
-        LOGGER.log(Level.SEVERE, "Excepción genérica: {0}", exception.getMessage());
-        showErrorDialog(AlertType.ERROR, "Error inesperado", defaultMessage);
+    public static <T> T handleResponse(Response response, Class<T> responseType) throws WebApplicationException {
+        try {
+            if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return responseType == Void.class ? null : response.readEntity(responseType);
+            } else {
+                throw translateResponseToException(response);
+            }
+        } catch (javax.ws.rs.ProcessingException e) {
+            throw new ServiceUnavailableException("No se pudo conectar con el servidor. Verifique que el servidor esté encendido y accesible.");
+        }
     }
 
+    public static <T> T handleResponse(Response response, GenericType<T> responseType) throws WebApplicationException {
+        try {
+            if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return response.readEntity(responseType);
+            } else {
+                throw translateResponseToException(response);
+            }
+        } catch (javax.ws.rs.ProcessingException e) {
+            throw new ServiceUnavailableException("No se pudo conectar con el servidor. Verifique que el servidor esté encendido y accesible.");
+        }
+    }
+
+    public static WebApplicationException translateResponseToException(Response response) {
+        int status = response.getStatus();
+        String message = response.readEntity(String.class);
+
+        switch (status) {
+            case 400:
+                return new BadRequestException("Solicitud inválida: " + message);
+            case 401:
+                return new NotAuthorizedException("No autorizado: " + message);
+            case 403:
+                return new ForbiddenException("Acceso prohibido: " + message);
+            case 404:
+                return new NotFoundException("Recurso no encontrado: " + message);
+            case 500:
+                return new InternalServerErrorException("Error interno del servidor: " + message);
+            case 503:
+                return new ServiceUnavailableException("Servicio no disponible: " + message);
+            default:
+                LOGGER.log(Level.SEVERE, "Error desconocido ({0}): {1}", new Object[]{status, message});
+                return new WebApplicationException("Error desconocido: " + message, status);
+        }
+    }
 }

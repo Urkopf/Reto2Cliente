@@ -11,7 +11,7 @@ import crud.negocio.FactoriaUsuarios;
 import crud.objetosTransferibles.Articulo;
 import crud.objetosTransferibles.Trabajador;
 import crud.utilidades.AlertUtilities;
-import static crud.utilidades.ExcepcionesUtilidad.clasificadorExcepciones;
+import static crud.excepciones.ExcepcionesUtilidad.clasificadorExcepciones;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;

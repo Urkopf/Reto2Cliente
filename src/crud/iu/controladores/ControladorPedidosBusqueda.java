@@ -6,7 +6,7 @@ import crud.objetosTransferibles.Cliente;
 import crud.objetosTransferibles.Estado;
 import crud.objetosTransferibles.Pedido;
 import crud.objetosTransferibles.Trabajador;
-import static crud.utilidades.ExcepcionesUtilidad.clasificadorExcepciones;
+import static crud.excepciones.ExcepcionesUtilidad.clasificadorExcepciones;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

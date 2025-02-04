@@ -39,7 +39,7 @@ import static crud.seguridad.UtilidadesCifrado.cargarClavePublica;
 import static crud.seguridad.UtilidadesCifrado.cifrarConClavePublica;
 import static crud.utilidades.AlertUtilities.showConfirmationDialog;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
-import static crud.utilidades.ExcepcionesUtilidad.clasificadorExcepciones;
+import static crud.excepciones.ExcepcionesUtilidad.clasificadorExcepciones;
 import static crud.utilidades.ValidateUtilities.isValid;
 import java.io.IOException;
 import java.io.InputStream;

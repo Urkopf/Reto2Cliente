@@ -3,7 +3,7 @@ package crud.iu.controladores;
 import crud.negocio.FactoriaUsuarios;
 import crud.objetosTransferibles.Usuario;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
-import static crud.utilidades.ExcepcionesUtilidad.clasificadorExcepciones;
+import static crud.excepciones.ExcepcionesUtilidad.clasificadorExcepciones;
 import crud.utilidades.Utilidades;
 import static crud.utilidades.ValidateUtilities.isValid;
 import javafx.event.ActionEvent;

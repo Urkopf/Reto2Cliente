@@ -14,8 +14,8 @@ import crud.objetosTransferibles.Usuario;
 import crud.utilidades.AlertUtilities;
 
 import static crud.utilidades.AlertUtilities.showErrorDialog;
-import crud.utilidades.ExcepcionesUtilidad;
-import static crud.utilidades.ExcepcionesUtilidad.clasificadorExcepciones;
+import crud.excepciones.ExcepcionesUtilidad;
+import static crud.excepciones.ExcepcionesUtilidad.clasificadorExcepciones;
 import java.io.InputStream;
 
 import java.net.URL;
@@ -568,7 +568,7 @@ public class ControladorPedidosPrincipal implements Initializable {
             setHayCambiosNoGuardados(false); // <<--- Ya no hay cambios sin guardar
             showErrorDialog(AlertType.INFORMATION, "Información", "Datos Guardados correctamente.");
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al guardar cambios", e);
+
             clasificadorExcepciones(e, e.getMessage());
             showErrorDialog(AlertType.ERROR, "Error", "No se han guardado los cambios.");
         }
@@ -1107,8 +1107,8 @@ public class ControladorPedidosPrincipal implements Initializable {
                         clientes = factoriaUsuarios.accesoCliente().getAllClientes();
                         ObservableList<String> cifs = obtenerCifsClientes(clientes);
                         comboBox.setItems(cifs);
-                    } catch (LogicaNegocioException ex) {
-                        LOGGER.log(Level.SEVERE, null, ex);
+                    } catch (Exception ex) {
+                        ExcepcionesUtilidad.centralExcepciones(ex, valorOriginal);
                     }
 
                     valorOriginal = getItem();
