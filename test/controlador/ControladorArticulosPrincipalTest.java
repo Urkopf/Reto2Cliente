@@ -8,13 +8,17 @@ package controlador;
 import auxiliarMainTest.MainTestArticulosPrincipal;
 import crud.objetosTransferibles.Articulo;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TableView;
@@ -22,7 +26,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -36,47 +39,88 @@ import org.testfx.matcher.base.NodeMatchers;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
 
 /**
- *
- * @author Ser_090
+ * Clase de prueba que verifica el comportamiento de la ventana principal de
+ * Artículos. Se utiliza TestFX para la automatización de UI y JUnit para
+ * aserciones.
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ControladorArticulosPrincipalTest extends ApplicationTest {
 
-    private TableView<Articulo> tablaArticulos;
+    // Logger para la clase actual
+    private static final Logger LOGGER = Logger.getLogger(ControladorArticulosPrincipalTest.class.getName());
+    // Formato de fecha para comparar y asignar fechas (dd/MM/yyyy)
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
+    // Componentes de la UI que se referencian en los tests
+    private TableView<Articulo> tablaArticulos;
+    private Button botonNuevo, botonReiniciar, botonBusqueda, botonEliminar, botonGuardar, botonDetalles, botonAtras;
+
+    /**
+     * Método que inicia la aplicación de prueba. Se sobreescribe para poder
+     * interactuar con la ventana y obtener referencias de los componentes.
+     *
+     * @param stage Stage principal de JavaFX.
+     * @throws Exception
+     */
     @Override
     public void start(Stage stage) throws Exception {
         new MainTestArticulosPrincipal().start(stage);
+        // Espera un segundo para que se renderice la UI antes de interactuar
+        sleep(1000);
+
+        // Asignación de componentes de la UI
         tablaArticulos = lookup("#tablaArticulos").queryTableView();
+        botonNuevo = lookup("#botonNuevo").queryButton();
+        botonReiniciar = lookup("#botonReiniciar").queryButton();
+        botonBusqueda = lookup("#botonBusqueda").queryButton();
+        botonEliminar = lookup("#botonEliminar").queryButton();
+        botonGuardar = lookup("#botonGuardar").queryButton();
+        botonDetalles = lookup("#botonDetalles").queryButton();
+        botonAtras = lookup("#botonAtras").queryButton();
     }
 
+    /**
+     * Constructor vacío de la clase de prueba.
+     */
     public ControladorArticulosPrincipalTest() {
     }
 
+    /**
+     * Test que crea un artículo nuevo y verifica que sea añadido correctamente
+     * a la tabla.
+     */
     @Test
     //@Ignore
-    public void test_A_EstadoInicial() {
-        // Comprobamos que la tabla está visible
-        verifyThat("#tablaArticulos", NodeMatchers.isVisible());
-        // Verificamos que la tabla no está vacía
-        assertFalse("La tabla no debería estar vacía.", tablaArticulos.getItems().isEmpty());
-    }
+    public void test_A_CrearArticulo() {
 
-    //Los test Aqui
-    @Test
-    //@Ignore
-    public void test_B_CrearArticulo() {
-        // Contar filas iniciales
-        int initialRowCount = tablaArticulos.getItems().size();
+        // Clic en el botón "Reiniciar" para asegurarnos de un estado inicial conocido
+        clickOn(botonReiniciar);
+
+        // Si no hay filas seleccionadas, los botones Detalles y Eliminar deben estar deshabilitados
+        tablaArticulos.getSelectionModel().clearSelection();
+        sleep(300);
+        assertTrue("Detalles debería estar deshabilitado sin selección",
+                botonDetalles.isDisabled());
+        assertTrue("Eliminar debería estar deshabilitado sin selección",
+                botonEliminar.isDisabled());
+
+        // Obtenemos el conteo inicial de filas en la tabla
+        int RowCount = tablaArticulos.getItems().size();
 
         // Hacer clic en el botón "Nuevo Artículo"
-        clickOn("#botonNuevo");
+        clickOn(botonNuevo);
 
-        // Como el nuevo artículo se inserta al inicio, seleccionamos la fila 0
+        // El artículo nuevo se inserta al inicio; se selecciona la fila 0
         tablaArticulos.getSelectionModel().select(0);
         tablaArticulos.scrollTo(0);
 
-        // Obtener todas las filas visibles
+        // Con 1 fila seleccionada, los botones Detalles y Eliminar deben habilitarse
+        assertFalse("Detalles debería estar habilitado con 1 fila seleccionada",
+                botonDetalles.isDisabled());
+        assertFalse("Eliminar debería estar habilitado con 1 fila seleccionada",
+                botonEliminar.isDisabled());
+
+        // Obtenemos todas las filas visibles de la tabla
         List<Node> filas = lookup(".table-row-cell").queryAll().stream()
                 .filter(Node::isVisible)
                 .collect(Collectors.toList());
@@ -91,13 +135,12 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
         celdas.sort(Comparator.comparingDouble(Node::getLayoutX));
 
         /*
-     * Se asume que el orden de columnas es:
-     *   1: Nombre
-     *   2: Precio
-     *   3: Fecha (reposicion)
-     *   4: Descripción
-     *   5: Stock
-
+         * Se asume que el orden de columnas es:
+         *   1: Nombre
+         *   2: Precio
+         *   3: Fecha (reposicion)
+         *   4: Descripción
+         *   5: Stock
          */
         // Celda 1: Nombre - asignar un nombre único para el artículo
         String nombreArticulo = "Test de prueba";
@@ -109,50 +152,58 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
         push(KeyCode.ENTER);
 
         // Celda 2: Precio
-        doubleClickOn(celdas.get(2)); // activar edición
-        // Esperar a que aparezca el Spinner para que no falle el lookup
-        Spinner<?> spinnerPrecio = lookup(".spinner").query();
-        TextField precioField = spinnerPrecio.getEditor();
+        doubleClickOn(celdas.get(2)); // activa edición
+        Spinner<?> spinnerPrecio = lookup(".spinner").query(); // obtención del Spinner
+        TextField precioField = spinnerPrecio.getEditor();     // editor del Spinner
         precioField.clear();
-        write("60");  // tu nuevo precio
+        write("60");  // nuevo precio
         push(KeyCode.ENTER);
 
-        // Celda 3: Fecha
-        doubleClickOn(celdas.get(3)); // Activa el modo edición en la celda de la fecha
+        // Celda 3: Fecha (reposicion)
+        doubleClickOn(celdas.get(3)); // activa el modo edición en la celda de la fecha
         DatePicker datePicker = lookup(".date-picker").query();
         TextField dateEditor = datePicker.getEditor();
         dateEditor.clear();
-
-        // Escribe la fecha en el formato esperado por la vista (ejemplo: "dd/MM/yyyy")
-        String fechaHoy = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
-        write(fechaHoy);
+        // Escribe la fecha en formato "dd/MM/yyyy"
+        write("10/10/2025");
         push(KeyCode.ENTER);
 
-        // Celda 3: Descripción
+        // Celda 4: Descripción
         clickOn(celdas.get(4));
         write("Descripción de prueba");
         push(KeyCode.ENTER);
 
-        // Celda 4: Stock
+        // Celda 5: Stock
         clickOn(celdas.get(5));
         write("10");
         push(KeyCode.ENTER);
 
-        // Hacer clic en el botón "Guardar"
-        clickOn("#botonGuardar");
+        // Si la tabla tiene más de 1 fila, probamos a seleccionar más de 1 fila (Ctrl+Click)
+        if (RowCount > 1) {
+            press(KeyCode.CONTROL).clickOn(filas.get(1)).release(KeyCode.CONTROL);
+            sleep(300);
 
-        // 4. Verificar que el diálogo de confirmación aparece con el texto esperado
-        //    (Ajusta la cadena a exactamente lo que muestres en tu Alert).
+            // Con selección múltiple, Detalles se deshabilita y Eliminar se habilita
+            assertTrue("Detalles debería estar deshabilitado con varias filas",
+                    botonDetalles.isDisabled());
+            assertFalse("Eliminar debería estar habilitado con varias filas",
+                    botonEliminar.isDisabled());
+        }
+
+        // Hacer clic en el botón "Guardar"
+        clickOn(botonGuardar);
+
+        // Verificar que aparece el diálogo de confirmación
         verifyThat("Hay cambios sin guardar. ¿Qué desea hacer?", isVisible());
 
-        // 5. Ahora sí, hacer clic en el botón "Guardar" del diálogo
+        // En el diálogo, hacemos clic en "Guardar"
         clickOn("Guardar");
 
-        // Verificar que el artículo se ha añadido: la cantidad de filas debe incrementarse en 1
+        // Verificar que se ha añadido un artículo (la tabla incrementa su tamaño en 1)
         int newRowCount = tablaArticulos.getItems().size();
-        assertThat("El artículo debe añadirse a la tabla", newRowCount, is(initialRowCount + 1));
+        assertThat("El artículo debe añadirse a la tabla", newRowCount, is(RowCount + 1));
 
-        // Verificar que el artículo creado existe en la tabla (usando el nombre asignado)
+        // Verificar que el artículo creado está en la tabla (mediante el nombre)
         @SuppressWarnings("unchecked")
         List<Articulo> articulos = (List<Articulo>) tablaArticulos.getItems();
         long coincidencias = articulos.stream()
@@ -161,50 +212,71 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
         assertThat("El artículo creado debe estar en la tabla", coincidencias, is(1L));
     }
 
+    /**
+     * Test para comprobar que el artículo recién creado existe con los valores
+     * correctos.
+     */
+    @Test
+    @Ignore
+    public void test_B_ComprobarNuevoArticulo() {
+        boolean existe;
+        existe = tablaArticulos.getItems().stream().anyMatch(p
+                -> "Test de prueba".equals(p.getNombre())
+                && Double.compare(60, p.getPrecio()) == 0
+                && dateFormat.format(p.getFechaReposicion()).equals("10/10/2025")
+                && "Descripción de prueba".equals(p.getDescripcion())
+                && p.getStock() == 10);
+        // Verifica que el artículo con esos datos exista
+        assertTrue("No se encontró el pedido recién creado en la tabla", existe);
+    }
+
+    /**
+     * Test para editar un artículo en la tabla y comprobar que se guarda
+     * correctamente.
+     */
     @Test
     @Ignore
     public void test_C_EditarArticulo() {
-        // Comprobar que existe al menos un artículo. Si no hay filas, no se puede editar nada.
+        // Verifica que haya al menos un artículo para editar
         assertFalse("No hay artículos para editar", tablaArticulos.getItems().isEmpty());
 
-        // Seleccionar la primera fila (índice 0) y asegurarnos de que se vea
+        // Selecciona la primera fila y asegura que sea visible
         tablaArticulos.getSelectionModel().select(0);
         tablaArticulos.scrollTo(0);
 
-        // Obtener las filas visibles
+        // Obtiene las filas visibles
         List<Node> filas = lookup(".table-row-cell").queryAll().stream()
                 .filter(Node::isVisible)
                 .collect(Collectors.toList());
         assertFalse("No se encontraron filas visibles en la tabla", filas.isEmpty());
 
-        // La fila a editar es la primera (posición 0 en la lista de filas visibles)
+        // La fila a editar es la primera fila visible
         Node filaSeleccionada = filas.get(0);
 
-        // Obtener todas las celdas de la fila seleccionada y ordenarlas por su posición horizontal
+        // Obtiene y ordena las celdas por posición horizontal
         Set<Node> celdasSet = filaSeleccionada.lookupAll(".table-cell");
         List<Node> celdas = new ArrayList<>(celdasSet);
         celdas.sort(Comparator.comparingDouble(Node::getLayoutX));
 
         /*
-     * Se asume el orden de columnas:
-     *   0: ID (no editable)
-     *   1: Nombre
-     *   2: Precio
-     *   3: Fecha
-     *   4: Descripción
-     *   5: Stock
+         * Orden de columnas:
+         *   0: ID (no editable)
+         *   1: Nombre
+         *   2: Precio
+         *   3: Fecha
+         *   4: Descripción
+         *   5: Stock
          */
-        // ----- Edición de Nombre (columna 1) -----
+        // Edición de Nombre (columna 1)
         String nuevoNombre = "ArticuloModificado";
-        doubleClickOn(celdas.get(1)); // Activa edición en la celda de Nombre
+        doubleClickOn(celdas.get(1)); // activa edición
         TextField nombreField = lookup(".text-field").query();
         nombreField.clear();
         write(nuevoNombre);
         push(KeyCode.ENTER);
 
-        // ----- Edición de Precio (columna 2) -----
-        doubleClickOn(celdas.get(2)); // Activa edición en la celda de Precio
-        // Dado que la celda usa un Spinner, lo obtenemos:
+        // Edición de Precio (columna 2)
+        doubleClickOn(celdas.get(2));
         Spinner<?> spinnerPrecio = lookup(".spinner").query();
         TextField precioField = spinnerPrecio.getEditor();
         precioField.clear();
@@ -212,63 +284,59 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
         write(precio);
         push(KeyCode.ENTER);
 
-        // ----- Edición de Fecha (columna 3) -----
-        doubleClickOn(celdas.get(3)); // Activa edición en la celda de Fecha
+        // Edición de Fecha (columna 3)
+        doubleClickOn(celdas.get(3));
         DatePicker datePicker = lookup(".date-picker").query();
         TextField dateEditor = datePicker.getEditor();
         dateEditor.clear();
-        //Uso una fecha lejana para que no falle
-        String fecha = "10/10/2025";
+        String fecha = "20/10/2025";
         write(fecha);
         push(KeyCode.ENTER);
 
-        // ----- Edición de Descripción (columna 4) -----
-        doubleClickOn(celdas.get(4)); // Activa edición en la celda de Descripción
+        // Edición de Descripción (columna 4)
+        doubleClickOn(celdas.get(4));
         TextField descField = lookup(".text-field").query();
         descField.clear();
         String descripcion = "Descripcion Editada";
         write(descripcion);
         push(KeyCode.ENTER);
 
-        // ----- Edición de Stock (columna 5) -----
-        doubleClickOn(celdas.get(5)); // Activa edición en la celda de Stock
-        // Dependiendo de tu implementación, Stock también podría ser un Spinner.
-        // Aquí asumimos un TextField tras activarse la edición.
+        // Edición de Stock (columna 5)
+        doubleClickOn(celdas.get(5));
         TextField stockField = lookup(".text-field").query();
         stockField.clear();
         String stock = "50";
         write(stock);
         push(KeyCode.ENTER);
 
-        // ----- Guardar cambios -----
-        clickOn("#botonGuardar");
+        // Clic en botón Guardar
+        clickOn(botonGuardar);
 
-        // 4. Verificar que el diálogo de confirmación aparece con el texto esperado
-        //    (Ajusta la cadena a exactamente lo que muestres en tu Alert).
+        // Verifica que aparece el diálogo de confirmación
         verifyThat("Hay cambios sin guardar. ¿Qué desea hacer?", isVisible());
 
-        // 5. Ahora sí, hacer clic en el botón "Guardar" del diálogo
+        // En el diálogo, clic en "Guardar"
         clickOn("Guardar");
 
-        // Ahora verificamos que los cambios estén reflejados en el modelo
-        @SuppressWarnings("unchecked")
-        List<Articulo> articulos = (List<Articulo>) tablaArticulos.getItems();
-        // El artículo que hemos editado sigue siendo el primero en la tabla
-        Articulo articuloEditado = articulos.get(0);
+        // Verifica que el artículo se modificó correctamente
+        boolean existe;
+        existe = tablaArticulos.getItems().stream().anyMatch(p
+                -> "ArticuloModificado".equals(p.getNombre())
+                && Double.compare(99.99, p.getPrecio()) == 0
+                && dateFormat.format(p.getFechaReposicion()).equals("20/10/2025")
+                && "Descripcion Editada".equals(p.getDescripcion())
+                && p.getStock() == 50);
 
-        // Verificamos cada campo editado (mirar Bien los errores)
-        assertThat("El nombre debe ser actualizado", articuloEditado.getNombre(), is(nuevoNombre));
-        assertThat("El precio debe ser 99.99", articuloEditado.getPrecio(), is(precio));
-        String fechaArticulo = new SimpleDateFormat("dd/MM/yyyy").format(articuloEditado.getFechaReposicion());
-        assertThat("La fecha debe coincidir con la fecha de hoy", fechaArticulo, is(fecha));
-        assertThat("La descripción debe haberse actualizado", articuloEditado.getDescripcion(), is(descripcion));
-        assertThat("El stock debe ser 50", articuloEditado.getStock(), is(stock));
+        assertTrue("El articulo no se modifico correctamente", existe);
     }
 
+    /**
+     * Test para eliminar una fila seleccionada de la tabla.
+     */
     @Test
     @Ignore
     public void test_D_DeleteRow() {
-        // Obtener el conteo inicial de filas
+        // Conteo inicial de filas
         int totalFilasInicial = tablaArticulos.getItems().size();
         assertTrue("La tabla debe tener al menos una fila para esta prueba.", totalFilasInicial > 0);
 
@@ -276,22 +344,202 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
         Node fila = lookup(".table-row-cell").nth(0).query();
         clickOn(fila);
 
-        // Presionar el botón de eliminar
-        clickOn("#botonEliminar");
+        // Clic en el botón Eliminar
+        clickOn(botonEliminar);
 
-        // ----- Guardar cambios -----
-        clickOn("#botonGuardar");
+        // Guardar cambios
+        clickOn(botonGuardar);
 
-        // 4. Verificar que el diálogo de confirmación aparece con el texto esperado
-        //    (Ajusta la cadena a exactamente lo que muestres en tu Alert).
+        // Verifica que aparece el diálogo de confirmación
         verifyThat("Hay cambios sin guardar. ¿Qué desea hacer?", isVisible());
 
-        // 5. Ahora sí, hacer clic en el botón "Guardar" del diálogo
+        // En el diálogo, clic en "Guardar"
         clickOn("Guardar");
 
-        // Verificar que el conteo de filas ha disminuido
-        int totalFilasFinal = tablaArticulos.getItems().size();
-        assertEquals("La fila no fue eliminada correctamente.", totalFilasInicial - 1, totalFilasFinal);
+        // Comprueba que el artículo anteriormente editado ya no está
+        boolean existe;
+        existe = tablaArticulos.getItems().stream().anyMatch(p
+                -> "ArticuloModificado".equals(p.getNombre())
+                && Double.compare(99.99, p.getPrecio()) == 0
+                && dateFormat.format(p.getFechaReposicion()).equals("20/10/2025")
+                && "Descripcion Editada".equals(p.getDescripcion())
+                && p.getStock() == 50);
+
+        // Debe ser false, ya que el artículo se ha eliminado
+        assertFalse("El articulo no se elimino correctamente", existe);
+    }
+
+    /**
+     * Test para ingresar una fecha inválida (anterior a la actual) y comprobar
+     * que aparece la alerta.
+     */
+    @Test
+    @Ignore
+    public void test_E_FechaInvalida() {
+        // Verifica que haya filas en la tabla
+        int totalFilas = tablaArticulos.getItems().size();
+        assertTrue("No hay filas en la tabla para probar fecha inválida", totalFilas > 0);
+
+        // Seleccionamos la última fila
+        int rowIndex = totalFilas - 1;
+        interact(() -> {
+            tablaArticulos.scrollTo(rowIndex);
+            tablaArticulos.getSelectionModel().clearSelection();
+            tablaArticulos.getSelectionModel().select(rowIndex);
+        });
+
+        // Obtenemos la fila visible
+        List<Node> filas = lookup(".table-row-cell").queryAll().stream()
+                .filter(Node::isVisible)
+                .collect(Collectors.toList());
+        assertFalse("No se encontraron filas visibles", filas.isEmpty());
+
+        // Tomamos la fila seleccionada, que debería ser la última
+        Node filaSeleccionada = filas.get(Math.min(rowIndex, filas.size() - 1));
+        Set<Node> celdasSet = filaSeleccionada.lookupAll(".table-cell");
+        List<Node> celdas = new ArrayList<>(celdasSet);
+        celdas.sort(Comparator.comparingDouble(Node::getLayoutX));
+
+        // Double click en la celda de la fecha (columna 3 en este ejemplo)
+        doubleClickOn(celdas.get(3));
+
+        // Se obtiene el DatePicker que se mostró
+        DatePicker datePicker = lookup(".date-picker").query();
+
+        // Se construye una fecha inválida (ayer)
+        LocalDate fechaInvalida = LocalDate.now().minusDays(1);
+
+        // Convertimos la fecha inválida a String con formato dd/MM/yyyy
+        String fechaStr = new java.text.SimpleDateFormat("dd/MM/yyyy")
+                .format(Date.from(fechaInvalida.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+
+        // Accedemos al editor del DatePicker
+        TextField editor = datePicker.getEditor();
+        interact(() -> {
+            editor.clear();
+            editor.appendText(fechaStr);
+        });
+        push(KeyCode.ENTER);
+
+        // Verificamos que aparece la alerta por fecha inválida
+        verifyThat("No se permiten fechas anteriores al día actual.", NodeMatchers.isVisible());
+        clickOn("Aceptar");
+    }
+
+    /**
+     * Test para comprobar que el botón "Eliminar" permanece deshabilitado
+     * cuando no hay selección.
+     */
+    @Test
+    @Ignore
+    public void test_F_BorrarSinSeleccionarFila() {
+        // Limpiar la selección
+        interact(() -> tablaArticulos.getSelectionModel().clearSelection());
+
+        // Verificamos que el botón "Eliminar" está deshabilitado
+        assertTrue("El botón de eliminar debería estar deshabilitado sin selección", botonEliminar.isDisabled());
+    }
+
+    /**
+     * Test para comprobar el diálogo de alerta de cambios sin guardar al pulsar
+     * "Atrás".
+     */
+    @Test
+    @Ignore
+    public void test_G_AlertaCambiosSinGuardar() {
+        int totalFilas = tablaArticulos.getItems().size();
+        assertTrue("No hay filas para probar cambios sin guardar", totalFilas > 0);
+
+        // Seleccionamos la última fila
+        int rowIndex = totalFilas - 1;
+        interact(() -> {
+            tablaArticulos.scrollTo(rowIndex);
+            tablaArticulos.getSelectionModel().clearSelection();
+            tablaArticulos.getSelectionModel().select(rowIndex);
+        });
+
+        // Obtenemos la fila visible y ordenamos sus celdas
+        List<Node> filas = lookup(".table-row-cell").queryAll().stream()
+                .filter(Node::isVisible)
+                .collect(Collectors.toList());
+        assertFalse("No se encontraron filas visibles", filas.isEmpty());
+
+        Node filaSeleccionada = filas.get(Math.min(rowIndex, filas.size() - 1));
+        Set<Node> celdasSet = filaSeleccionada.lookupAll(".table-cell");
+        List<Node> celdas = new ArrayList<>(celdasSet);
+        celdas.sort(Comparator.comparingDouble(Node::getLayoutX));
+
+        // Editamos la celda 2 (por ejemplo, "Dirección" o algún campo)
+        doubleClickOn(celdas.get(2));
+        TextField direccionField = lookup(".text-field").query();
+        interact(() -> {
+            direccionField.clear();
+            direccionField.appendText("Cambio sin guardar G");
+        });
+        push(KeyCode.ENTER);
+
+        // Pulsamos el botón Atrás
+        clickOn(botonAtras);
+
+        // Verificamos la alerta de cambios sin guardar
+        verifyThat("Hay cambios sin guardar. ¿Qué desea hacer?", NodeMatchers.isVisible());
+
+        // Elegimos "No Guardar" para descartar cambios
+        clickOn("No Guardar");
+
+        // Confirmamos que seguimos en la vista de la tabla
+        verifyThat("#tablaArticulos", NodeMatchers.isVisible());
+    }
+
+    /**
+     * Test para comprobar el diálogo de cambios sin guardar al pulsar
+     * "Búsqueda" (similar a Reiniciar).
+     */
+    @Test
+    @Ignore
+    public void test_H_CheckDeAlertasSinGuardar() {
+        int totalFilas = tablaArticulos.getItems().size();
+        assertTrue("No hay filas para probar cambios sin guardar", totalFilas > 0);
+
+        // Seleccionamos la última fila
+        int rowIndex = totalFilas - 1;
+        interact(() -> {
+            tablaArticulos.scrollTo(rowIndex);
+            tablaArticulos.getSelectionModel().clearSelection();
+            tablaArticulos.getSelectionModel().select(rowIndex);
+        });
+
+        // Obtenemos la fila visible y ordenamos celdas
+        List<Node> filas = lookup(".table-row-cell").queryAll().stream()
+                .filter(Node::isVisible)
+                .collect(Collectors.toList());
+        assertFalse("No se encontraron filas visibles", filas.isEmpty());
+
+        Node filaSeleccionada = filas.get(Math.min(rowIndex, filas.size() - 1));
+        Set<Node> celdasSet = filaSeleccionada.lookupAll(".table-cell");
+        List<Node> celdas = new ArrayList<>(celdasSet);
+        celdas.sort(Comparator.comparingDouble(Node::getLayoutX));
+
+        // Editamos una celda (índice 2, por ejemplo)
+        doubleClickOn(celdas.get(2));
+        TextField campoNombre = lookup(".text-field").query();
+        interact(() -> {
+            campoNombre.clear();
+            campoNombre.appendText("Nombre test Comprobacion");
+        });
+        push(KeyCode.ENTER);
+
+        // Pulsamos el botón Búsqueda
+        clickOn(botonBusqueda);
+
+        // Verificamos la alerta de cambios sin guardar
+        verifyThat("Hay cambios sin guardar. ¿Qué desea hacer?", NodeMatchers.isVisible());
+
+        // Seleccionamos "No Guardar" para quedarnos en la vista
+        clickOn("No Guardar");
+
+        // Verificamos que seguimos en la vista de la tabla
+        verifyThat("#tablaArticulos", NodeMatchers.isVisible());
     }
 
 }

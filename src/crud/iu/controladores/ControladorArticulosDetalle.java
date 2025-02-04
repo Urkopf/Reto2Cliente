@@ -269,16 +269,16 @@ public class ControladorArticulosDetalle implements Initializable {
     private void configureMnemotecnicKeys() {
         stage.getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.isAltDown() && event.getCode() == KeyCode.R) {
-                botonAlmacen.fire();  // Simula el clic en el botón Nuevo
+                botonAlmacen.fire();  // Simula el clic en el botón agregar almacen
                 event.consume();  // Evita la propagación adicional del evento
             } else if (event.isAltDown() && event.getCode() == KeyCode.R) {
-                botonEliminar.fire();  // Simula el clic en el boton reiniciar
+                botonEliminar.fire();  // Simula el clic en el boton eliminar
                 event.consume();  // Evita la propagación adicional del evento
             } else if (event.isAltDown() && event.getCode() == KeyCode.A) {
-                botonAtras.fire();  // Simula el clic botom busqueda
+                botonAtras.fire();  // Simula el clic botom atras
                 event.consume();  // Evita la propagación adicional del evento
             } else if (event.isAltDown() && event.getCode() == KeyCode.G) {
-                botonGuardar.fire();  // Simula el clic en el boton atras
+                botonGuardar.fire();  // Simula el clic en el boton guardar
                 event.consume();  // Evita la propagación adicional del evento
             }
 
