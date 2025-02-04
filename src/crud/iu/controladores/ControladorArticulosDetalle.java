@@ -38,6 +38,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -256,7 +258,31 @@ public class ControladorArticulosDetalle implements Initializable {
             cargarArticuloEnFormulario();
             cargarAlmacenesDelArticulo();
             cargarAlmacenesDisponibles();
+            configureMnemotecnicKeys();
         }
+    }
+
+    /**
+     * Configura las teclas de acceso rápido para los botones de iniciar sesión
+     * y registrar.
+     */
+    private void configureMnemotecnicKeys() {
+        stage.getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.isAltDown() && event.getCode() == KeyCode.R) {
+                botonAlmacen.fire();  // Simula el clic en el botón Nuevo
+                event.consume();  // Evita la propagación adicional del evento
+            } else if (event.isAltDown() && event.getCode() == KeyCode.R) {
+                botonEliminar.fire();  // Simula el clic en el boton reiniciar
+                event.consume();  // Evita la propagación adicional del evento
+            } else if (event.isAltDown() && event.getCode() == KeyCode.A) {
+                botonAtras.fire();  // Simula el clic botom busqueda
+                event.consume();  // Evita la propagación adicional del evento
+            } else if (event.isAltDown() && event.getCode() == KeyCode.G) {
+                botonGuardar.fire();  // Simula el clic en el boton atras
+                event.consume();  // Evita la propagación adicional del evento
+            }
+
+        });
     }
 
     /**
