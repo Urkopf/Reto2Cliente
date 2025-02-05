@@ -38,79 +38,217 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 /**
- * Controlador para la ventana principal de Pedidos.
+ * Controlador para la ventana de detalle de un Artículo.
+ * <p>
+ * Permite visualizar y asignar almacenes a un artículo, así como gestionar el
+ * resto de campos que describen al artículo. También maneja la navegación y
+ * acciones disponibles (guardar cambios, eliminar asignaciones, entre otros).
  */
 public class ControladorArticulosDetalle implements Initializable {
 
+    /**
+     * Logger para la clase.
+     */
     private static final Logger LOGGER = Logger.getLogger(ControladorArticulosDetalle.class.getName());
+
+    /**
+     * Factoría para la gestión de Artículos.
+     */
     private FactoriaArticulos factoriaArticulos = FactoriaArticulos.getInstance();
+
+    /**
+     * Factoría para la gestión de Almacenes.
+     */
     private FactoriaAlmacen factoriaAlmacenes = FactoriaAlmacen.getInstance();
+
+    /**
+     * Factoría para la gestión de Usuarios.
+     */
     private FactoriaUsuarios factoriaUsuarios = FactoriaUsuarios.getInstance();
+
+    /**
+     * Factoría para la gestión de Pedidos.
+     */
     private FactoriaPedidos factoriaPedidos = FactoriaPedidos.getInstance();
+
+    /**
+     * Referencia al escenario principal (Stage).
+     */
     private Stage stage;
+
+    /**
+     * Artículo que se está visualizando o editando en esta ventana.
+     */
     private Articulo articulo;
+
+    /**
+     * Referencia al Trabajador que está usando la aplicación.
+     */
     private Trabajador userTrabajador;
+
+    /**
+     * Lista observable de almacenes asociados al artículo.
+     */
     private ObservableList<Almacen> almacenesPorArticulo;
+
+    /**
+     * Lista observable de almacenes disponibles (no asociados todavía).
+     */
     private ObservableList<Almacen> almacenesDisponibles;
+
+    /**
+     * Lista de almacenes disponibles original antes de cualquier modificación.
+     */
     private ObservableList<Almacen> almacenesDisponiblesOriginales;
+
+    /**
+     * Lista de almacenes originales del artículo antes de cualquier
+     * modificación.
+     */
     private ObservableList<Almacen> almacenesDelArticuloOriginal;
 
-    // Elementos FXML
+    /**
+     * Contenedor principal de la vista.
+     */
     @FXML
     private AnchorPane anchorPane;
+
+    /**
+     * Botón para asignar un almacén al artículo.
+     */
     @FXML
     private Button botonAlmacen;
+
+    /**
+     * Botón para guardar los cambios realizados.
+     */
     @FXML
     private Button botonGuardar;
+
+    /**
+     * Botón para volver a la pantalla anterior.
+     */
     @FXML
     private Button botonAtras;
+
+    /**
+     * Botón para eliminar un almacén asignado al artículo.
+     */
     @FXML
     private Button botonEliminar;
 
+    /**
+     * Tabla de almacenes disponibles (no asignados al artículo).
+     */
     @FXML
     private TableView<Almacen> tablaAlmacenesDisponibles;
+
+    /**
+     * Columna de la tabla de almacenes disponibles que muestra el ID.
+     */
     @FXML
     private TableColumn<Almacen, Long> columnaId;
+
+    /**
+     * Columna de la tabla de almacenes disponibles que muestra la dirección.
+     */
     @FXML
     private TableColumn<Almacen, String> columnaDireccion;
+
+    /**
+     * Columna de la tabla de almacenes disponibles que muestra el espacio
+     * disponible.
+     */
     @FXML
     private TableColumn<Almacen, Double> columnaEspacios;
 
+    /**
+     * Tabla de almacenes actualmente asignados al artículo.
+     */
     @FXML
     private TableView<Almacen> tablaAlmacenesArticulo;
+
+    /**
+     * Columna de la tabla de almacenes del artículo que muestra el ID.
+     */
     @FXML
     private TableColumn<Almacen, Long> columnaId2;
+
+    /**
+     * Columna de la tabla de almacenes del artículo que muestra la dirección.
+     */
     @FXML
     private TableColumn<Almacen, String> columnaDireccion2;
+
+    /**
+     * Columna de la tabla de almacenes del artículo que muestra el espacio
+     * disponible.
+     */
     @FXML
     private TableColumn<Almacen, Double> columnaEspacios2;
 
+    /**
+     * Campo de texto para mostrar el ID del artículo.
+     */
     @FXML
     private TextField campoId;
+
+    /**
+     * Campo de texto para mostrar el nombre del artículo.
+     */
     @FXML
     private TextField campoNombre;
+
+    /**
+     * Campo de texto para mostrar el precio del artículo.
+     */
     @FXML
     private TextField campoPrecio;
+
+    /**
+     * Selector de fecha para la fecha de reposición del artículo.
+     */
     @FXML
     private DatePicker campoFecha;
+
+    /**
+     * Campo de texto para la descripción del artículo.
+     */
     @FXML
     private TextField campoDescripcion;
+
+    /**
+     * Campo de texto para el stock del artículo.
+     */
     @FXML
     private TextField campoStock;
 
+    /**
+     * Indicador de cambios no guardados.
+     */
     private boolean cambiosNoGuardados = false;
+
+    /**
+     * Lista auxiliar de almacenes a modificar (agregar o eliminar).
+     */
     List<Almacen> almacenesCambiar = new ArrayList<>();
 
+    /**
+     * Inicializa la escena y configura el menú, handlers, etc.
+     *
+     * @param root Nodo raíz de la vista.
+     */
     public void initStage(Parent root) {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Gestión de Articulos Detalle");
-        // Configurar la escena y mostrar la ventana
         LOGGER.info("Inicializando la escena principal");
         configurarMenu();
         configurarHandlers();
@@ -120,10 +258,39 @@ public class ControladorArticulosDetalle implements Initializable {
             cargarArticuloEnFormulario();
             cargarAlmacenesDelArticulo();
             cargarAlmacenesDisponibles();
+            configureMnemotecnicKeys();
         }
-
     }
 
+    /**
+     * Configura las teclas de acceso rápido para los botones de iniciar sesión
+     * y registrar.
+     */
+    private void configureMnemotecnicKeys() {
+        stage.getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.isAltDown() && event.getCode() == KeyCode.R) {
+                botonAlmacen.fire();  // Simula el clic en el botón agregar almacen
+                event.consume();  // Evita la propagación adicional del evento
+            } else if (event.isAltDown() && event.getCode() == KeyCode.R) {
+                botonEliminar.fire();  // Simula el clic en el boton eliminar
+                event.consume();  // Evita la propagación adicional del evento
+            } else if (event.isAltDown() && event.getCode() == KeyCode.A) {
+                botonAtras.fire();  // Simula el clic botom atras
+                event.consume();  // Evita la propagación adicional del evento
+            } else if (event.isAltDown() && event.getCode() == KeyCode.G) {
+                botonGuardar.fire();  // Simula el clic en el boton guardar
+                event.consume();  // Evita la propagación adicional del evento
+            }
+
+        });
+    }
+
+    /**
+     * Método de inicialización del controlador cuando se carga el FXML.
+     *
+     * @param url Localización del archivo FXML (no se usa en este caso).
+     * @param rb Recursos de internacionalización (no se usan en este caso).
+     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         LOGGER.info("Inicializando controlador ArticulosDetalle");
@@ -134,9 +301,13 @@ public class ControladorArticulosDetalle implements Initializable {
                 almacenesPorArticulo.stream()
                         .map(Almacen::clone)
                         .collect(Collectors.toList()));
-
     }
 
+    /**
+     * Asigna el usuario (Trabajador) que está utilizando la aplicación.
+     *
+     * @param user Objeto que representa al Trabajador.
+     */
     public void setUser(Object user) {
         if (user != null) {
             this.userTrabajador = new Trabajador();
@@ -145,16 +316,29 @@ public class ControladorArticulosDetalle implements Initializable {
         }
     }
 
+    /**
+     * Asigna el escenario principal (Stage).
+     *
+     * @param stage Escenario de JavaFX.
+     */
     public void setStage(Stage stage) {
         this.stage = stage;
         LOGGER.info("Stage asignado.");
     }
 
+    /**
+     * Asigna el artículo con el que se va a trabajar en esta vista.
+     *
+     * @param articulo Objeto Articulo a editar o visualizar.
+     */
     public void setArticulo(Articulo articulo) {
         this.articulo = articulo;
         LOGGER.info("Articulo asignado.");
     }
 
+    /**
+     * Carga en los campos del formulario los datos del artículo.
+     */
     private void cargarArticuloEnFormulario() {
         if (articulo != null) {
             campoId.setText(String.valueOf(articulo.getId()));
@@ -168,10 +352,12 @@ public class ControladorArticulosDetalle implements Initializable {
                             .atZone(ZoneId.systemDefault())
                             .toLocalDate()
             );
-
         }
     }
 
+    /**
+     * Configura los menús y sus acciones dentro del BorderPane.
+     */
     public void configurarMenu() {
         // Obtiene el BorderPane de la raíz
         BorderPane borderPane = (BorderPane) anchorPane.getChildrenUnmodifiable().get(0);
@@ -211,25 +397,40 @@ public class ControladorArticulosDetalle implements Initializable {
         });
     }
 
-    // Métodos de acción
+    /**
+     * Cierra la sesión actual.
+     */
     private void cerrarSesion() {
         System.out.println("Cerrando sesión...");
         stage.close();
     }
 
+    /**
+     * Sale completamente de la aplicación.
+     */
     private void salirPrograma() {
         System.out.println("Saliendo del programa...");
         System.exit(0);
     }
 
+    /**
+     * Vuelve al menú principal de la aplicación.
+     */
     private void volverAlMenuPrincipal() {
         factoriaUsuarios.cargarMenuPrincipal(stage, userTrabajador);
     }
 
+    /**
+     * Navega a la vista de Pedidos.
+     */
     private void irVistaPedidos() {
         factoriaPedidos.cargarPedidosPrincipal(stage, userTrabajador, null);
     }
 
+    /**
+     * Configura las tablas (almacenes disponibles y almacenes del artículo)
+     * asignándoles columnas y formateadores de celdas.
+     */
     private void configurarTablas() {
 
         columnaId.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -273,6 +474,10 @@ public class ControladorArticulosDetalle implements Initializable {
         tablaAlmacenesArticulo.getColumns().forEach(col -> col.setSortable(false));
     }
 
+    /**
+     * Carga la lista de almacenes disponibles (que no están asignados al
+     * artículo).
+     */
     private void cargarAlmacenesDisponibles() {
         try {
             Collection<Almacen> almacenes = factoriaAlmacenes.acceso().getAllAlmacenes();
@@ -296,6 +501,9 @@ public class ControladorArticulosDetalle implements Initializable {
         }
     }
 
+    /**
+     * Carga la lista de almacenes asignados al artículo.
+     */
     private void cargarAlmacenesDelArticulo() {
         try {
             Collection<Almacen> almacenes = factoriaAlmacenes.acceso().getAllAlmacenesById(articulo.getId());
@@ -318,6 +526,9 @@ public class ControladorArticulosDetalle implements Initializable {
 
     }
 
+    /**
+     * Configura los manejadores (handlers) de los botones de la interfaz.
+     */
     private void configurarHandlers() {
         botonAlmacen.setOnAction(this::handleAsignarAlmacen);
         botonEliminar.setOnAction(this::handleEliminar);
@@ -325,6 +536,11 @@ public class ControladorArticulosDetalle implements Initializable {
         botonAtras.setOnAction(this::handleAtras);
     }
 
+    /**
+     * Asigna el almacén seleccionado de la tabla de disponibles al artículo.
+     *
+     * @param event Acción que dispara el método.
+     */
     @FXML
     private void handleAsignarAlmacen(ActionEvent event) {
         Almacen almacenSeleccionado = tablaAlmacenesDisponibles.getSelectionModel().getSelectedItem();
@@ -339,16 +555,19 @@ public class ControladorArticulosDetalle implements Initializable {
         tablaAlmacenesArticulo.refresh();
         cargarAlmacenesDisponibles();
         cambiosNoGuardados = true;
-
     }
 
+    /**
+     * Guarda los cambios realizados en la asignación de almacenes para el
+     * artículo.
+     *
+     * @param event Acción que dispara el método.
+     */
     @FXML
     private void handleGuardarCambios(ActionEvent event) {
         LOGGER.info("Botón Guardar Cambios presionado");
         List<Almacen> almacenes = tablaAlmacenesArticulo.getItems();
-        List<Articulo> articulos = new ArrayList<>();
         try {
-
             articulo.setAlmacenTrump(almacenes);
             factoriaArticulos.acceso().actualizarArticulo(articulo);
 
@@ -360,6 +579,9 @@ public class ControladorArticulosDetalle implements Initializable {
         }
     }
 
+    /**
+     * Refresca la vista tras guardar cambios o revertirlos.
+     */
     private void reiniciar() {
         configurarTablas();
         cargarAlmacenesDelArticulo();
@@ -368,6 +590,12 @@ public class ControladorArticulosDetalle implements Initializable {
         tablaAlmacenesArticulo.refresh();
     }
 
+    /**
+     * Elimina el almacén seleccionado de la lista de almacenes asignados al
+     * artículo.
+     *
+     * @param event Acción que dispara el método.
+     */
     @FXML
     private void handleEliminar(ActionEvent event) {
         Almacen almacenSeleccionado = tablaAlmacenesArticulo.getSelectionModel().getSelectedItem();
@@ -384,6 +612,12 @@ public class ControladorArticulosDetalle implements Initializable {
         cambiosNoGuardados = true;
     }
 
+    /**
+     * Maneja el evento de volver atrás. Si hay cambios sin guardar, pide
+     * confirmación.
+     *
+     * @param event Acción que dispara el método.
+     */
     @FXML
     private void handleAtras(ActionEvent event) {
         if (cambiosNoGuardados) {
@@ -419,10 +653,20 @@ public class ControladorArticulosDetalle implements Initializable {
         factoriaArticulos.cargarArticulosPrincipal(stage, userTrabajador, null);
     }
 
+    /**
+     * Navega a la pantalla principal de artículos.
+     */
     private void irAPantallaPrincipal() {
         factoriaArticulos.cargarArticulosPrincipal(stage, userTrabajador, null);
     }
 
+    /**
+     * Muestra una alerta de JavaFX.
+     *
+     * @param tipo Tipo de alerta (ERROR, WARNING, INFORMATION, etc.).
+     * @param titulo Título de la ventana de alerta.
+     * @param mensaje Mensaje de la alerta.
+     */
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
         Alert alerta = new Alert(tipo);
         alerta.setTitle(titulo);
@@ -430,8 +674,11 @@ public class ControladorArticulosDetalle implements Initializable {
         alerta.showAndWait();
     }
 
+    /**
+     * Muestra la ayuda (vista de ayuda o manual).
+     */
     private void mostrarAyuda() {
-        factoriaUsuarios.cargarAyuda("pedidosDetalle");
+        factoriaUsuarios.cargarAyuda("articulosDetalle");
     }
 
 }
