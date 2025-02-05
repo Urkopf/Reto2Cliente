@@ -3,6 +3,7 @@
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+        <parameter name="LOGO_PATH" class="java.io.InputStream"/>
 	<field name="id" class="java.lang.Long"/>
 	<field name="nombre" class="java.lang.String"/>
 	<field name="precio" class="java.lang.Double"/>
@@ -16,7 +17,7 @@
 		<band height="79" splitType="Stretch">
 			<image>
 				<reportElement x="0" y="0" width="555" height="79" uuid="dc0f6b17-c296-40a6-b593-94ad900c0def"/>
-				<imageExpression><![CDATA["C:\\Users\\2dam\\Documents\\NetBeansProjects\\Reto_2_DEV\\Reto2_CRUD_Cliente\\src\\recursos\\logoFullrecortado.jpg"]]></imageExpression>
+				<imageExpression><![CDATA[$P{LOGO_PATH}]]></imageExpression>
 			</image>
 		</band>
 	</title>
