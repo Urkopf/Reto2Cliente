@@ -15,12 +15,12 @@ import java.util.Collection;
  */
 public interface ITrabajador {
 
-    public Collection<Trabajador> getAllClientes() throws LogicaNegocioException;
+    public Collection<Trabajador> getAllClientes() throws Exception;
 
-    public void crearTrabajador(Trabajador trabajador) throws LogicaNegocioException;
+    public void crearTrabajador(Trabajador trabajador) throws Exception;
 
-    public void actualizarTrabajador(Trabajador trabajador) throws LogicaNegocioException;
+    public void actualizarTrabajador(Trabajador trabajador) throws Exception;
 
-    public void borrarTrabajador(Trabajador trabajador) throws LogicaNegocioException;
+    public void borrarTrabajador(Trabajador trabajador) throws Exception;
 
 }

@@ -1,90 +1,70 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package crud.rest;
 
+import crud.excepciones.ExcepcionesUtilidad;
 import crud.objetosTransferibles.Trabajador;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-/**
- * Jersey REST client generated for REST resource:TrabajadorFacadeREST
- * [trabajador]<br>
- * USAGE:
- * <pre>
- *        TrabajadorRestFull client = new TrabajadorRestFull();
- *        Object response = client.XXX(...);
- *        // do whatever with response
- *        client.close();
- * </pre>
- *
- * @author 2dam
- */
 public class TrabajadorRestFull {
 
     private static final Logger LOGGER = Logger.getLogger(TrabajadorRestFull.class.getName());
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI
-            = ResourceBundle.getBundle("recursos.configCliente")
-                    .getString("BASE_URI");
+    private static final String BASE_URI = ResourceBundle.getBundle("recursos.configCliente").getString("BASE_URI");
 
     public TrabajadorRestFull() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
         webTarget = client.target(BASE_URI).path("trabajador");
     }
 
-    public String countREST() throws WebApplicationException {
-        WebTarget resource = webTarget;
-        resource = resource.path("count");
-        return resource.request(javax.ws.rs.core.MediaType.TEXT_PLAIN).get(String.class);
+    public String countREST() throws Exception {
+        WebTarget resource = webTarget.path("count");
+        Response response = resource.request().get();
+        return ExcepcionesUtilidad.handleResponse(response, String.class);
     }
 
-    public void edit_XML(Object requestEntity) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Trabajador.class);
+    public void edit_XML(Object requestEntity) throws Exception {
+        Response response = webTarget.request()
+                .put(Entity.entity(requestEntity, MediaType.APPLICATION_XML));
+        ExcepcionesUtilidad.handleResponse(response, Void.class);
     }
 
-
-    public <T> T find_XML(Class<T> responseType, String id) throws WebApplicationException {
-        WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+    public <T> T find_XML(Class<T> responseType, String id) throws Exception {
+        WebTarget resource = webTarget.path(id);
+        Response response = resource.request().get();
+        return ExcepcionesUtilidad.handleResponse(response, responseType);
     }
 
-
-    public <T> T findRange_XML(Class<T> responseType, String from, String to) throws WebApplicationException {
-        WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("{0}/{1}", new Object[]{from, to}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+    public <T> T findRange_XML(Class<T> responseType, String from, String to) throws Exception {
+        WebTarget resource = webTarget.path(from + "/" + to);
+        Response response = resource.request().get();
+        return ExcepcionesUtilidad.handleResponse(response, responseType);
     }
 
-
-    public void create_XML(Object requestEntity) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Response.class);
+    public void create_XML(Object requestEntity) throws Exception {
+        Response response = webTarget.request()
+                .post(Entity.entity(requestEntity, MediaType.APPLICATION_XML));
+        ExcepcionesUtilidad.handleResponse(response, Void.class);
     }
 
-    public <T> T findAll_XML(GenericType<T> responseType) throws WebApplicationException {
-        WebTarget resource = webTarget;
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+    public <T> T findAll_XML(GenericType<T> responseType) throws Exception {
+        Response response = webTarget.request().get();
+        return ExcepcionesUtilidad.handleResponse(response, responseType);
     }
 
-
-    public void remove(Long id) throws WebApplicationException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete(Trabajador.class);
+    public void remove(Long id) throws Exception {
+        Response response = webTarget.path(id.toString()).request().delete();
+        ExcepcionesUtilidad.handleResponse(response, Void.class);
     }
 
     public void close() {
         client.close();
     }
-
 }

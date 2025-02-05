@@ -24,48 +24,40 @@ public class UsuarioImpl implements IUsuario {
     }
 
     @Override
-    public Collection<Usuario> getAllUsers() {
+    public Collection<Usuario> getAllUsers() throws Exception {
         List<Usuario> users = null;
-        try {
-            users = usuarioCliente.findAll_XML(new GenericType<List<Usuario>>() {
-            });
-        } catch (Exception e) {
-            //Falta implementar las excepciones
-        }
+
+        users = usuarioCliente.findAll_XML(new GenericType<List<Usuario>>() {
+        });
+
         return users;
     }
 
     @Override
-    public Object getInicioSesion(Usuario usuario) {
+    public Object getInicioSesion(Usuario usuario) throws Exception {
         Object user = null;
-        try {
-            user = usuarioCliente.inicioSesion_XML(usuario);
-        } catch (Exception e) {
-            //Falta implementar las excepciones
-        }
+
+        user = usuarioCliente.inicioSesion_XML(usuario);
+
         return user;
     }
 
     @Override
-    public Object getCambiarContrasena(Usuario usuario) {
+    public Object getCambiarContrasena(Usuario usuario) throws Exception {
 
         Object user = null;
-        try {
-            user = usuarioCliente.cambiar_XML(usuario);
-        } catch (Exception e) {
-            //Falta implementar las excepciones
-        }
+
+        user = usuarioCliente.cambiar_XML(usuario);
+
         return user;
     }
 
     @Override
-    public Object getRecuperarContrasena(Usuario usuario) {
+    public Object getRecuperarContrasena(Usuario usuario) throws Exception {
         Object user = null;
-        try {
-            user = usuarioCliente.recuperar_XML(usuario);
-        } catch (Exception e) {
-            //Falta implementar las excepciones
-        }
+
+        user = usuarioCliente.recuperar_XML(usuario);
+
         return user;
     }
 

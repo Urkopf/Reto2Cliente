@@ -15,13 +15,13 @@ import java.util.Collection;
  */
 public interface IArticulo {
 
-    public Collection<Articulo> getAllArticulos() throws LogicaNegocioException;
+    public Collection<Articulo> getAllArticulos() throws Exception;
 
-    public void crearArticulo(Articulo articulo) throws LogicaNegocioException;
+    public void crearArticulo(Articulo articulo) throws Exception;
 
-    public void actualizarArticulo(Articulo articulo) throws LogicaNegocioException;
+    public void actualizarArticulo(Articulo articulo) throws Exception;
 
-    public void actualizarArticuloDetalle(Articulo articulo) throws LogicaNegocioException;
+    public void actualizarArticuloDetalle(Articulo articulo) throws Exception;
 
-    public void borrarArticulo(Articulo articulo) throws LogicaNegocioException;
+    public void borrarArticulo(Articulo articulo) throws Exception;
 }

@@ -25,7 +25,7 @@ public class TrabajadorImpl implements ITrabajador {
     }
 
     @Override
-    public Collection<Trabajador> getAllClientes() throws LogicaNegocioException {
+    public Collection<Trabajador> getAllClientes() throws Exception {
         List<Trabajador> trabajadores = null;
         try {
             trabajadores = cliente.findAll_XML(new GenericType<List<Trabajador>>() {
@@ -37,31 +37,18 @@ public class TrabajadorImpl implements ITrabajador {
     }
 
     @Override
-    public void crearTrabajador(Trabajador trabajador) throws LogicaNegocioException {
-        try {
-            cliente.create_XML(trabajador);
-        } catch (Exception e) {
-            throw new LogicaNegocioException("Error");
-        }
+    public void crearTrabajador(Trabajador trabajador) throws Exception {
+        cliente.create_XML(trabajador);
     }
 
     @Override
-    public void actualizarTrabajador(Trabajador trabajador) throws LogicaNegocioException {
-        try {
-            cliente.edit_XML(trabajador);
-        } catch (Exception e) {
-            throw new LogicaNegocioException("Error");
-        }
+    public void actualizarTrabajador(Trabajador trabajador) throws Exception {
+        cliente.edit_XML(trabajador);
     }
 
     @Override
-    public void borrarTrabajador(Trabajador trabajador) throws LogicaNegocioException {
-        try {
-            cliente.remove(trabajador.getId());
-        } catch (Exception e) {
-            throw new LogicaNegocioException("Error");
-        }
+    public void borrarTrabajador(Trabajador trabajador) throws Exception {
+        cliente.remove(trabajador.getId());
     }
-
 
 }

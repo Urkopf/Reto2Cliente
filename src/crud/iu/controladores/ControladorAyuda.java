@@ -5,6 +5,9 @@
  */
 package crud.iu.controladores;
 
+import crud.excepciones.ExcepcionesUtilidad;
+import crud.negocio.FactoriaUsuarios;
+import java.net.ConnectException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
@@ -17,6 +20,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javax.ws.rs.ProcessingException;
 
 /**
  * FXML Controller class
@@ -35,16 +39,27 @@ public class ControladorAyuda implements Initializable {
      * Initializes the controller class.
      */
     public void initStage(Parent root) {
-        Scene scene = new Scene(root);
-        stage = new Stage();
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setScene(scene);
-        stage.setTitle("Ayuda para la Gestion de Usuarios");
-        stage.setResizable(false);
-        stage.setMinWidth(800);
-        stage.setMinHeight(600);
-        stage.setOnShowing(this::handleWindowShowing);
-        stage.show();
+        try {
+            Scene scene = new Scene(root);
+            stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(scene);
+            stage.setTitle("Ayuda para la Gestion de Usuarios");
+            stage.setResizable(false);
+            stage.setMinWidth(800);
+            stage.setMinHeight(600);
+            stage.setOnShowing(this::handleWindowShowing);
+            stage.show();
+        } catch (Exception e) {
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
+            if (e instanceof ConnectException || e instanceof ProcessingException) {
+
+                FactoriaUsuarios.getInstance().cargarInicioSesion(stage, "");
+            } else {
+                throw e;
+            }
+
+        }
     }
 
     private void handleWindowShowing(WindowEvent event) {

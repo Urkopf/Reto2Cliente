@@ -18,6 +18,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
+import java.net.ConnectException;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
@@ -29,6 +30,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javax.ws.rs.ProcessingException;
 
 /**
  * Controlador para la ventana del Menú Principal.
@@ -68,55 +70,65 @@ public class ControladorMenuPrincipal implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        contextMenu = new ContextMenu();
+        try {
+            contextMenu = new ContextMenu();
 
-        // Aplicar estilo personalizado al menú contextual
-        contextMenu.getStyleClass().add("context-menu");
-        contextMenu.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8);"
-                + "-fx-text-fill: #FFFFFF;"
-                + "-fx-font-size: 18px;"
-                + "-fx-font-weight: bold;"
-                + "-fx-font-family: 'Protest Strike';"
-                + "-fx-max-width: 250px;"
-                + "-fx-wrap-text: true;"
-                + "-fx-padding: 10px;"
-                + "-fx-border-width: 1;"
-                + "-fx-border-radius: 5;"
-                + "-fx-background-radius: 5;");
+            // Aplicar estilo personalizado al menú contextual
+            contextMenu.getStyleClass().add("context-menu");
+            contextMenu.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8);"
+                    + "-fx-text-fill: #FFFFFF;"
+                    + "-fx-font-size: 18px;"
+                    + "-fx-font-weight: bold;"
+                    + "-fx-font-family: 'Protest Strike';"
+                    + "-fx-max-width: 250px;"
+                    + "-fx-wrap-text: true;"
+                    + "-fx-padding: 10px;"
+                    + "-fx-border-width: 1;"
+                    + "-fx-border-radius: 5;"
+                    + "-fx-background-radius: 5;");
 
-        // Configurar y añadir opción de cerrar sesión al menú contextual
-        MenuItem closeSesion = new MenuItem("Cerrar sesión");
-        closeSesion.setStyle("-fx-font-size: 18px;"
-                + "-fx-font-weight: bold;"
-                + "-fx-font-family: 'Protest Strike';"
-                + "-fx-text-fill: #FFFFFF;"
-                + "-fx-background-color: transparent;"
-                + "-fx-max-width: 250px;"
-                + "-fx-wrap-text: true;");
-        closeSesion.setOnAction(event -> cerrarSesion());
+            // Configurar y añadir opción de cerrar sesión al menú contextual
+            MenuItem closeSesion = new MenuItem("Cerrar sesión");
+            closeSesion.setStyle("-fx-font-size: 18px;"
+                    + "-fx-font-weight: bold;"
+                    + "-fx-font-family: 'Protest Strike';"
+                    + "-fx-text-fill: #FFFFFF;"
+                    + "-fx-background-color: transparent;"
+                    + "-fx-max-width: 250px;"
+                    + "-fx-wrap-text: true;");
+            closeSesion.setOnAction(event -> cerrarSesion());
 
-        // Configurar y añadir opción de salir al menú contextual
-        MenuItem exitItem = new MenuItem("Salir");
-        exitItem.setStyle("-fx-font-size: 18px;"
-                + "-fx-font-weight: bold;"
-                + "-fx-font-family: 'Protest Strike';"
-                + "-fx-text-fill: #FFFFFF;"
-                + "-fx-background-color: transparent;"
-                + "-fx-max-width: 250px;"
-                + "-fx-wrap-text: true;");
-        exitItem.setOnAction(event -> salir());
+            // Configurar y añadir opción de salir al menú contextual
+            MenuItem exitItem = new MenuItem("Salir");
+            exitItem.setStyle("-fx-font-size: 18px;"
+                    + "-fx-font-weight: bold;"
+                    + "-fx-font-family: 'Protest Strike';"
+                    + "-fx-text-fill: #FFFFFF;"
+                    + "-fx-background-color: transparent;"
+                    + "-fx-max-width: 250px;"
+                    + "-fx-wrap-text: true;");
+            exitItem.setOnAction(event -> salir());
 
-        contextMenu.getItems().addAll(closeSesion, exitItem);
+            contextMenu.getItems().addAll(closeSesion, exitItem);
 
-        // Configurar menú contextual para mostrar al hacer clic derecho
-        panel.setOnMouseClicked(event -> {
-            if (event.getButton() == MouseButton.SECONDARY) {
-                contextMenu.show(panel, event.getScreenX(), event.getScreenY());
+            // Configurar menú contextual para mostrar al hacer clic derecho
+            panel.setOnMouseClicked(event -> {
+                if (event.getButton() == MouseButton.SECONDARY) {
+                    contextMenu.show(panel, event.getScreenX(), event.getScreenY());
+                } else {
+                    contextMenu.hide();
+                }
+            });
+        } catch (Exception e) {
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
+            if (e instanceof ConnectException || e instanceof ProcessingException) {
+
+                FactoriaUsuarios.getInstance().cargarInicioSesion(stage, "");
             } else {
-                contextMenu.hide();
+                throw e;
             }
-        });
 
+        }
     }
 
     public void initStage(Parent root) {
@@ -150,7 +162,13 @@ public class ControladorMenuPrincipal implements Initializable {
             stage.show();  // Mostrar el escenario
 
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al inicializar el stage", e);
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
+            if (e instanceof ConnectException || e instanceof ProcessingException) {
+
+                FactoriaUsuarios.getInstance().cargarInicioSesion(stage, "");
+            } else {
+                throw e;
+            }
         }
     }
 
@@ -201,7 +219,7 @@ public class ControladorMenuPrincipal implements Initializable {
             salir();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al salir", e);
-            showErrorDialog(AlertType.ERROR, "No se pudo salir de la aplicación", "Inténtelo de nuevo más tarde.");
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 
@@ -218,7 +236,7 @@ public class ControladorMenuPrincipal implements Initializable {
             cerrarSesion();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cerrar sesión", e);
-            showErrorDialog(AlertType.ERROR, "No se pudo cerrar la sesión", "Inténtelo de nuevo más tarde.");
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 
@@ -264,12 +282,11 @@ public class ControladorMenuPrincipal implements Initializable {
     @FXML
     private void manejarBotonArticulo(ActionEvent event) {
         try {
-
             LOGGER.info("Botón 'Gestión de Artículos' presionado.");
             factoriaArticulos.cargarArticulosPrincipal(stage, userTrabajador, null);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al gestionar artículos", e);
-            showErrorDialog(AlertType.ERROR, "No se pudo gestionar los artículos", "Inténtelo de nuevo más tarde.");
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 

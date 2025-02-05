@@ -5,6 +5,7 @@
  */
 package crud.negocio;
 
+import crud.excepciones.ExcepcionesUtilidad;
 import crud.iu.controladores.ControladorArticulosBusqueda;
 import crud.iu.controladores.ControladorArticulosDetalle;
 import crud.iu.controladores.ControladorArticulosPrincipal;
@@ -55,7 +56,7 @@ public class FactoriaArticulos {
             controlador.initStage(root);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al abrir la ventana de ArticulosPrincipal: {0}", e.getMessage());
-            showErrorDialog(Alert.AlertType.ERROR, "Error", "No se puede cargar la ventana de Articulos principal.");
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 
@@ -69,7 +70,7 @@ public class FactoriaArticulos {
             controlador.initStage(root);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al abrir la ventana de ArticulosBusqueda: {0}", e.getMessage());
-            showErrorDialog(Alert.AlertType.ERROR, "Error", "No se puede cargar la ventana de Articulos busqueda.");
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 
@@ -84,7 +85,7 @@ public class FactoriaArticulos {
             controlador.initStage(root);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al abrir la ventana de Articulos Detalle: {0}", e.getMessage());
-            showErrorDialog(Alert.AlertType.ERROR, "Error", "No se puede cargar la ventana de Articulos Detalle.");
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 }

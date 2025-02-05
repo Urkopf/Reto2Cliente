@@ -25,42 +25,34 @@ public class PedidoArticuloImpl implements IPedidoArticulo {
     }
 
     @Override
-    public Collection<PedidoArticulo> getAllPedidoArticulo() throws LogicaNegocioException {
+    public Collection<PedidoArticulo> getAllPedidoArticulo() throws Exception {
         List<PedidoArticulo> pedidoArticulos = null;
-        try {
-            pedidoArticulos = cliente.findAll_XML(new GenericType<List<PedidoArticulo>>() {
-            });
-        } catch (Exception e) {
-            throw new LogicaNegocioException("");
-        }
+
+        pedidoArticulos = cliente.findAll_XML(new GenericType<List<PedidoArticulo>>() {
+        });
+
         return pedidoArticulos;
     }
 
     @Override
-    public void crearPedidoArticulo(PedidoArticulo pedidoArticulo) throws LogicaNegocioException {
-        try {
-            cliente.create_XML(pedidoArticulo);
-        } catch (Exception e) {
-            throw new LogicaNegocioException("");
-        }
+    public void crearPedidoArticulo(PedidoArticulo pedidoArticulo) throws Exception {
+
+        cliente.create_XML(pedidoArticulo);
+
     }
 
     @Override
-    public void actualizarPedidoArticulo(PedidoArticulo pedidoArticulo) throws LogicaNegocioException {
-        try {
-            cliente.edit_XML(pedidoArticulo);
-        } catch (Exception e) {
-            throw new LogicaNegocioException("");
-        }
+    public void actualizarPedidoArticulo(PedidoArticulo pedidoArticulo) throws Exception {
+
+        cliente.edit_XML(pedidoArticulo);
+
     }
 
     @Override
-    public void borrarPedidoArticulo(PedidoArticulo pedidoArticulo) throws LogicaNegocioException {
-        try {
-            cliente.remove(pedidoArticulo.getId());
-        } catch (Exception e) {
-            throw new LogicaNegocioException("");
-        }
+    public void borrarPedidoArticulo(PedidoArticulo pedidoArticulo) throws Exception {
+
+        cliente.remove(pedidoArticulo.getId());
+
     }
 
 }

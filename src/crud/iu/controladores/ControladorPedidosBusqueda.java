@@ -7,6 +7,7 @@ import crud.objetosTransferibles.Cliente;
 import crud.objetosTransferibles.Estado;
 import crud.objetosTransferibles.Pedido;
 import crud.objetosTransferibles.Trabajador;
+import java.net.ConnectException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -29,6 +30,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.scene.image.ImageView;
+import javax.ws.rs.ProcessingException;
 
 /**
  * <h1>ControladorPedidosBusqueda</h1>
@@ -112,32 +114,44 @@ public class ControladorPedidosBusqueda implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        factoriaPedidos = FactoriaPedidos.getInstance();
+        try {
 
-        // Configurar valores iniciales para los spinners
-        spinnerIdDesde.setValueFactory(
-                new SpinnerValueFactory.IntegerSpinnerValueFactory(1, Integer.MAX_VALUE, 1));
-        spinnerIdHasta.setValueFactory(
-                new SpinnerValueFactory.IntegerSpinnerValueFactory(1, Integer.MAX_VALUE, 1));
-        spinnerPrecioDesde.setValueFactory(
-                new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, Double.MAX_VALUE, 0.0));
-        spinnerPrecioHasta.setValueFactory(
-                new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, Double.MAX_VALUE, 0.0));
+            factoriaPedidos = FactoriaPedidos.getInstance();
 
-        // Configurar acciones de botones
-        botonBuscar.setOnAction(this::handleBuscar);
-        botonReiniciarCampos.setOnAction(this::handleReiniciarCampos);
-        botonAtras.setOnAction(this::handleAtras);
-        botonAyuda.setOnMouseClicked(event -> {
-            mostrarAyuda();
-        });
-        botonAyuda.setOnMouseEntered(event -> {
-            botonAyuda.setStyle("-fx-cursor: hand;"); // Cambia el cursor al pasar el ratón
-        });
+            // Configurar valores iniciales para los spinners
+            spinnerIdDesde.setValueFactory(
+                    new SpinnerValueFactory.IntegerSpinnerValueFactory(1, Integer.MAX_VALUE, 1));
+            spinnerIdHasta.setValueFactory(
+                    new SpinnerValueFactory.IntegerSpinnerValueFactory(1, Integer.MAX_VALUE, 1));
+            spinnerPrecioDesde.setValueFactory(
+                    new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, Double.MAX_VALUE, 0.0));
+            spinnerPrecioHasta.setValueFactory(
+                    new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, Double.MAX_VALUE, 0.0));
 
-        botonAyuda.setOnMouseExited(event -> {
-            botonAyuda.setStyle("-fx-cursor: default;"); // Vuelve al cursor normal al salir
-        });
+            // Configurar acciones de botones
+            botonBuscar.setOnAction(this::handleBuscar);
+            botonReiniciarCampos.setOnAction(this::handleReiniciarCampos);
+            botonAtras.setOnAction(this::handleAtras);
+            botonAyuda.setOnMouseClicked(event -> {
+                mostrarAyuda();
+            });
+            botonAyuda.setOnMouseEntered(event -> {
+                botonAyuda.setStyle("-fx-cursor: hand;"); // Cambia el cursor al pasar el ratón
+            });
+
+            botonAyuda.setOnMouseExited(event -> {
+                botonAyuda.setStyle("-fx-cursor: default;"); // Vuelve al cursor normal al salir
+            });
+        } catch (Exception e) {
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
+            if (e instanceof ConnectException || e instanceof ProcessingException) {
+
+                FactoriaUsuarios.getInstance().cargarInicioSesion(stage, "");
+            } else {
+                throw e;
+            }
+
+        }
     }
 
     /**
@@ -147,35 +161,46 @@ public class ControladorPedidosBusqueda implements Initializable {
      * @param root Nodo raíz (parent) de la escena.
      */
     public void initStage(Parent root) {
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setTitle("Búsqueda avanzada");
-        LOGGER.info("Inicializando la escena principal");
-        stage.show();
+        try {
 
-        // Configurar spinner con validaciones
-        configurarSpinnerId(spinnerIdDesde);
-        configurarSpinnerId(spinnerIdHasta);
-        configurarSpinnerPrecio(spinnerPrecioDesde);
-        configurarSpinnerPrecio(spinnerPrecioHasta);
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("Búsqueda avanzada");
+            LOGGER.info("Inicializando la escena principal");
+            stage.show();
 
-        // Asocia CheckBoxes con sus respectivos campos
-        asociarCampoConCheckBox(spinnerIdDesde.getEditor(), checkBoxIdPedido);
-        asociarCampoConCheckBox(spinnerIdHasta.getEditor(), checkBoxIdPedido);
-        asociarCampoConCheckBox(comboBoxCIF, checkBoxCIF);
-        asociarCampoConCheckBox(textFieldDireccion, checkBoxDireccion);
-        asociarCampoConCheckBox(datePickerDesde, checkBoxFecha);
-        asociarCampoConCheckBox(datePickerHasta, checkBoxFecha);
-        asociarCampoConCheckBox(comboBoxEstado, checkBoxEstado);
-        asociarCampoConCheckBox(spinnerPrecioDesde.getEditor(), checkBoxPrecio);
-        asociarCampoConCheckBox(spinnerPrecioHasta.getEditor(), checkBoxPrecio);
+            // Configurar spinner con validaciones
+            configurarSpinnerId(spinnerIdDesde);
+            configurarSpinnerId(spinnerIdHasta);
+            configurarSpinnerPrecio(spinnerPrecioDesde);
+            configurarSpinnerPrecio(spinnerPrecioHasta);
 
-        // Cargar valores iniciales
-        cargarComboBoxCIF();
-        cargarComboBoxEstado();
+            // Asocia CheckBoxes con sus respectivos campos
+            asociarCampoConCheckBox(spinnerIdDesde.getEditor(), checkBoxIdPedido);
+            asociarCampoConCheckBox(spinnerIdHasta.getEditor(), checkBoxIdPedido);
+            asociarCampoConCheckBox(comboBoxCIF, checkBoxCIF);
+            asociarCampoConCheckBox(textFieldDireccion, checkBoxDireccion);
+            asociarCampoConCheckBox(datePickerDesde, checkBoxFecha);
+            asociarCampoConCheckBox(datePickerHasta, checkBoxFecha);
+            asociarCampoConCheckBox(comboBoxEstado, checkBoxEstado);
+            asociarCampoConCheckBox(spinnerPrecioDesde.getEditor(), checkBoxPrecio);
+            asociarCampoConCheckBox(spinnerPrecioHasta.getEditor(), checkBoxPrecio);
 
-        // Configurar estado inicial de la vista
-        configurarEstadoInicial();
+            // Cargar valores iniciales
+            cargarComboBoxCIF();
+            cargarComboBoxEstado();
+
+            // Configurar estado inicial de la vista
+            configurarEstadoInicial();
+
+        } catch (Exception e) {
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
+            if (e instanceof ConnectException || e instanceof ProcessingException) {
+
+                FactoriaUsuarios.getInstance().cargarInicioSesion(stage, "");
+            }
+
+        }
     }
 
     /**
@@ -282,7 +307,6 @@ public class ControladorPedidosBusqueda implements Initializable {
         editor.textProperty().addListener((observable, oldValue, newValue) -> {
             // Eliminar símbolo de moneda para validación
             String valueWithoutSymbol = newValue.replace("€", "").trim();
-
             // Validar entrada (digitos, punto o coma)
             if (valueWithoutSymbol.matches("\\d*(\\.\\d*)?|\\d*(,\\d*)?")) {
                 if (!valueWithoutSymbol.isEmpty()) {
@@ -371,10 +395,13 @@ public class ControladorPedidosBusqueda implements Initializable {
             }
 
             mostrarResultados(pedidosFiltrados);
-
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al filtrar los pedidos", e);
             ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
+            if (e instanceof ConnectException || e instanceof ProcessingException) {
+
+                FactoriaUsuarios.getInstance().cargarInicioSesion(stage, "");
+            }
+
         }
     }
 
@@ -470,31 +497,21 @@ public class ControladorPedidosBusqueda implements Initializable {
      * Carga la lista de CIF de todos los clientes y la asigna al
      * {@code comboBoxCIF}.
      */
-    private void cargarComboBoxCIF() {
-        try {
-            List<String> cifsClientes = factoriaUsuarios.accesoCliente()
-                    .getAllClientes()
-                    .stream()
-                    .map(Cliente::getCif)
-                    .collect(Collectors.toList());
-            comboBoxCIF.getItems().setAll(cifsClientes);
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al cargar los CIF de los clientes", e);
-            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
-        }
+    private void cargarComboBoxCIF() throws Exception {
+        List<String> cifsClientes = factoriaUsuarios.accesoCliente()
+                .getAllClientes()
+                .stream()
+                .map(Cliente::getCif)
+                .collect(Collectors.toList());
+        comboBoxCIF.getItems().setAll(cifsClientes);
     }
 
     /**
      * Carga todas las opciones de estado disponibles en {@link Estado} y las
      * asigna al {@code comboBoxEstado}.
      */
-    private void cargarComboBoxEstado() {
-        try {
-            comboBoxEstado.getItems().setAll(Estado.values());
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al cargar los estados", e);
-            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
-        }
+    private void cargarComboBoxEstado() throws Exception {
+        comboBoxEstado.getItems().setAll(Estado.values());
     }
 
     /**

@@ -25,42 +25,34 @@ public class ClienteImpl implements ICliente {
     }
 
     @Override
-    public Collection<Cliente> getAllClientes() throws LogicaNegocioException {
+    public Collection<Cliente> getAllClientes() throws Exception {
         List<Cliente> clientes = null;
-        try {
-            clientes = clienteRest.findAll_XML(new GenericType<List<Cliente>>() {
-            });
-        } catch (Exception e) {
-            throw new LogicaNegocioException("Error");
-        }
+
+        clientes = clienteRest.findAll_XML(new GenericType<List<Cliente>>() {
+        });
+
         return clientes;
     }
 
     @Override
-    public void crearCliente(Cliente cliente) throws LogicaNegocioException {
-        try {
-            clienteRest.create_XML(cliente);
-        } catch (Exception e) {
-            throw new LogicaNegocioException("Error");
-        }
+    public void crearCliente(Cliente cliente) throws Exception {
+
+        clienteRest.create_XML(cliente);
+
     }
 
     @Override
-    public void actualizarCliente(Cliente cliente) throws LogicaNegocioException {
-        try {
-            clienteRest.edit_XML(cliente);
-        } catch (Exception e) {
-            throw new LogicaNegocioException("Error");
-        }
+    public void actualizarCliente(Cliente cliente) throws Exception {
+
+        clienteRest.edit_XML(cliente);
+
     }
 
     @Override
-    public void borrarCliente(Cliente cliente) throws LogicaNegocioException {
-        try {
-            clienteRest.remove(cliente.getId());
-        } catch (Exception e) {
-            throw new LogicaNegocioException("Error");
-        }
+    public void borrarCliente(Cliente cliente) throws Exception {
+
+        clienteRest.remove(cliente.getId());
+
     }
 
 }

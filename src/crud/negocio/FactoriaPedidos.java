@@ -58,6 +58,7 @@ public class FactoriaPedidos {
             controlador.setBusqueda(pedidoBusqueda);
             controlador.initStage(root);
         } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error al abrir la ventana de Pedidos Principal: {0}", e.getMessage());
             ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
@@ -71,6 +72,7 @@ public class FactoriaPedidos {
             controlador.setUser(user);
             controlador.initStage(root);
         } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error al abrir la ventana de Pedidos Busqueda: {0}", e.getMessage());
             ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }

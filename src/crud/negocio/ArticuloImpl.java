@@ -29,50 +29,33 @@ public class ArticuloImpl implements IArticulo {
     }
 
     @Override
-    public Collection<Articulo> getAllArticulos() throws LogicaNegocioException {
+    public Collection<Articulo> getAllArticulos() throws Exception {
         List<Articulo> articulos = null;
-        try {
-            articulos = cliente.findAll_XML(new GenericType<List<Articulo>>() {
-            });
-        } catch (Exception e) {
-            throw new LogicaNegocioException("Error");
-        }
+        articulos = cliente.findAll_XML(new GenericType<List<Articulo>>() {
+        });
         return articulos;
     }
 
     @Override
-    public void crearArticulo(Articulo articulo) throws LogicaNegocioException {
-        try {
-            cliente.create_XML(articulo);
-        } catch (Exception e) {
-            throw new LogicaNegocioException("Error");
-        }
+
+    public void crearArticulo(Articulo articulo) throws Exception {
+        cliente.create_XML(articulo);
     }
 
     @Override
-    public void actualizarArticulo(Articulo articulo) throws LogicaNegocioException {
-        try {
-            cliente.edit_XML(articulo);
-        } catch (Exception e) {
-        }
+    public void actualizarArticulo(Articulo articulo) throws Exception {
+        cliente.edit_XML(articulo);
     }
 
     @Override
-    public void actualizarArticuloDetalle(Articulo articulo) throws LogicaNegocioException {
-        try {
-            LOGGER.log(Level.INFO, "TAMAÑO TABLA en IMPL {0}", articulo.getAlmacenes().size());
-            cliente.editDetalle_XML(articulo);
-        } catch (Exception e) {
-        }
+    public void actualizarArticuloDetalle(Articulo articulo) throws Exception {
+
+        cliente.editDetalle_XML(articulo);
     }
 
     @Override
-    public void borrarArticulo(Articulo articulo) throws LogicaNegocioException {
-        try {
-            cliente.remove(articulo.getId());
-        } catch (Exception e) {
-            throw new LogicaNegocioException("Error");
-        }
+    public void borrarArticulo(Articulo articulo) throws Exception {
+        cliente.remove(articulo.getId());
     }
 
 }

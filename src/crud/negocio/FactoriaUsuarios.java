@@ -67,6 +67,7 @@ public class FactoriaUsuarios {
             controlador.setCorreo(email);
             controlador.initStage(root);
         } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error al abrir la ventana de Inicio de sesion {0}", e.getMessage());
             ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
@@ -82,6 +83,7 @@ public class FactoriaUsuarios {
             controlador.initStage(root);
         } catch (Exception e) {
             ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error al abrir la ventana de Registro: {0}", e.getMessage());
         }
     }
 
@@ -94,6 +96,7 @@ public class FactoriaUsuarios {
             controlador.setUser(usuario);
             controlador.initStage(root);
         } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error al abrir la ventana de Menu principal: {0}", e.getMessage());
             ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }

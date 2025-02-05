@@ -1,5 +1,6 @@
 package crud.iu.controladores;
 
+import crud.excepciones.ExcepcionesUtilidad;
 import crud.negocio.FactoriaAlmacen;
 import crud.negocio.FactoriaArticulos;
 import crud.negocio.FactoriaPedidos;
@@ -7,6 +8,7 @@ import crud.negocio.FactoriaUsuarios;
 import crud.objetosTransferibles.Almacen;
 import crud.objetosTransferibles.Articulo;
 import crud.objetosTransferibles.Trabajador;
+import java.net.ConnectException;
 import java.net.URL;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -43,6 +45,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javax.ws.rs.ProcessingException;
 
 /**
  * Controlador para la ventana de detalle de un Artículo.
@@ -245,20 +248,31 @@ public class ControladorArticulosDetalle implements Initializable {
      *
      * @param root Nodo raíz de la vista.
      */
-    public void initStage(Parent root) {
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setTitle("Gestión de Articulos Detalle");
-        LOGGER.info("Inicializando la escena principal");
-        configurarMenu();
-        configurarHandlers();
-        stage.show();  // Mostrar el escenario
+    public void initStage(Parent root) throws Exception {
+        try {
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("Gestión de Articulos Detalle");
+            LOGGER.info("Inicializando la escena principal");
+            configurarMenu();
+            configurarHandlers();
+            stage.show();  // Mostrar el escenario
 
-        if (articulo != null) {
-            cargarArticuloEnFormulario();
-            cargarAlmacenesDelArticulo();
-            cargarAlmacenesDisponibles();
-            configureMnemotecnicKeys();
+            if (articulo != null) {
+                cargarArticuloEnFormulario();
+                cargarAlmacenesDelArticulo();
+                cargarAlmacenesDisponibles();
+                configureMnemotecnicKeys();
+            }
+        } catch (Exception e) {
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
+            if (e instanceof ConnectException || e instanceof ProcessingException) {
+
+                FactoriaUsuarios.getInstance().cargarInicioSesion(stage, "");
+            } else {
+                throw e;
+            }
+
         }
     }
 
@@ -293,14 +307,26 @@ public class ControladorArticulosDetalle implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        LOGGER.info("Inicializando controlador ArticulosDetalle");
-        configurarTablas();
+        try {
 
-        almacenesPorArticulo = FXCollections.observableArrayList();
-        almacenesDelArticuloOriginal = FXCollections.observableArrayList(
-                almacenesPorArticulo.stream()
-                        .map(Almacen::clone)
-                        .collect(Collectors.toList()));
+            LOGGER.info("Inicializando controlador ArticulosDetalle");
+            configurarTablas();
+
+            almacenesPorArticulo = FXCollections.observableArrayList();
+            almacenesDelArticuloOriginal = FXCollections.observableArrayList(
+                    almacenesPorArticulo.stream()
+                            .map(Almacen::clone)
+                            .collect(Collectors.toList()));
+        } catch (Exception e) {
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
+            if (e instanceof ConnectException || e instanceof ProcessingException) {
+
+                FactoriaUsuarios.getInstance().cargarInicioSesion(stage, "");
+            } else {
+                throw e;
+            }
+
+        }
     }
 
     /**
@@ -445,7 +471,7 @@ public class ControladorArticulosDetalle implements Initializable {
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    setText(String.format("%.2f", item));
+                    setText(String.format("%f", item));
                     setStyle("-fx-alignment: CENTER-RIGHT;");
                 }
             }
@@ -465,7 +491,7 @@ public class ControladorArticulosDetalle implements Initializable {
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    setText(String.format("%.2f", item));
+                    setText(String.format("%f", item));
                     setStyle("-fx-alignment: CENTER-RIGHT;");
                 }
             }
@@ -478,27 +504,22 @@ public class ControladorArticulosDetalle implements Initializable {
      * Carga la lista de almacenes disponibles (que no están asignados al
      * artículo).
      */
-    private void cargarAlmacenesDisponibles() {
-        try {
-            Collection<Almacen> almacenes = factoriaAlmacenes.acceso().getAllAlmacenes();
+    private void cargarAlmacenesDisponibles() throws Exception {
 
-            Set<Long> idsAlmacenes = almacenesPorArticulo.stream()
-                    .map(Almacen::getId)
-                    .collect(Collectors.toSet());
+        Collection<Almacen> almacenes = factoriaAlmacenes.acceso().getAllAlmacenes();
 
-            almacenes.removeIf(almacen -> idsAlmacenes.contains(almacen.getId()));
+        Set<Long> idsAlmacenes = almacenesPorArticulo.stream()
+                .map(Almacen::getId)
+                .collect(Collectors.toSet());
 
-            almacenesDisponibles = FXCollections.observableArrayList(almacenes);
+        almacenes.removeIf(almacen -> idsAlmacenes.contains(almacen.getId()));
 
-            // Ordenar por ID para mayor claridad
-            FXCollections.sort(almacenesDisponibles, Comparator.comparing(Almacen::getId));
-            tablaAlmacenesDisponibles.setItems(almacenesDisponibles);
+        almacenesDisponibles = FXCollections.observableArrayList(almacenes);
 
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al cargar los Almacenes disponibles", e);
-            mostrarAlerta(Alert.AlertType.ERROR, "Error",
-                    "No se pudieron cargar los Almacenes disponibles.");
-        }
+        // Ordenar por ID para mayor claridad
+        FXCollections.sort(almacenesDisponibles, Comparator.comparing(Almacen::getId));
+        tablaAlmacenesDisponibles.setItems(almacenesDisponibles);
+
     }
 
     /**
@@ -553,7 +574,12 @@ public class ControladorArticulosDetalle implements Initializable {
         almacenesPorArticulo.add(almacenSeleccionado);
         almacenesCambiar.add(almacenSeleccionado);
         tablaAlmacenesArticulo.refresh();
-        cargarAlmacenesDisponibles();
+        try {
+            cargarAlmacenesDisponibles();
+        } catch (Exception e) {
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
+
+        }
         cambiosNoGuardados = true;
     }
 
@@ -575,7 +601,7 @@ public class ControladorArticulosDetalle implements Initializable {
             reiniciar();
 
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al guardar cambios", e);
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 
@@ -583,11 +609,21 @@ public class ControladorArticulosDetalle implements Initializable {
      * Refresca la vista tras guardar cambios o revertirlos.
      */
     private void reiniciar() {
-        configurarTablas();
-        cargarAlmacenesDelArticulo();
-        cargarAlmacenesDisponibles();
-        tablaAlmacenesDisponibles.refresh();
-        tablaAlmacenesArticulo.refresh();
+        try {
+
+            configurarTablas();
+            cargarAlmacenesDelArticulo();
+            cargarAlmacenesDisponibles();
+            tablaAlmacenesDisponibles.refresh();
+            tablaAlmacenesArticulo.refresh();
+
+        } catch (Exception e) {
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
+            if (e instanceof ConnectException || e instanceof ProcessingException) {
+
+                FactoriaUsuarios.getInstance().cargarInicioSesion(stage, "");
+            }
+        }
     }
 
     /**
@@ -608,7 +644,12 @@ public class ControladorArticulosDetalle implements Initializable {
         almacenesPorArticulo.remove(almacenSeleccionado);
         almacenesDisponibles.add(almacenSeleccionado);
         tablaAlmacenesArticulo.refresh();
-        cargarAlmacenesDisponibles();
+        try {
+            cargarAlmacenesDisponibles();
+        } catch (Exception e) {
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
+
+        }
         cambiosNoGuardados = true;
     }
 

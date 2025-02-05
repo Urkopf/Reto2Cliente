@@ -43,6 +43,7 @@ import static crud.utilidades.AlertUtilities.showErrorDialog;
 import static crud.utilidades.ValidateUtilities.isValid;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.ConnectException;
 import java.security.PublicKey;
 import java.util.Base64;
 import java.util.Optional;
@@ -54,6 +55,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleGroup;
+import javax.ws.rs.ProcessingException;
 
 /**
  * Controlador FXML para la vista de registro (SignUp). Este controlador
@@ -181,126 +183,133 @@ public class ControladorRegistro implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Crear el menú contextual personalizado
-        contextMenu = new ContextMenu();
-        contextMenu.getStyleClass().add("context-menu");
-        contextMenu.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8);"
-                + "-fx-text-fill: #FFFFFF;"
-                + "-fx-font-size: 18px;"
-                + "-fx-font-weight: bold;"
-                + "-fx-font-family: 'Protest Strike';"
-                + "-fx-max-width: 250px;"
-                + "-fx-wrap-text: true;"
-                + "-fx-padding: 10px;"
-                + "-fx-border-width: 1;"
-                + "-fx-border-radius: 5;"
-                + "-fx-background-radius: 5;");
+        try {
+            // Crear el menú contextual personalizado
+            contextMenu = new ContextMenu();
+            contextMenu.getStyleClass().add("context-menu");
+            contextMenu.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8);"
+                    + "-fx-text-fill: #FFFFFF;"
+                    + "-fx-font-size: 18px;"
+                    + "-fx-font-weight: bold;"
+                    + "-fx-font-family: 'Protest Strike';"
+                    + "-fx-max-width: 250px;"
+                    + "-fx-wrap-text: true;"
+                    + "-fx-padding: 10px;"
+                    + "-fx-border-width: 1;"
+                    + "-fx-border-radius: 5;"
+                    + "-fx-background-radius: 5;");
 
-        // Opción "Borrar campos" en el menú contextual
-        MenuItem clearFieldsItem = new MenuItem("Borrar campos");
-        clearFieldsItem.setStyle("-fx-font-size: 18px;"
-                + "-fx-font-weight: bold;"
-                + "-fx-font-family: 'Protest Strike';"
-                + "-fx-text-fill: #FFFFFF;"
-                + "-fx-background-color: transparent;"
-                + "-fx-max-width: 250px;"
-                + "-fx-wrap-text: true;");
-        clearFieldsItem.setOnAction(event -> handleClearFields());
+            // Opción "Borrar campos" en el menú contextual
+            MenuItem clearFieldsItem = new MenuItem("Borrar campos");
+            clearFieldsItem.setStyle("-fx-font-size: 18px;"
+                    + "-fx-font-weight: bold;"
+                    + "-fx-font-family: 'Protest Strike';"
+                    + "-fx-text-fill: #FFFFFF;"
+                    + "-fx-background-color: transparent;"
+                    + "-fx-max-width: 250px;"
+                    + "-fx-wrap-text: true;");
+            clearFieldsItem.setOnAction(event -> handleClearFields());
 
-        // Opción "Salir" en el menú contextual
-        MenuItem exitItem = new MenuItem("Salir");
-        exitItem.setStyle("-fx-font-size: 18px;"
-                + "-fx-font-weight: bold;"
-                + "-fx-font-family: 'Protest Strike';"
-                + "-fx-text-fill: #FFFFFF;"
-                + "-fx-background-color: transparent;"
-                + "-fx-max-width: 250px;"
-                + "-fx-wrap-text: true;");
-        exitItem.setOnAction(event -> handleExit());
+            // Opción "Salir" en el menú contextual
+            MenuItem exitItem = new MenuItem("Salir");
+            exitItem.setStyle("-fx-font-size: 18px;"
+                    + "-fx-font-weight: bold;"
+                    + "-fx-font-family: 'Protest Strike';"
+                    + "-fx-text-fill: #FFFFFF;"
+                    + "-fx-background-color: transparent;"
+                    + "-fx-max-width: 250px;"
+                    + "-fx-wrap-text: true;");
+            exitItem.setOnAction(event -> handleExit());
 
-        // Añadir las opciones personalizadas al menú contextual
-        contextMenu.getItems().addAll(clearFieldsItem, exitItem);
+            // Añadir las opciones personalizadas al menú contextual
+            contextMenu.getItems().addAll(clearFieldsItem, exitItem);
 
-        // Asignar el menú personalizado a cada campo de texto y eliminar el menú predeterminado
-        assignCustomContextMenu(campoNombre);
-        assignCustomContextMenu(campoApellido1);
-        assignCustomContextMenu(campoApellido2);
-        assignCustomContextMenu(campoEmail);
-        assignCustomContextMenu(campoDireccion);
-        assignCustomContextMenu(campoCiudad);
-        assignCustomContextMenu(campoCodigoPostal);
-        assignCustomContextMenu(campoCIF);
-        assignCustomContextMenu(campoContrasena);
-        assignCustomContextMenu(campoRepiteContrasena);
-        assignCustomContextMenu(campoSector);
-        assignCustomContextMenu(campoTelefono);
-        assignCustomContextMenuCombo(comboDepartamento);
-        assignCustomContextMenuCombo(comboCategoria);
+            // Asignar el menú personalizado a cada campo de texto y eliminar el menú predeterminado
+            assignCustomContextMenu(campoNombre);
+            assignCustomContextMenu(campoApellido1);
+            assignCustomContextMenu(campoApellido2);
+            assignCustomContextMenu(campoEmail);
+            assignCustomContextMenu(campoDireccion);
+            assignCustomContextMenu(campoCiudad);
+            assignCustomContextMenu(campoCodigoPostal);
+            assignCustomContextMenu(campoCIF);
+            assignCustomContextMenu(campoContrasena);
+            assignCustomContextMenu(campoRepiteContrasena);
+            assignCustomContextMenu(campoSector);
+            assignCustomContextMenu(campoTelefono);
+            assignCustomContextMenuCombo(comboDepartamento);
+            assignCustomContextMenuCombo(comboCategoria);
 
-        // Asignar el menú contextual al GridPane
-        gridPane.setOnMouseClicked(event -> {
-            if (event.getButton() == MouseButton.SECONDARY) {
-                contextMenu.show(gridPane, event.getScreenX(), event.getScreenY());
+            // Asignar el menú contextual al GridPane
+            gridPane.setOnMouseClicked(event -> {
+                if (event.getButton() == MouseButton.SECONDARY) {
+                    contextMenu.show(gridPane, event.getScreenX(), event.getScreenY());
+                }
+            });
+
+            // Añadir listener a cada TextField o PasswordField en el GridPane
+            for (Node node : gridPane.getChildren()) {
+                if (node instanceof TextField || node instanceof PasswordField || node instanceof ComboBox) {
+                    node.setOnKeyTyped(event -> hideErrorImage(node));  // Ocultar error tan pronto como se escribe algo
+                }
             }
-        });
 
-        // Añadir listener a cada TextField o PasswordField en el GridPane
-        for (Node node : gridPane.getChildren()) {
-            if (node instanceof TextField || node instanceof PasswordField || node instanceof ComboBox) {
-                node.setOnKeyTyped(event -> hideErrorImage(node));  // Ocultar error tan pronto como se escribe algo
+            for (Node node : grupoSector.getChildren()) {
+                if (node instanceof TextField || node instanceof PasswordField || node instanceof ComboBox) {
+                    node.setOnKeyTyped(event -> hideErrorImage(node));  // Ocultar error tan pronto como se escribe algo
+                }
             }
-        }
 
-        for (Node node : grupoSector.getChildren()) {
-            if (node instanceof TextField || node instanceof PasswordField || node instanceof ComboBox) {
-                node.setOnKeyTyped(event -> hideErrorImage(node));  // Ocultar error tan pronto como se escribe algo
+            for (Node node : grupoTelefono.getChildren()) {
+                if (node instanceof TextField || node instanceof PasswordField || node instanceof ComboBox) {
+                    node.setOnKeyTyped(event -> hideErrorImage(node));  // Ocultar error tan pronto como se escribe algo
+                }
             }
-        }
 
-        for (Node node : grupoTelefono.getChildren()) {
-            if (node instanceof TextField || node instanceof PasswordField || node instanceof ComboBox) {
-                node.setOnKeyTyped(event -> hideErrorImage(node));  // Ocultar error tan pronto como se escribe algo
+            // Asegura que se salte estos campos porque son auxiliares
+            campoContrasena.setOnKeyPressed(event -> {
+                if (event.getCode() == KeyCode.TAB) {
+                    event.consume();  // Evita la acción por defecto de la tecla TAB
+                    campoRepiteContrasena.requestFocus();  // Mover el foco al siguiente campo
+                }
+            });
+
+            campoRepiteContrasena.setOnKeyPressed(event -> {
+                if (event.getCode() == KeyCode.TAB) {
+                    event.consume();  // Evita la acción por defecto de la tecla TAB
+                    radioCliente.requestFocus();  // Mover el foco al siguiente campo
+                }
+            });
+
+            // Añade los botones de radio al ToggleGroup
+            radioCliente.setToggleGroup(grupoRadio);
+            radioTrabajador.setToggleGroup(grupoRadio);
+
+            // Añade un listener para los cambios en la selección
+            grupoRadio.selectedToggleProperty().addListener((observable, oldValue, newValue) -> handleRadioChange());
+            radioCliente.setSelected(true);
+            // Configuración inicial
+            handleRadioChange(); // Ajusta visibilidad inicial según el estado de los botones
+
+            comboDepartamento.setItems(FXCollections.observableArrayList(Departamento.values()));
+
+            // Añade un listener para el ComboBox de Departamento
+            comboDepartamento.valueProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue != null) {
+                    actualizarCategorias(newValue);
+                }
+            });
+
+            // Configuración inicial del ComboBox de Categorías
+            if (!comboDepartamento.getItems().isEmpty()) {
+                comboDepartamento.setValue(comboDepartamento.getItems().get(0)); // Selecciona el primer departamento por defecto
+                actualizarCategorias(comboDepartamento.getValue());
             }
-        }
-
-        // Asegura que se salte estos campos porque son auxiliares
-        campoContrasena.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.TAB) {
-                event.consume();  // Evita la acción por defecto de la tecla TAB
-                campoRepiteContrasena.requestFocus();  // Mover el foco al siguiente campo
+        } catch (Exception e) {
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
+            if (e instanceof ConnectException || e instanceof ProcessingException) {
+                FactoriaUsuarios.getInstance().cargarInicioSesion(stage, "");
             }
-        });
-
-        campoRepiteContrasena.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.TAB) {
-                event.consume();  // Evita la acción por defecto de la tecla TAB
-                radioCliente.requestFocus();  // Mover el foco al siguiente campo
-            }
-        });
-
-        // Añade los botones de radio al ToggleGroup
-        radioCliente.setToggleGroup(grupoRadio);
-        radioTrabajador.setToggleGroup(grupoRadio);
-
-        // Añade un listener para los cambios en la selección
-        grupoRadio.selectedToggleProperty().addListener((observable, oldValue, newValue) -> handleRadioChange());
-        radioCliente.setSelected(true);
-        // Configuración inicial
-        handleRadioChange(); // Ajusta visibilidad inicial según el estado de los botones
-
-        comboDepartamento.setItems(FXCollections.observableArrayList(Departamento.values()));
-
-        // Añade un listener para el ComboBox de Departamento
-        comboDepartamento.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                actualizarCategorias(newValue);
-            }
-        });
-
-        // Configuración inicial del ComboBox de Categorías
-        if (!comboDepartamento.getItems().isEmpty()) {
-            comboDepartamento.setValue(comboDepartamento.getItems().get(0)); // Selecciona el primer departamento por defecto
-            actualizarCategorias(comboDepartamento.getValue());
         }
     }
 
@@ -539,7 +548,7 @@ public class ControladorRegistro implements Initializable {
                 // Cliente encripta la contraseña
                 contraseñaEncriptada = cifrarConClavePublica(contraseña, clavePublica);
             } catch (Exception ex) {
-                Logger.getLogger(ControladorRegistro.class.getName()).log(Level.SEVERE, null, ex);
+                ExcepcionesUtilidad.centralExcepciones(ex, ex.getMessage());
             }
 
             // Si no hay errores, proceder con el registro
@@ -644,7 +653,7 @@ public class ControladorRegistro implements Initializable {
                 return hashClaveIngresada.equals(hashEsperado);
 
             } catch (Exception e) {
-                Logger.getLogger(ControladorRegistro.class.getName()).log(Level.SEVERE, null, e);
+                ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
                 return false;
             }
         } else {
@@ -674,19 +683,6 @@ public class ControladorRegistro implements Initializable {
             // Si el usuario confirma, realizar la acción de cancelar
             factoria.cargarInicioSesion(stage, "");
         }
-    }
-
-    /**
-     * Metodo para visualizar una alerta de confirmacion de registro.
-     *
-     * @return true si pulsa aceptar o false si pulsa cancelar.
-     *
-     * @author Urko
-     */
-    /*    private boolean confirmNoActiveUserRegister() {
-        // Crear la alerta de confirmación
-        return showConfirmationDialog("Confirmación de Registro", "Si el usuario esta 'No Activo', no podrá iniciar sesión ¿Desea continuar el registro?");
-
     }
 
     /**
@@ -788,46 +784,6 @@ public class ControladorRegistro implements Initializable {
             errorTelefono.setVisible(false);
         } else if (node == campoCIF) {
             errorCIF.setVisible(false);
-        }
-    }
-
-    /**
-     * Gestiona la respuesta del servidor a la solicitud de registro.
-     *
-     * @param message El mensaje de respuesta del servidor.
-     * @author Sergio
-     */
-    /*  private void messageManager(Message message) {
-        switch (message.getType()) {
-            case OK_RESPONSE:
-                botonRegistrar.setDisable(true);
-                if (!actualizar) {
-                    showErrorDialog(AlertType.INFORMATION, "Información", "El registro se ha realizado con éxito.");
-                } else {
-                    showErrorDialog(AlertType.INFORMATION, "Información", "La actualización se ha realizado con éxito.");
-                }
-                factoria.loadSignInWindow(stage, user.getCorreo());
-                break;
-            case SIGNUP_ERROR:
-                showErrorDialog(AlertType.ERROR, "Error", "Se ha producido un error al intentar registrar sus datos. Vuelva a intentarlo.");
-                break;
-            case LOGIN_EXIST_ERROR:
-                showErrorDialog(AlertType.ERROR, "Error", "El correo electrónico ya existe en la base de datos.");
-                campoEmail.setStyle("-fx-border-color: red;");
-                errorEmail.setVisible(true);
-                break;
-            case BAD_RESPONSE:
-                showErrorDialog(AlertType.ERROR, "Error", "Error interno de la base de datos, inténtelo de nuevo...");
-                break;
-            case SQL_ERROR:
-                showErrorDialog(AlertType.ERROR, "Error", "Error al introducir los datos en la base de datos, inténtelo de nuevo...");
-                break;
-            case CONNECTION_ERROR:
-                showErrorDialog(AlertType.ERROR, "Error", "Error de conexión con la base de datos. No hay conexión disponible, inténtelo de nuevo...");
-                break;
-            case SERVER_ERROR:
-                showErrorDialog(AlertType.ERROR, "Error", "Servidor no encontrado, inténtelo de nuevo...");
-                break;
         }
     }
 

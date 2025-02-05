@@ -6,6 +6,7 @@ import crud.objetosTransferibles.Usuario;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
 import crud.utilidades.Utilidades;
 import static crud.utilidades.ValidateUtilities.isValid;
+import java.net.ConnectException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -21,6 +22,7 @@ import java.util.logging.Logger;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javax.ws.rs.ProcessingException;
 
 /**
  * Controlador para la vista de recuperación de contraseña.
@@ -55,9 +57,7 @@ public class ControladorRecuperarContrasena implements Initializable {
             stage.setResizable(false);
 
             botonCancelar.addEventHandler(ActionEvent.ACTION, this::manejarCancelar);
-
             botonRecuperar.addEventHandler(ActionEvent.ACTION, this::manejarRecuperar);
-
             botonAyuda.setOnMouseClicked(event -> {
                 mostrarAyuda();
             });
@@ -73,6 +73,13 @@ public class ControladorRecuperarContrasena implements Initializable {
 
         } catch (Exception e) {
             ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
+            if (e instanceof ConnectException || e instanceof ProcessingException) {
+
+                FactoriaUsuarios.getInstance().cargarInicioSesion(stage, "");
+            } else {
+                throw e;
+            }
+
         }
     }
 

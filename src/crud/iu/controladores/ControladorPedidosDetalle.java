@@ -12,6 +12,7 @@ import crud.objetosTransferibles.Estado;
 import crud.objetosTransferibles.Pedido;
 import crud.objetosTransferibles.PedidoArticulo;
 import crud.objetosTransferibles.Trabajador;
+import java.net.ConnectException;
 
 import java.net.URL;
 import java.text.NumberFormat;
@@ -50,6 +51,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javax.ws.rs.ProcessingException;
 
 /**
  * <h1>ControladorPedidosDetalle</h1>
@@ -175,19 +177,26 @@ public class ControladorPedidosDetalle implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        configurarTablas();
-        cargarArticulosDisponibles();
-        cargarArticulosDelPedido();
+        try {
+            configurarTablas();
+            cargarArticulosDisponibles();
+            cargarArticulosDelPedido();
 
-        articulosDelPedido = FXCollections.observableArrayList();
-        articulosDelPedidoOriginales = FXCollections.observableArrayList(
-                articulosDelPedido.stream()
-                        .map(PedidoArticulo::clone)
-                        .collect(Collectors.toList())
-        );
+            articulosDelPedido = FXCollections.observableArrayList();
+            articulosDelPedidoOriginales = FXCollections.observableArrayList(
+                    articulosDelPedido.stream()
+                            .map(PedidoArticulo::clone)
+                            .collect(Collectors.toList())
+            );
 
-        // Llamada inicial para mostrar el total (inicialmente 0)
-        actualizarTotal();
+            // Llamada inicial para mostrar el total (inicialmente 0)
+            actualizarTotal();
+        } catch (Exception e) {
+            if (e instanceof ConnectException || e instanceof ProcessingException) {
+
+                FactoriaUsuarios.getInstance().cargarInicioSesion(stage, "");
+            }
+        }
     }
 
     /**
@@ -196,29 +205,35 @@ public class ControladorPedidosDetalle implements Initializable {
      *
      * @param root Nodo raíz (parent) de la escena.
      */
-    public void initStage(Parent root) {
+    public void initStage(Parent root) throws Exception {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Detalles del pedido");
+        try {
+            LOGGER.info("Inicializando la escena principal");
+            configurarMenu();
+            configurarHandlers();
+            stage.show();
 
-        LOGGER.info("Inicializando la escena principal");
-        configurarMenu();
-        configurarHandlers();
-        stage.show();
+            // Si ya tenemos el pedido, cargamos sus datos en la vista
+            if (pedido != null) {
+                cargarDatosPedidoEnVista();
+                // Cargamos artículos del pedido y establecemos listeners
+                cargarArticulosDelPedido();
+                actualizarTotal();
+                agregarListeners();
+            }
 
-        // Si ya tenemos el pedido, cargamos sus datos en la vista
-        if (pedido != null) {
-            cargarDatosPedidoEnVista();
-            // Cargamos artículos del pedido y establecemos listeners
-            cargarArticulosDelPedido();
-            actualizarTotal();
-            agregarListeners();
-        }
+            // Si el usuario es un cliente, deshabilitar ciertos campos
+            if (userCliente != null) {
+                campoEstado.setDisable(true);
+                campoCif.setDisable(true);
+            }
+        } catch (Exception e) {
+            if (e instanceof ConnectException || e instanceof ProcessingException) {
 
-        // Si el usuario es un cliente, deshabilitar ciertos campos
-        if (userCliente != null) {
-            campoEstado.setDisable(true);
-            campoCif.setDisable(true);
+                FactoriaUsuarios.getInstance().cargarInicioSesion(stage, "");
+            }
         }
     }
     // </editor-fold>
@@ -501,19 +516,15 @@ public class ControladorPedidosDetalle implements Initializable {
      * Carga todos los artículos disponibles desde la base de datos y los
      * muestra en la tabla de artículos disponibles.
      */
-    private void cargarArticulosDisponibles() {
-        try {
-            Collection<Articulo> articulos = factoriaArticulos.acceso().getAllArticulos();
-            articulosDisponibles = FXCollections.observableArrayList(articulos);
+    private void cargarArticulosDisponibles() throws Exception {
 
-            // Ordenar por ID para mayor claridad
-            FXCollections.sort(articulosDisponibles, Comparator.comparing(Articulo::getId));
-            tablaArticulosDisponibles.setItems(articulosDisponibles);
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al cargar los artículos disponibles", e);
-            mostrarAlerta(Alert.AlertType.ERROR, "Error",
-                    "No se pudieron cargar los artículos disponibles.");
-        }
+        Collection<Articulo> articulos = factoriaArticulos.acceso().getAllArticulos();
+        articulosDisponibles = FXCollections.observableArrayList(articulos);
+
+        // Ordenar por ID para mayor claridad
+        FXCollections.sort(articulosDisponibles, Comparator.comparing(Articulo::getId));
+        tablaArticulosDisponibles.setItems(articulosDisponibles);
+
     }
 
     /**
@@ -546,8 +557,7 @@ public class ControladorPedidosDetalle implements Initializable {
             tablaArticulosPedidos.refresh();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cargar los artículos del pedido", e);
-            mostrarAlerta(Alert.AlertType.ERROR, "Error",
-                    "No se pudieron cargar los artículos del pedido.");
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 
@@ -813,7 +823,7 @@ public class ControladorPedidosDetalle implements Initializable {
      * @param cantidad La cantidad a ajustar (positiva para aumentar, negativa
      * para reducir).
      */
-    private void actualizarStock(Articulo articulo, int cantidad) throws LogicaNegocioException {
+    private void actualizarStock(Articulo articulo, int cantidad) throws Exception {
         if (articulo != null) {
             int nuevoStock = articulo.getStock() + cantidad;
             if (nuevoStock < 0) {
@@ -882,12 +892,18 @@ public class ControladorPedidosDetalle implements Initializable {
      * Reinicia la vista recargando los artículos y actualizando el total.
      */
     private void reiniciar() {
-        configurarTablas();
-        cargarArticulosDisponibles();
-        cargarArticulosDelPedido();
-        tablaArticulosDisponibles.refresh();
-        tablaArticulosPedidos.refresh();
-        actualizarTotal();
+        try {
+            configurarTablas();
+            cargarArticulosDisponibles();
+            cargarArticulosDelPedido();
+            tablaArticulosDisponibles.refresh();
+            tablaArticulosPedidos.refresh();
+            actualizarTotal();
+        } catch (Exception e) {
+            if (e instanceof ConnectException || e instanceof ProcessingException) {
+                FactoriaUsuarios.getInstance().cargarInicioSesion(stage, "");
+            }
+        }
     }
 
     /**

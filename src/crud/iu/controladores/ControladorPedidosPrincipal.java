@@ -231,8 +231,9 @@ public class ControladorPedidosPrincipal implements Initializable {
         if (userCliente != null) {
             menuIr.setVisible(false);
             opcionIrArticulos.setVisible(false);
-            opcionIrArticulos.setOnAction(event -> irVistaArticulos());
+
         }
+        opcionIrArticulos.setOnAction(event -> irVistaArticulos());
         MenuItem botonAyuda = menuAyuda.getItems().get(0);
         botonAyuda.setOnAction(event -> {
             mostrarAyuda();
@@ -363,8 +364,9 @@ public class ControladorPedidosPrincipal implements Initializable {
                     nuevoPedido.setCifCliente("");
                     LOGGER.warning("No se encontraron clientes para asignar un CIF.");
                 }
-            } catch (LogicaNegocioException ex) {
+            } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
+                ExcepcionesUtilidad.centralExcepciones(ex, ex.getMessage());
             }
         } else if (userCliente != null) {
             // Si el usuario es cliente, usar su propio CIF
@@ -1175,8 +1177,9 @@ public class ControladorPedidosPrincipal implements Initializable {
                             .findFirst()
                             .orElse(null);
                     pedido.setCliente(clienteActualizado);
-                } catch (LogicaNegocioException ex) {
+                } catch (Exception ex) {
                     LOGGER.log(Level.SEVERE, null, ex);
+                    ExcepcionesUtilidad.centralExcepciones(ex, ex.getMessage());
                 }
 
                 setText(newValue);

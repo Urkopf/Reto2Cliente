@@ -8,6 +8,7 @@ import crud.objetosTransferibles.Articulo;
 import crud.objetosTransferibles.Trabajador;
 import crud.utilidades.AlertUtilities;
 import java.io.InputStream;
+import java.net.ConnectException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
@@ -51,6 +52,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javax.ws.rs.ProcessingException;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -274,31 +276,41 @@ public class ControladorArticulosPrincipal implements Initializable {
      *
      * @param root Nodo raíz (Parent) cargado desde el FXML.
      */
-    public void initStage(Parent root) {
+    public void initStage(Parent root) throws Exception {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Gestión de Articulos");
         LOGGER.info("Inicializando la escena principal");
+        try {
+            configurarMenu();
 
-        configurarMenu();
+            botonNuevo.addEventHandler(ActionEvent.ACTION, this::handleNuevoArticulo);
+            botonGuardar.addEventHandler(ActionEvent.ACTION, this::handleGuardarCambios);
+            botonAtras.addEventHandler(ActionEvent.ACTION, this::handleAtras);
+            botonReiniciar.addEventHandler(ActionEvent.ACTION, this::handleRecargarTabla);
+            botonEliminar.addEventHandler(ActionEvent.ACTION, this::handleEliminarArticulo);
+            botonBusqueda.addEventHandler(ActionEvent.ACTION, this::handleBusqueda);
+            botonDetalles.addEventHandler(ActionEvent.ACTION, this::handleDetalle);
 
-        botonNuevo.addEventHandler(ActionEvent.ACTION, this::handleNuevoArticulo);
-        botonGuardar.addEventHandler(ActionEvent.ACTION, this::handleGuardarCambios);
-        botonAtras.addEventHandler(ActionEvent.ACTION, this::handleAtras);
-        botonReiniciar.addEventHandler(ActionEvent.ACTION, this::handleRecargarTabla);
-        botonEliminar.addEventHandler(ActionEvent.ACTION, this::handleEliminarArticulo);
-        botonBusqueda.addEventHandler(ActionEvent.ACTION, this::handleBusqueda);
-        botonDetalles.addEventHandler(ActionEvent.ACTION, this::handleDetalle);
+            // Listener para habilitar o deshabilitar botones según la selección en la tabla
+            tablaArticulos.getSelectionModel().getSelectedItems().addListener((ListChangeListener<Articulo>) change -> {
+                actualizarEstadoBotones();
+            });
+            configureMnemotecnicKeys();
+            cargarDatosArticulos();
+            configurarPaginador();
+            stage.show();
+        } catch (Exception e) {
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
+            if (e instanceof ConnectException || e instanceof ProcessingException) {
 
-        // Listener para habilitar o deshabilitar botones según la selección en la tabla
-        tablaArticulos.getSelectionModel().getSelectedItems().addListener((ListChangeListener<Articulo>) change -> {
-            actualizarEstadoBotones();
-        });
+                FactoriaUsuarios.getInstance().cargarInicioSesion(stage, "");
+            } else {
+                throw e;
+            }
 
-        stage.show();
-        configureMnemotecnicKeys();
-        cargarDatosArticulos();
-        configurarPaginador();
+        }
+
     }
 
     /**
@@ -544,37 +556,32 @@ public class ControladorArticulosPrincipal implements Initializable {
      * Carga los datos de artículos desde la factoría. Si existe una lista de
      * búsqueda previa, se usa esa lista en lugar de la consulta general.
      */
-    private void cargarDatosArticulos() {
+    private void cargarDatosArticulos() throws Exception {
         Collection<Articulo> articulos = null;
-        try {
-            LOGGER.info("Cargando datos de articulos...");
-            if (listaBusqueda == null) {
-                articulos = factoriaArticulos.acceso().getAllArticulos();
-            } else {
-                articulos = listaBusqueda;
-            }
 
-            if (articulos == null || articulos.isEmpty()) {
-                LOGGER.warning("No se encontraron articulos.");
-                articulos = new ArrayList<>();
-            }
-            articulosObservableList = FXCollections.observableArrayList(articulos);
-            tablaArticulos.getItems().clear();
-            tablaArticulos.setItems(articulosObservableList);
-
-            articulosOriginales = FXCollections.observableArrayList(
-                    articulos.stream().map(Articulo::clone).collect(Collectors.toList()));
-
-            actualizarTablaYPaginador();
-            actualizarEstadoBotones();
-            setHayCambiosNoGuardados(false);
-            tablaArticulos.refresh();
-
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al cargar los datos de articulos", e);
-            AlertUtilities.showErrorDialog(Alert.AlertType.ERROR, "Error al cargar los articulos",
-                    "No se pudieron cargar los articulos. Intente nuevamente más tarde.");
+        LOGGER.info("Cargando datos de articulos...");
+        if (listaBusqueda == null) {
+            articulos = factoriaArticulos.acceso().getAllArticulos();
+        } else {
+            articulos = listaBusqueda;
         }
+
+        if (articulos == null || articulos.isEmpty()) {
+            LOGGER.warning("No se encontraron articulos.");
+            articulos = new ArrayList<>();
+        }
+        articulosObservableList = FXCollections.observableArrayList(articulos);
+        tablaArticulos.getItems().clear();
+        tablaArticulos.setItems(articulosObservableList);
+
+        articulosOriginales = FXCollections.observableArrayList(
+                articulos.stream().map(Articulo::clone).collect(Collectors.toList()));
+
+        actualizarTablaYPaginador();
+        actualizarEstadoBotones();
+        setHayCambiosNoGuardados(false);
+        tablaArticulos.refresh();
+
     }
 
     /**
@@ -807,9 +814,18 @@ public class ControladorArticulosPrincipal implements Initializable {
      * y recargando los datos desde la base.
      */
     private void reiniciar() {
-        listaBusqueda = null;
-        cargarDatosArticulos();
-        setHayCambiosNoGuardados(false);
+        try {
+            listaBusqueda = null;
+
+            cargarDatosArticulos();
+            setHayCambiosNoGuardados(false);
+        } catch (Exception e) {
+            if (e instanceof ConnectException || e instanceof ProcessingException) {
+
+                FactoriaUsuarios.getInstance().cargarInicioSesion(stage, "");
+            }
+        }
+
     }
 
     /**
@@ -881,9 +897,7 @@ public class ControladorArticulosPrincipal implements Initializable {
             factoriaArticulos.cargarArticulosDetalle(stage, userTrabajador, articuloSeleccionado);
             LOGGER.info("Cargando detalles del articulo: " + articuloSeleccionado.getId());
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al cargar detalles del articulo", e);
-            AlertUtilities.showErrorDialog(Alert.AlertType.ERROR, "Error",
-                    "No se pudieron cargar los detalles del articulo. Intentelo de nuevo.");
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 

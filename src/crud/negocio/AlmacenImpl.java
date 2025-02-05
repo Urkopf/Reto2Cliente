@@ -29,49 +29,38 @@ public class AlmacenImpl implements IAlmacen {
     }
 
     @Override
-    public Collection<Almacen> getAllAlmacenes() throws LogicaNegocioException {
+    public Collection<Almacen> getAllAlmacenes() throws Exception {
         List<Almacen> almacenes = null;
-        try {
-            LOGGER.log(Level.INFO, "Estoy en la Implementacion completa");
-            almacenes = cliente.findAll_XML(new GenericType<List<Almacen>>() {
-            });
-        } catch (Exception e) {
-            throw new LogicaNegocioException("Error");
-        }
+
+        LOGGER.log(Level.INFO, "Estoy en la Implementacion completa");
+        almacenes = cliente.findAll_XML(new GenericType<List<Almacen>>() {
+        });
+
         return almacenes;
     }
 
     @Override
-    public Collection<Almacen> getAllAlmacenesById(Long id) throws LogicaNegocioException {
+    public Collection<Almacen> getAllAlmacenesById(Long id) throws Exception {
         List<Almacen> almacenes;
-        try {
-            LOGGER.log(Level.INFO, "Estoy en la Implementacion {0}", id);
-            almacenes = cliente.findById_XML(new GenericType<List<Almacen>>() {
-            }, id);
-        } catch (Exception e) {
-            throw new LogicaNegocioException(e.getMessage());
-        }
+
+        LOGGER.log(Level.INFO, "Estoy en la Implementacion {0}", id);
+        almacenes = cliente.findById_XML(new GenericType<List<Almacen>>() {
+        }, id);
+
         return almacenes;
     }
 
     @Override
-    public void CrearActualizarRelacion(Almacen almacen) throws LogicaNegocioException {
-        try {
-            LOGGER.log(Level.INFO, "Estoy en la Implementacion {0}", almacen.getId());
-            cliente.createRelacion_XML(almacen);
-        } catch (Exception e) {
-            throw new LogicaNegocioException(e.getMessage());
-        }
+    public void CrearActualizarRelacion(Almacen almacen) throws Exception {
+
+        LOGGER.log(Level.INFO, "Estoy en la Implementacion {0}", almacen.getId());
+        cliente.createRelacion_XML(almacen);
     }
 
     @Override
-    public void BorrarRelacion(Almacen almacen) throws LogicaNegocioException {
-        try {
-            LOGGER.log(Level.INFO, "Estoy en la Implementacion {0}", almacen.getId());
-            cliente.remove_Relacion(almacen);
-        } catch (Exception e) {
-            throw new LogicaNegocioException(e.getMessage());
-        }
+    public void BorrarRelacion(Almacen almacen) throws Exception {
+        LOGGER.log(Level.INFO, "Estoy en la Implementacion {0}", almacen.getId());
+        cliente.remove_Relacion(almacen);
     }
 
 }

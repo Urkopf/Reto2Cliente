@@ -14,12 +14,12 @@ import java.util.Collection;
  */
 public interface IUsuario<T> {
 
-    public Collection<Usuario> getAllUsers();
+    public Collection<Usuario> getAllUsers() throws Exception;
 
-    public Object getInicioSesion(Usuario usuario);
+    public Object getInicioSesion(Usuario usuario) throws Exception;
 
-    public Object getCambiarContrasena(Usuario usuario);
+    public Object getCambiarContrasena(Usuario usuario) throws Exception;
 
-    public Object getRecuperarContrasena(Usuario usuario);
+    public Object getRecuperarContrasena(Usuario usuario) throws Exception;
 
 }

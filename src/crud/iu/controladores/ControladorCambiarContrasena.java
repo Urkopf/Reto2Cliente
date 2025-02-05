@@ -10,6 +10,7 @@ import static crud.seguridad.UtilidadesCifrado.cargarClavePublica;
 import static crud.seguridad.UtilidadesCifrado.cifrarConClavePublica;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
 import static crud.utilidades.ValidateUtilities.isValid;
+import java.net.ConnectException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -28,6 +29,7 @@ import java.util.logging.Logger;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javax.ws.rs.ProcessingException;
 
 /**
  * Controlador para la vista de cambio de contraseña.
@@ -67,16 +69,27 @@ public class ControladorCambiarContrasena implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        LOGGER.info("Inicializando controlador de cambio de contraseña.");
+        try {
+            LOGGER.info("Inicializando controlador de cambio de contraseña.");
 
-        botonOjoVieja.setOnMousePressed(event -> togglePasswordVisibility(campoContrasenaVieja, campoContrasenaViejaVista));
-        botonOjoVieja.setOnMouseReleased(event -> togglePasswordVisibility(campoContrasenaVieja, campoContrasenaViejaVista));
+            botonOjoVieja.setOnMousePressed(event -> togglePasswordVisibility(campoContrasenaVieja, campoContrasenaViejaVista));
+            botonOjoVieja.setOnMouseReleased(event -> togglePasswordVisibility(campoContrasenaVieja, campoContrasenaViejaVista));
 
-        botonOjoNueva.setOnMousePressed(event -> togglePasswordVisibility(campoContrasena, campoContrasenaVista));
-        botonOjoNueva.setOnMouseReleased(event -> togglePasswordVisibility(campoContrasena, campoContrasenaVista));
+            botonOjoNueva.setOnMousePressed(event -> togglePasswordVisibility(campoContrasena, campoContrasenaVista));
+            botonOjoNueva.setOnMouseReleased(event -> togglePasswordVisibility(campoContrasena, campoContrasenaVista));
 
-        botonOjoRepite.setOnMousePressed(event -> togglePasswordVisibility(campoRepiteContrasena, campoRepiteContrasenaVista));
-        botonOjoRepite.setOnMouseReleased(event -> togglePasswordVisibility(campoRepiteContrasena, campoRepiteContrasenaVista));
+            botonOjoRepite.setOnMousePressed(event -> togglePasswordVisibility(campoRepiteContrasena, campoRepiteContrasenaVista));
+            botonOjoRepite.setOnMouseReleased(event -> togglePasswordVisibility(campoRepiteContrasena, campoRepiteContrasenaVista));
+        } catch (Exception e) {
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
+            if (e instanceof ConnectException || e instanceof ProcessingException) {
+
+                FactoriaUsuarios.getInstance().cargarInicioSesion(stage, "");
+            } else {
+                throw e;
+            }
+
+        }
     }
 
     /**
@@ -126,6 +139,13 @@ public class ControladorCambiarContrasena implements Initializable {
             });
         } catch (Exception e) {
             ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
+            if (e instanceof ConnectException || e instanceof ProcessingException) {
+
+                FactoriaUsuarios.getInstance().cargarInicioSesion(stage, "");
+            } else {
+                throw e;
+            }
+
         }
     }
 

@@ -1,11 +1,13 @@
 package crud.iu.controladores;
 
+import crud.excepciones.ExcepcionesUtilidad;
 import crud.negocio.FactoriaArticulos;
 import crud.negocio.FactoriaUsuarios;
 import crud.objetosTransferibles.Articulo;
 import crud.objetosTransferibles.Trabajador;
 import crud.objetosTransferibles.Usuario;
 import crud.utilidades.AlertUtilities;
+import java.net.ConnectException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -31,6 +33,7 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javax.ws.rs.ProcessingException;
 
 /**
  * Controlador para la ventana de búsqueda de Artículos.
@@ -189,17 +192,28 @@ public class ControladorArticulosBusqueda implements Initializable {
      *
      * @param root Nodo raíz de la vista.
      */
-    public void initStage(Parent root) {
+    public void initStage(Parent root) throws Exception {
+
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Gestión de Articulos Busqueda");
         LOGGER.info("Inicializando la escena principal");
+        try {
+            botonBuscar.addEventHandler(ActionEvent.ACTION, this::handleBuscar);
+            botonReiniciar.addEventHandler(ActionEvent.ACTION, this::handleReiniciarFiltros);
+            botonAtras.addEventHandler(ActionEvent.ACTION, this::handleAtras);
 
-        botonBuscar.addEventHandler(ActionEvent.ACTION, this::handleBuscar);
-        botonReiniciar.addEventHandler(ActionEvent.ACTION, this::handleReiniciarFiltros);
-        botonAtras.addEventHandler(ActionEvent.ACTION, this::handleAtras);
+            stage.show();  // Mostrar el escenario
+        } catch (Exception e) {
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
+            if (e instanceof ConnectException || e instanceof ProcessingException) {
 
-        stage.show();  // Mostrar el escenario
+                FactoriaUsuarios.getInstance().cargarInicioSesion(stage, "");
+            } else {
+                throw e;
+            }
+
+        }
     }
 
     /**
