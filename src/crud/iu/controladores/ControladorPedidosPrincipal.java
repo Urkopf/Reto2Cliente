@@ -75,8 +75,7 @@ import net.sf.jasperreports.view.JasperViewer;
  * Controlador para la ventana principal de Pedidos. Se encarga de la
  * visualización, creación, edición, eliminación y búsqueda de pedidos.
  *
- * @author
- * <a href="mailto:urkoperitz@example.com">Urko Peritz</a>
+ * @author Urko Peritz
  */
 public class ControladorPedidosPrincipal implements Initializable {
 
@@ -153,7 +152,7 @@ public class ControladorPedidosPrincipal implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         LOGGER.info("Inicializando controlador PedidosPrincipal");
-        configurarTabla();
+
     }
 
     /**
@@ -162,21 +161,31 @@ public class ControladorPedidosPrincipal implements Initializable {
      *
      * @param root Nodo raíz de la escena.
      */
-    public void initStage(Parent root) {
+    public void initStage(Parent root) throws Exception {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Gestión de Pedidos");
         LOGGER.info("Inicializando la escena principal");
+        try {
+            configurarMenu();
+            configurarTabla();
+            configurarHandlers();
+            configurarListeners();
+            cargarDatosPedidos();
+            configurarPaginador();
+            stage.show();
+        } catch (Exception e) {
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
+            if (e instanceof ConnectException || e instanceof ProcessingException) {
 
-        configurarMenu();
+                FactoriaUsuarios.getInstance().cargarInicioSesion(stage, "");
+            } else {
+                throw e;
+            }
 
-        configurarHandlers();
-        configurarListeners();
-        stage.show();
+        }
 
         // Cargar datos y configurar paginador
-        cargarDatosPedidos();
-        configurarPaginador();
     }
 
     /**
@@ -306,7 +315,6 @@ public class ControladorPedidosPrincipal implements Initializable {
                 this.userTrabajador = (Trabajador) user;
                 LOGGER.info("Usuario asignado (Trabajador): " + userTrabajador.getNombre());
             }
-            cargarDatosPedidos();
         }
     }
 
@@ -797,51 +805,43 @@ public class ControladorPedidosPrincipal implements Initializable {
      * Carga los datos de pedidos desde la base de datos o de la lista de
      * búsqueda. Aplica filtro si el usuario es un {@code Cliente}.
      */
-    private void cargarDatosPedidos() {
-        try {
-            LOGGER.info("Cargando datos de pedidos...");
-            Collection<Pedido> pedidos;
+    private void cargarDatosPedidos() throws Exception {
 
-            if (listaBusqueda != null) {
-                // Si se ha hecho una búsqueda, usar esos resultados
-                pedidos = listaBusqueda;
-            } else {
-                // Caso contrario, obtener todos los pedidos
-                pedidos = factoriaPedidos.acceso().getAllPedidos();
-            }
+        LOGGER.info("Cargando datos de pedidos...");
+        Collection<Pedido> pedidos;
 
-            if (pedidos == null || pedidos.isEmpty()) {
-                pedidos = new ArrayList<>();
-            }
-
-            if (userCliente != null) {
-                // Filtrar solo los pedidos del cliente
-                pedidosObservableList = FXCollections.observableArrayList(
-                        pedidos.stream()
-                                .filter(p -> p.getCifCliente().equals(userCliente.getCif()))
-                                .collect(Collectors.toList()));
-            } else {
-                // Si es trabajador, mostrar todos
-                pedidosObservableList = FXCollections.observableArrayList(pedidos);
-            }
-
-            // Crear una copia de seguridad
-            pedidosOriginales = FXCollections.observableArrayList(
-                    pedidosObservableList.stream().map(Pedido::clone).collect(Collectors.toList()));
-
-            actualizarTablaYPaginador();
-            actualizarEstadoBotones();
-            setHayCambiosNoGuardados(false); // Al cargar inicial no hay cambios
-            tablaPedidos.refresh();
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al cargar los datos de pedidos", e);
-            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
-            if (e instanceof ConnectException || e instanceof ProcessingException) {
-
-                FactoriaUsuarios.getInstance().cargarInicioSesion(stage, "");
-            }
-
+        if (listaBusqueda != null) {
+            // Si se ha hecho una búsqueda, usar esos resultados
+            pedidos = listaBusqueda;
+        } else {
+            // Caso contrario, obtener todos los pedidos
+            pedidos = factoriaPedidos.acceso().getAllPedidos();
         }
+
+        if (pedidos == null || pedidos.isEmpty()) {
+            pedidos = new ArrayList<>();
+        }
+
+        if (userCliente != null) {
+            // Filtrar solo los pedidos del cliente
+            pedidosObservableList = FXCollections.observableArrayList(
+                    pedidos.stream()
+                            .filter(p -> p.getCifCliente().equals(userCliente.getCif()))
+                            .collect(Collectors.toList()));
+        } else {
+            // Si es trabajador, mostrar todos
+            pedidosObservableList = FXCollections.observableArrayList(pedidos);
+        }
+
+        // Crear una copia de seguridad
+        pedidosOriginales = FXCollections.observableArrayList(
+                pedidosObservableList.stream().map(Pedido::clone).collect(Collectors.toList()));
+
+        actualizarTablaYPaginador();
+        actualizarEstadoBotones();
+        setHayCambiosNoGuardados(false); // Al cargar inicial no hay cambios
+        tablaPedidos.refresh();
+
     }
 
     /**
@@ -849,7 +849,15 @@ public class ControladorPedidosPrincipal implements Initializable {
      * búsqueda.
      */
     private void reiniciarTabla() {
-        cargarDatosPedidos();
+        try {
+            cargarDatosPedidos();
+        } catch (Exception ex) {
+            ExcepcionesUtilidad.centralExcepciones(ex, ex.getMessage());
+            if (ex instanceof ConnectException || ex instanceof ProcessingException) {
+
+                FactoriaUsuarios.getInstance().cargarInicioSesion(stage, "");
+            }
+        }
         LOGGER.info("Tabla reiniciada a los datos originales.");
     }
 
