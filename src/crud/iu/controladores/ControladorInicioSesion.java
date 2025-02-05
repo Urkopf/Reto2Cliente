@@ -34,7 +34,6 @@ import static crud.seguridad.UtilidadesCifrado.cifrarConClavePublica;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
 import crud.excepciones.ExcepcionesUtilidad;
 import static crud.excepciones.ExcepcionesUtilidad.centralExcepciones;
-import static crud.excepciones.ExcepcionesUtilidad.clasificadorExcepciones;
 import static crud.utilidades.ValidateUtilities.isValid;
 import java.awt.Cursor;
 import java.security.PublicKey;
@@ -397,7 +396,7 @@ public class ControladorInicioSesion implements Initializable {
             }
 
         } catch (Exception e) {
-            clasificadorExcepciones(e, e.getMessage());
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 

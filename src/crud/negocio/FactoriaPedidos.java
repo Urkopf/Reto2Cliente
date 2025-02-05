@@ -5,6 +5,7 @@
  */
 package crud.negocio;
 
+import crud.excepciones.ExcepcionesUtilidad;
 import crud.iu.controladores.ControladorPedidosBusqueda;
 import crud.iu.controladores.ControladorPedidosPrincipal;
 import crud.objetosTransferibles.Pedido;
@@ -57,8 +58,7 @@ public class FactoriaPedidos {
             controlador.setBusqueda(pedidoBusqueda);
             controlador.initStage(root);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al abrir la ventnaa de PedidosPrincipal: {0}", e.getMessage());
-            showErrorDialog(Alert.AlertType.ERROR, "Error", "No se puede cargar la ventana de Pedidos principal.");
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 
@@ -71,8 +71,7 @@ public class FactoriaPedidos {
             controlador.setUser(user);
             controlador.initStage(root);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al abrir la ventnaa de Busqueda: {0}", e.getMessage());
-            showErrorDialog(Alert.AlertType.ERROR, "Error", "No se puede cargar la ventana de Busqueda.");
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 

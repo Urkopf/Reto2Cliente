@@ -1,5 +1,6 @@
 package crud.iu.controladores;
 
+import com.sun.mail.iap.ConnectionException;
 import crud.excepciones.LogicaNegocioException;
 import crud.negocio.FactoriaArticulos;
 import crud.negocio.FactoriaPedidoArticulo;
@@ -15,8 +16,8 @@ import crud.utilidades.AlertUtilities;
 
 import static crud.utilidades.AlertUtilities.showErrorDialog;
 import crud.excepciones.ExcepcionesUtilidad;
-import static crud.excepciones.ExcepcionesUtilidad.clasificadorExcepciones;
 import java.io.InputStream;
+import java.net.ConnectException;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -60,6 +61,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javax.ws.rs.ProcessingException;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -281,9 +283,9 @@ public class ControladorPedidosPrincipal implements Initializable {
             JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
             jasperViewer.setVisible(true);
 
-        } catch (JRException | NullPointerException ex) {
+        } catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Error printing report: {0}", ex.getMessage());
-            clasificadorExcepciones(ex, ex.getMessage());
+            ExcepcionesUtilidad.centralExcepciones(ex, ex.getMessage());
         }
     }
 
@@ -484,8 +486,8 @@ public class ControladorPedidosPrincipal implements Initializable {
                     AlertUtilities.showErrorDialog(Alert.AlertType.INFORMATION, "Información",
                             "Se ha cancelado el borrado.");
                 }
-            } catch (LogicaNegocioException ex) {
-                clasificadorExcepciones(ex, ex.getMessage());
+            } catch (Exception ex) {
+                ExcepcionesUtilidad.centralExcepciones(ex, ex.getMessage());
             }
 
         }
@@ -569,7 +571,7 @@ public class ControladorPedidosPrincipal implements Initializable {
             showErrorDialog(AlertType.INFORMATION, "Información", "Datos Guardados correctamente.");
         } catch (Exception e) {
 
-            clasificadorExcepciones(e, e.getMessage());
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
             showErrorDialog(AlertType.ERROR, "Error", "No se han guardado los cambios.");
         }
     }
@@ -610,7 +612,7 @@ public class ControladorPedidosPrincipal implements Initializable {
             LOGGER.info("Cargando detalles del pedido: " + pedidoSeleccionado.getId());
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cargar detalles del pedido", e);
-            clasificadorExcepciones(e, e.getMessage());
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 
@@ -833,7 +835,12 @@ public class ControladorPedidosPrincipal implements Initializable {
             tablaPedidos.refresh();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cargar los datos de pedidos", e);
-            clasificadorExcepciones(e, e.getMessage());
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
+            if (e instanceof ConnectException || e instanceof ProcessingException) {
+
+                FactoriaUsuarios.getInstance().cargarInicioSesion(stage, "");
+            }
+
         }
     }
 

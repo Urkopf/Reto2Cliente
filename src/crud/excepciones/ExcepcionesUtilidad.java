@@ -1,6 +1,8 @@
 package crud.excepciones;
 
+import crud.negocio.FactoriaUsuarios;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
+import java.net.ConnectException;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.ForbiddenException;
@@ -17,16 +19,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.scene.control.Alert.AlertType;
+import javafx.stage.Stage;
+import javax.ws.rs.ProcessingException;
+import net.sf.jasperreports.engine.JRException;
 
 public class ExcepcionesUtilidad {
 
     private static final Logger LOGGER = Logger.getLogger(ExcepcionesUtilidad.class.getName());
-
-    public static void clasificadorExcepciones(Object excepcion, String mensaje) {
-
-        centralExcepciones((Exception) excepcion, mensaje);
-
-    }
 
     public static void centralExcepciones(Exception exception, String defaultMessage) {
         if (exception instanceof BadRequestException) {
@@ -46,7 +45,16 @@ public class ExcepcionesUtilidad {
         } else if (exception instanceof ServerErrorException) {
             showErrorDialog(AlertType.ERROR, "Error del servidor", "Se produjo un error en el servidor. Inténtelo nuevamente.");
         } else if (exception instanceof ClientErrorException) {
-            showErrorDialog(AlertType.ERROR, "Error del cliente", "Hubo un problema con la solicitud enviada.");
+            showErrorDialog(AlertType.ERROR, "Error", "Hubo un problema con la solicitud enviada.");
+        } else if (exception instanceof ProcessingException) {
+            showErrorDialog(AlertType.ERROR, "Error", "Conexion con servidor fallida. Por seguridad se procede a cerrar la sesión");
+        } else if (exception instanceof ConnectException) {
+            showErrorDialog(AlertType.ERROR, "Error", "Conexion con servidor fallida. Por seguridad se procede a cerrar la sesión. Intenteo");
+        } else if (exception instanceof JRException) {
+            showErrorDialog(AlertType.ERROR, "Error", "Hubo un problema generando el informe.");
+        } else if (exception instanceof NullPointerException) {
+            showErrorDialog(AlertType.ERROR, "Error", "No se han recibido datos.");
+
         } else {
             LOGGER.log(Level.SEVERE, "Excepción desconocida: {0}", exception.getMessage());
             showErrorDialog(AlertType.ERROR, "Error desconocido", defaultMessage);
@@ -54,27 +62,22 @@ public class ExcepcionesUtilidad {
     }
 
     public static <T> T handleResponse(Response response, Class<T> responseType) throws WebApplicationException {
-        try {
-            if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
-                return responseType == Void.class ? null : response.readEntity(responseType);
-            } else {
-                throw translateResponseToException(response);
-            }
-        } catch (javax.ws.rs.ProcessingException e) {
-            throw new ServiceUnavailableException("No se pudo conectar con el servidor. Verifique que el servidor esté encendido y accesible.");
+
+        if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+            return responseType == Void.class ? null : response.readEntity(responseType);
+        } else {
+            throw translateResponseToException(response);
         }
     }
 
     public static <T> T handleResponse(Response response, GenericType<T> responseType) throws WebApplicationException {
-        try {
-            if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
-                return response.readEntity(responseType);
-            } else {
-                throw translateResponseToException(response);
-            }
-        } catch (javax.ws.rs.ProcessingException e) {
-            throw new ServiceUnavailableException("No se pudo conectar con el servidor. Verifique que el servidor esté encendido y accesible.");
+
+        if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+            return response.readEntity(responseType);
+        } else {
+            throw translateResponseToException(response);
         }
+
     }
 
     public static WebApplicationException translateResponseToException(Response response) {

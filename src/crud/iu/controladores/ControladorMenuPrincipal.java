@@ -1,5 +1,6 @@
 package crud.iu.controladores;
 
+import crud.excepciones.ExcepcionesUtilidad;
 import crud.negocio.FactoriaArticulos;
 import crud.negocio.FactoriaPedidos;
 import crud.negocio.FactoriaUsuarios;
@@ -17,7 +18,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
-import static crud.excepciones.ExcepcionesUtilidad.clasificadorExcepciones;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
@@ -234,7 +234,7 @@ public class ControladorMenuPrincipal implements Initializable {
             factoriaUsuarios.cargarCambiarContrasena(stage, (userCliente != null) ? userCliente : userTrabajador);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cambiar contraseña", e);
-            clasificadorExcepciones(e, e.getMessage());
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 
@@ -252,7 +252,7 @@ public class ControladorMenuPrincipal implements Initializable {
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al gestionar pedidos", e);
-            clasificadorExcepciones(e, e.getMessage());
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 

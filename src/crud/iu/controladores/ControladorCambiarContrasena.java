@@ -1,5 +1,6 @@
 package crud.iu.controladores;
 
+import crud.excepciones.ExcepcionesUtilidad;
 import crud.iu.controladores.ControladorRegistro;
 import crud.negocio.FactoriaUsuarios;
 import crud.objetosTransferibles.Cliente;
@@ -8,7 +9,6 @@ import crud.objetosTransferibles.Usuario;
 import static crud.seguridad.UtilidadesCifrado.cargarClavePublica;
 import static crud.seguridad.UtilidadesCifrado.cifrarConClavePublica;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
-import static crud.excepciones.ExcepcionesUtilidad.clasificadorExcepciones;
 import static crud.utilidades.ValidateUtilities.isValid;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -125,7 +125,7 @@ public class ControladorCambiarContrasena implements Initializable {
                 botonAyuda.setStyle("-fx-cursor: default;"); // Vuelve al cursor normal al salir
             });
         } catch (Exception e) {
-            clasificadorExcepciones(e, e.getMessage());
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 
@@ -241,7 +241,7 @@ public class ControladorCambiarContrasena implements Initializable {
             ventanaPadre();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cambiar la contraseña.", e);
-            clasificadorExcepciones(e, e.getMessage());
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 

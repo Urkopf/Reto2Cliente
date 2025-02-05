@@ -1,9 +1,9 @@
 package crud.iu.controladores;
 
+import crud.excepciones.ExcepcionesUtilidad;
 import crud.negocio.FactoriaUsuarios;
 import crud.objetosTransferibles.Usuario;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
-import static crud.excepciones.ExcepcionesUtilidad.clasificadorExcepciones;
 import crud.utilidades.Utilidades;
 import static crud.utilidades.ValidateUtilities.isValid;
 import javafx.event.ActionEvent;
@@ -72,7 +72,7 @@ public class ControladorRecuperarContrasena implements Initializable {
             stage.show();  // Mostrar el escenario
 
         } catch (Exception e) {
-            clasificadorExcepciones(e, e.getMessage());
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 
@@ -145,7 +145,7 @@ public class ControladorRecuperarContrasena implements Initializable {
             factoria.cargarInicioSesion(stage, "");
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al enviar solicitud de recuperación.", e);
-            clasificadorExcepciones(e, e.getMessage());
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 
