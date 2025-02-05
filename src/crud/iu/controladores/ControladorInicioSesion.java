@@ -32,9 +32,8 @@ import crud.seguridad.UtilidadesCifrado;
 import static crud.seguridad.UtilidadesCifrado.cargarClavePublica;
 import static crud.seguridad.UtilidadesCifrado.cifrarConClavePublica;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
-import crud.utilidades.ExcepcionesUtilidad;
-import static crud.utilidades.ExcepcionesUtilidad.centralExcepciones;
-import static crud.utilidades.ExcepcionesUtilidad.clasificadorExcepciones;
+import crud.excepciones.ExcepcionesUtilidad;
+import static crud.excepciones.ExcepcionesUtilidad.centralExcepciones;
 import static crud.utilidades.ValidateUtilities.isValid;
 import java.awt.Cursor;
 import java.security.PublicKey;
@@ -397,7 +396,7 @@ public class ControladorInicioSesion implements Initializable {
             }
 
         } catch (Exception e) {
-            clasificadorExcepciones(e, e.getMessage());
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 

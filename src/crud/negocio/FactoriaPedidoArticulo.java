@@ -5,6 +5,7 @@
  */
 package crud.negocio;
 
+import crud.excepciones.ExcepcionesUtilidad;
 import crud.iu.controladores.ControladorPedidosDetalle;
 import crud.iu.controladores.ControladorPedidosPrincipal;
 import crud.objetosTransferibles.Pedido;
@@ -52,8 +53,7 @@ public class FactoriaPedidoArticulo {
             controlador.setPedido(pedido);
             controlador.initStage(root);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al abrir la ventana de PedidosDetalle: {0}", e.getMessage());
-            showErrorDialog(Alert.AlertType.ERROR, "Error", "No se puede cargar la ventana de Pedidos Detalle.");
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 

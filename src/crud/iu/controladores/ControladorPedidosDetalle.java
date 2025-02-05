@@ -1,5 +1,6 @@
 package crud.iu.controladores;
 
+import crud.excepciones.ExcepcionesUtilidad;
 import crud.excepciones.LogicaNegocioException;
 import crud.negocio.FactoriaArticulos;
 import crud.negocio.FactoriaPedidoArticulo;
@@ -11,7 +12,6 @@ import crud.objetosTransferibles.Estado;
 import crud.objetosTransferibles.Pedido;
 import crud.objetosTransferibles.PedidoArticulo;
 import crud.objetosTransferibles.Trabajador;
-import static crud.utilidades.ExcepcionesUtilidad.clasificadorExcepciones;
 
 import java.net.URL;
 import java.text.NumberFormat;
@@ -584,7 +584,7 @@ public class ControladorPedidosDetalle implements Initializable {
             campoCif.setItems(cifs);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cargar los CIF de los clientes", e);
-            clasificadorExcepciones(e, e.getMessage());
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 
@@ -801,7 +801,7 @@ public class ControladorPedidosDetalle implements Initializable {
             LOGGER.info("Cambios guardados exitosamente.");
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al guardar cambios", e);
-            clasificadorExcepciones(e, e.getMessage());
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
 
         }
     }

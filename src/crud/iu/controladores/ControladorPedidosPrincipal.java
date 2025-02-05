@@ -1,5 +1,6 @@
 package crud.iu.controladores;
 
+import com.sun.mail.iap.ConnectionException;
 import crud.excepciones.LogicaNegocioException;
 import crud.negocio.FactoriaArticulos;
 import crud.negocio.FactoriaPedidoArticulo;
@@ -14,7 +15,9 @@ import crud.objetosTransferibles.Usuario;
 import crud.utilidades.AlertUtilities;
 
 import static crud.utilidades.AlertUtilities.showErrorDialog;
-import static crud.utilidades.ExcepcionesUtilidad.clasificadorExcepciones;
+import crud.excepciones.ExcepcionesUtilidad;
+import java.io.InputStream;
+import java.net.ConnectException;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -24,6 +27,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -39,6 +43,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
@@ -56,6 +61,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javax.ws.rs.ProcessingException;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -69,8 +75,7 @@ import net.sf.jasperreports.view.JasperViewer;
  * Controlador para la ventana principal de Pedidos. Se encarga de la
  * visualización, creación, edición, eliminación y búsqueda de pedidos.
  *
- * @author
- * <a href="mailto:urkoperitz@example.com">Urko Peritz</a>
+ * @author Urko Peritz
  */
 public class ControladorPedidosPrincipal implements Initializable {
 
@@ -147,7 +152,7 @@ public class ControladorPedidosPrincipal implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         LOGGER.info("Inicializando controlador PedidosPrincipal");
-        configurarTabla();
+
     }
 
     /**
@@ -156,21 +161,31 @@ public class ControladorPedidosPrincipal implements Initializable {
      *
      * @param root Nodo raíz de la escena.
      */
-    public void initStage(Parent root) {
+    public void initStage(Parent root) throws Exception {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Gestión de Pedidos");
         LOGGER.info("Inicializando la escena principal");
+        try {
+            configurarMenu();
+            configurarTabla();
+            configurarHandlers();
+            configurarListeners();
+            cargarDatosPedidos();
+            configurarPaginador();
+            stage.show();
+        } catch (Exception e) {
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
+            if (e instanceof ConnectException || e instanceof ProcessingException) {
 
-        configurarMenu();
+                FactoriaUsuarios.getInstance().cargarInicioSesion(stage, "");
+            } else {
+                throw e;
+            }
 
-        configurarHandlers();
-        configurarListeners();
-        stage.show();
+        }
 
         // Cargar datos y configurar paginador
-        cargarDatosPedidos();
-        configurarPaginador();
     }
 
     /**
@@ -252,30 +267,34 @@ public class ControladorPedidosPrincipal implements Initializable {
     public void crearInforme() {
         try {
             LOGGER.info("Beginning printing action...");
-            JasperReport report
-                    = JasperCompileManager.compileReport(getClass()
-                            .getResourceAsStream("/crud/iu/reportes/PedidosReport.jrxml"));
-            //Data for the report: a collection of UserBean passed as a JRDataSource
-            //implementation
-            JRBeanCollectionDataSource dataItems
-                    = new JRBeanCollectionDataSource((Collection<Pedido>) this.tablaPedidos.getItems());
-            //Map of parameter to be passed to the report
+
+            // Cargar el informe desde el classpath
+            JasperReport report = JasperCompileManager.compileReport(getClass()
+                    .getResourceAsStream("/crud/iu/reportes/PedidosReport.jrxml"));
+
+            // Cargar la imagen desde el classpath
+            InputStream logoStream = getClass().getResourceAsStream("/recursos/logoFullrecortado.jpg");
+            if (logoStream == null) {
+                throw new RuntimeException("No se pudo cargar la imagen del logo desde el JAR.");
+            }
+
             Map<String, Object> parameters = new HashMap<>();
-            //Fill report with data
+            parameters.put("LOGO_PATH", logoStream);
+
+            // Crear los datos del informe
+            JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource(
+                    (Collection<Pedido>) this.tablaPedidos.getItems());
+
+            // Llenar el informe
             JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
-            //Create and show the report window. The second parameter false value makes
-            //report window not to close app.
+
+            // Mostrar el informe en una ventana
             JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
             jasperViewer.setVisible(true);
-            // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-        } catch (JRException ex) {
-            //If there is an error show message and
-            //log it.
-            LOGGER.log(Level.SEVERE,
-                    "UI GestionUsuariosController: Error printing report: {0}",
-                    ex.getMessage());
-            clasificadorExcepciones(ex, ex.getMessage());
 
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error printing report: {0}", ex.getMessage());
+            ExcepcionesUtilidad.centralExcepciones(ex, ex.getMessage());
         }
     }
 
@@ -296,7 +315,6 @@ public class ControladorPedidosPrincipal implements Initializable {
                 this.userTrabajador = (Trabajador) user;
                 LOGGER.info("Usuario asignado (Trabajador): " + userTrabajador.getNombre());
             }
-            cargarDatosPedidos();
         }
     }
 
@@ -419,17 +437,69 @@ public class ControladorPedidosPrincipal implements Initializable {
     private void handleEliminar(ActionEvent event) {
         cancelarEdicionEnTabla();
         LOGGER.info("Botón Eliminar presionado");
-
+        Boolean quiereBorrar = true;
         ObservableList<Pedido> seleccionados = tablaPedidos.getSelectionModel().getSelectedItems();
         if (seleccionados.isEmpty()) {
             AlertUtilities.showErrorDialog(Alert.AlertType.WARNING, "Eliminar Pedidos",
                     "Debe seleccionar al menos un pedido para eliminar.");
         } else {
-            pedidosObservableList.removeAll(seleccionados);
-            setHayCambiosNoGuardados(true); // <<--- Marcamos que hay cambios
-            actualizarTablaYPaginador();
-            LOGGER.info("Pedidos eliminados de la tabla.");
+            // Eliminar pedidos
+            try {
+                for (Pedido pedido : seleccionados) {
+
+                    Collection<PedidoArticulo> coleccion = FactoriaPedidoArticulo.getInstance().acceso().getAllPedidoArticulo();
+                    ObservableList<PedidoArticulo> lista = FXCollections.observableArrayList(coleccion);
+                    lista = FXCollections.observableArrayList(lista.stream()
+                            .filter(p -> p.getPedidoId().equals(pedido.getId()))
+                            .collect(Collectors.toList()));
+                    if (lista.size() == 0) {
+                        // Mostrar alerta de confirmación
+                        Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
+                        alerta.setTitle("Confirmación de eliminación");
+                        alerta.setHeaderText("El pedido " + pedido.getId() + ".");
+                        alerta.setContentText("¿Está seguro de que desea eliminar el pedido?");
+                        Optional<ButtonType> resultado = alerta.showAndWait();
+                        if (resultado.isPresent() && resultado.get() != ButtonType.OK) {
+                            quiereBorrar = false;
+                            break;
+                        }
+                    } else {
+                        // Mostrar alerta de confirmación
+                        Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
+                        alerta.setTitle("Confirmación de eliminación");
+                        alerta.setHeaderText("El pedido " + pedido.getId() + " contiene " + lista.size() + " artículo(s).");
+                        alerta.setContentText("¿Está seguro de que desea eliminar el pedido junto con sus artículos?");
+
+                        // Esperar la respuesta del usuario
+                        Optional<ButtonType> resultado = alerta.showAndWait();
+                        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+                            quiereBorrar = false;
+                            break;
+
+                        } else {
+                            LOGGER.info("Eliminación cancelada por el usuario para el pedido: " + pedido.getId());
+                        }
+
+                    }
+
+                }
+                if (quiereBorrar) {
+                    pedidosObservableList.removeAll(seleccionados);
+                    setHayCambiosNoGuardados(true); // <<--- Marcamos que hay cambios
+                    actualizarTablaYPaginador();
+                    LOGGER.info("Pedidos eliminados de la tabla.");
+                    AlertUtilities.showErrorDialog(Alert.AlertType.INFORMATION, "Información",
+                            "Pedidos borrados de la tabla actual. Si quiere aplicar los cambios en la base de datos no olvide guardar los cambios");
+                } else {
+                    AlertUtilities.showErrorDialog(Alert.AlertType.INFORMATION, "Información",
+                            "Se ha cancelado el borrado.");
+                }
+            } catch (Exception ex) {
+                ExcepcionesUtilidad.centralExcepciones(ex, ex.getMessage());
+            }
+
         }
+
     }
 
     /**
@@ -477,7 +547,12 @@ public class ControladorPedidosPrincipal implements Initializable {
             for (Pedido pedidoOriginal : pedidosOriginales) {
                 if (!pedidosObservableList.contains(pedidoOriginal) && pedidoOriginal.getId() != null) {
                     LOGGER.info("Eliminando pedido: " + pedidoOriginal.getId());
-                    ObservableList<PedidoArticulo> lista = (ObservableList<PedidoArticulo>) FactoriaPedidoArticulo.getInstance().acceso().getAllPedidoArticulo();
+                    Collection<PedidoArticulo> coleccion = FactoriaPedidoArticulo.getInstance().acceso().getAllPedidoArticulo();
+                    ObservableList<PedidoArticulo> lista = FXCollections.observableArrayList(
+                            coleccion.stream()
+                                    .filter(p -> p.getPedidoId().equals(pedidoOriginal.getId()))
+                                    .collect(Collectors.toList())
+                    );
                     lista = FXCollections.observableArrayList(
                             lista.stream()
                                     .filter(p -> p.getPedidoId().equals(pedidoOriginal.getId()))
@@ -485,24 +560,12 @@ public class ControladorPedidosPrincipal implements Initializable {
                     if (lista.size() == 0) {
                         factoriaPedidos.acceso().borrarPedido(pedidoOriginal);
                     } else {
-                        // Mostrar alerta de confirmación
-                        Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
-                        alerta.setTitle("Confirmación de eliminación");
-                        alerta.setHeaderText("El pedido " + pedidoOriginal.getId() + " contiene " + lista.size() + " artículo(s).");
-                        alerta.setContentText("¿Está seguro de que desea eliminar el pedido junto con sus artículos?");
 
-                        // Esperar la respuesta del usuario
-                        Optional<ButtonType> resultado = alerta.showAndWait();
-                        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
-                            // Eliminar los artículos asociados
-                            for (PedidoArticulo pa : lista) {
-                                FactoriaPedidoArticulo.getInstance().acceso().borrarPedidoArticulo(pa);
-                            }
-                            // Eliminar el pedido
-                            factoriaPedidos.acceso().borrarPedido(pedidoOriginal);
-                        } else {
-                            LOGGER.info("Eliminación cancelada por el usuario para el pedido: " + pedidoOriginal.getId());
+                        for (PedidoArticulo pa : lista) {
+                            FactoriaPedidoArticulo.getInstance().acceso().borrarPedidoArticulo(pa);
                         }
+                        // Eliminar el pedido
+                        factoriaPedidos.acceso().borrarPedido(pedidoOriginal);
 
                     }
 
@@ -513,10 +576,11 @@ public class ControladorPedidosPrincipal implements Initializable {
             LOGGER.info("Cambios guardados exitosamente.");
             reiniciarTabla();
             setHayCambiosNoGuardados(false); // <<--- Ya no hay cambios sin guardar
+            showErrorDialog(AlertType.INFORMATION, "Información", "Datos Guardados correctamente.");
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al guardar cambios", e);
-            clasificadorExcepciones(e, e.getMessage());
 
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
+            showErrorDialog(AlertType.ERROR, "Error", "No se han guardado los cambios.");
         }
     }
 
@@ -556,7 +620,7 @@ public class ControladorPedidosPrincipal implements Initializable {
             LOGGER.info("Cargando detalles del pedido: " + pedidoSeleccionado.getId());
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cargar detalles del pedido", e);
-            clasificadorExcepciones(e, e.getMessage());
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 
@@ -703,12 +767,10 @@ public class ControladorPedidosPrincipal implements Initializable {
         columnaUsuarioId.setCellValueFactory(new PropertyValueFactory<>("usuarioId"));
         columnaUsuarioId.setVisible(false);
 
-        // Columna Dirección (editable)
-        configurarColumnaDireccion();
-
         // Columna CIF (editable solo para Trabajador)
         configurarColumnaCif();
-
+        // Columna Dirección (editable)
+        configurarColumnaDireccion();
         // Columna Fecha (editable con DatePicker)
         configurarColumnaFecha();
 
@@ -743,45 +805,43 @@ public class ControladorPedidosPrincipal implements Initializable {
      * Carga los datos de pedidos desde la base de datos o de la lista de
      * búsqueda. Aplica filtro si el usuario es un {@code Cliente}.
      */
-    private void cargarDatosPedidos() {
-        try {
-            LOGGER.info("Cargando datos de pedidos...");
-            Collection<Pedido> pedidos;
+    private void cargarDatosPedidos() throws Exception {
 
-            if (listaBusqueda != null) {
-                // Si se ha hecho una búsqueda, usar esos resultados
-                pedidos = listaBusqueda;
-            } else {
-                // Caso contrario, obtener todos los pedidos
-                pedidos = factoriaPedidos.acceso().getAllPedidos();
-            }
+        LOGGER.info("Cargando datos de pedidos...");
+        Collection<Pedido> pedidos;
 
-            if (pedidos == null || pedidos.isEmpty()) {
-                pedidos = new ArrayList<>();
-            }
-
-            if (userCliente != null) {
-                // Filtrar solo los pedidos del cliente
-                pedidosObservableList = FXCollections.observableArrayList(
-                        pedidos.stream()
-                                .filter(p -> p.getCifCliente().equals(userCliente.getCif()))
-                                .collect(Collectors.toList()));
-            } else {
-                // Si es trabajador, mostrar todos
-                pedidosObservableList = FXCollections.observableArrayList(pedidos);
-            }
-
-            // Crear una copia de seguridad
-            pedidosOriginales = FXCollections.observableArrayList(
-                    pedidosObservableList.stream().map(Pedido::clone).collect(Collectors.toList()));
-
-            actualizarTablaYPaginador();
-            actualizarEstadoBotones();
-            setHayCambiosNoGuardados(false); // Al cargar inicial no hay cambios
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al cargar los datos de pedidos", e);
-            clasificadorExcepciones(e, e.getMessage());
+        if (listaBusqueda != null) {
+            // Si se ha hecho una búsqueda, usar esos resultados
+            pedidos = listaBusqueda;
+        } else {
+            // Caso contrario, obtener todos los pedidos
+            pedidos = factoriaPedidos.acceso().getAllPedidos();
         }
+
+        if (pedidos == null || pedidos.isEmpty()) {
+            pedidos = new ArrayList<>();
+        }
+
+        if (userCliente != null) {
+            // Filtrar solo los pedidos del cliente
+            pedidosObservableList = FXCollections.observableArrayList(
+                    pedidos.stream()
+                            .filter(p -> p.getCifCliente().equals(userCliente.getCif()))
+                            .collect(Collectors.toList()));
+        } else {
+            // Si es trabajador, mostrar todos
+            pedidosObservableList = FXCollections.observableArrayList(pedidos);
+        }
+
+        // Crear una copia de seguridad
+        pedidosOriginales = FXCollections.observableArrayList(
+                pedidosObservableList.stream().map(Pedido::clone).collect(Collectors.toList()));
+
+        actualizarTablaYPaginador();
+        actualizarEstadoBotones();
+        setHayCambiosNoGuardados(false); // Al cargar inicial no hay cambios
+        tablaPedidos.refresh();
+
     }
 
     /**
@@ -789,7 +849,15 @@ public class ControladorPedidosPrincipal implements Initializable {
      * búsqueda.
      */
     private void reiniciarTabla() {
-        cargarDatosPedidos();
+        try {
+            cargarDatosPedidos();
+        } catch (Exception ex) {
+            ExcepcionesUtilidad.centralExcepciones(ex, ex.getMessage());
+            if (ex instanceof ConnectException || ex instanceof ProcessingException) {
+
+                FactoriaUsuarios.getInstance().cargarInicioSesion(stage, "");
+            }
+        }
         LOGGER.info("Tabla reiniciada a los datos originales.");
     }
 
@@ -1001,7 +1069,6 @@ public class ControladorPedidosPrincipal implements Initializable {
                 Pedido pedido = getTableView().getItems().get(getIndex());
                 pedido.setDireccion(newValue); // Actualiza el modelo
                 setHayCambiosNoGuardados(true); // Marca que hay cambios sin guardar
-                tablaPedidos.refresh(); // Refresca la tabla
             }
 
             private void validarYCommit(String newValue) {
@@ -1055,8 +1122,8 @@ public class ControladorPedidosPrincipal implements Initializable {
                         clientes = factoriaUsuarios.accesoCliente().getAllClientes();
                         ObservableList<String> cifs = obtenerCifsClientes(clientes);
                         comboBox.setItems(cifs);
-                    } catch (LogicaNegocioException ex) {
-                        LOGGER.log(Level.SEVERE, null, ex);
+                    } catch (Exception ex) {
+                        ExcepcionesUtilidad.centralExcepciones(ex, valorOriginal);
                     }
 
                     valorOriginal = getItem();
@@ -1114,8 +1181,7 @@ public class ControladorPedidosPrincipal implements Initializable {
 
                 setText(newValue);
                 setGraphic(null);
-                setHayCambiosNoGuardados(true); // <<--- Marcamos que hay cambios
-                tablaPedidos.refresh();
+                setHayCambiosNoGuardados(true);
             }
 
             @Override
@@ -1153,7 +1219,8 @@ public class ControladorPedidosPrincipal implements Initializable {
                 }
                 setGraphic(datePicker);
                 setText(null);
-
+                datePicker.requestFocus();
+                datePicker.getEditor().selectAll();
                 datePicker.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
                     if (!isNowFocused) {
                         cancelEdit();
@@ -1189,8 +1256,8 @@ public class ControladorPedidosPrincipal implements Initializable {
                 super.commitEdit(newValue);
                 Pedido pedido = getTableView().getItems().get(getIndex());
                 pedido.setFechaPedido(newValue);
-                setHayCambiosNoGuardados(true); // <<--- Marcamos que hay cambios
-                tablaPedidos.refresh();
+                setHayCambiosNoGuardados(true);
+
             }
 
             @Override
@@ -1232,7 +1299,7 @@ public class ControladorPedidosPrincipal implements Initializable {
                     }
                     setGraphic(comboBox);
                     setText(null);
-
+                    comboBox.requestFocus();
                     comboBox.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
                         if (!isNowFocused) {
                             cancelEdit();
@@ -1257,7 +1324,6 @@ public class ControladorPedidosPrincipal implements Initializable {
                 Pedido pedido = getTableView().getItems().get(getIndex());
                 pedido.setEstado(newValue);
                 setHayCambiosNoGuardados(true); // <<--- Marcamos que hay cambios
-                tablaPedidos.refresh();
 
             }
 

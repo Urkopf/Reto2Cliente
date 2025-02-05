@@ -1,5 +1,6 @@
 package crud.iu.controladores;
 
+import crud.excepciones.ExcepcionesUtilidad;
 import crud.negocio.FactoriaUsuarios;
 import crud.objetosTransferibles.Categoria;
 import java.net.URL;
@@ -39,7 +40,6 @@ import static crud.seguridad.UtilidadesCifrado.cargarClavePublica;
 import static crud.seguridad.UtilidadesCifrado.cifrarConClavePublica;
 import static crud.utilidades.AlertUtilities.showConfirmationDialog;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
-import static crud.utilidades.ExcepcionesUtilidad.clasificadorExcepciones;
 import static crud.utilidades.ValidateUtilities.isValid;
 import java.io.IOException;
 import java.io.InputStream;
@@ -419,7 +419,7 @@ public class ControladorRegistro implements Initializable {
             }
             stage.show();
         } catch (Exception e) {
-            clasificadorExcepciones(e, e.getMessage());
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 
@@ -609,7 +609,7 @@ public class ControladorRegistro implements Initializable {
                         }
                     }
                 } catch (Exception e) {
-                    clasificadorExcepciones(e, e.getMessage());
+                    ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
                 }
             }
 

@@ -26,43 +26,31 @@ public class PedidoImpl implements IPedido {
     private Logger LOGGER = Logger.getLogger(PedidoImpl.class.getName());
 
     @Override
-    public Collection<Pedido> getAllPedidos() throws LogicaNegocioException {
-        try {
-            return cliente.findAll_XML(new GenericType<List<Pedido>>() {
-            });
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al obtener los pedidos desde el servidor REST", e);
-            //throw new LogicaNegocioException("Error");
-            return new ArrayList<>(); // Devuelve una lista vacía si falla la conexión
+    public Collection<Pedido> getAllPedidos() throws Exception {
 
-        }
+        return cliente.findAll_XML(new GenericType<List<Pedido>>() {
+        });
 
     }
 
     @Override
-    public void crearPedido(Pedido pedido) throws LogicaNegocioException {
-        try {
-            cliente.create_XML(pedido);
-        } catch (Exception e) {
-            throw new LogicaNegocioException("Error");
-        }
+    public void crearPedido(Pedido pedido) throws Exception {
+
+        cliente.create_XML(pedido);
+
     }
 
     @Override
-    public void actualizarPedido(Pedido pedido) throws LogicaNegocioException {
-        try {
-            cliente.edit_XML(pedido);
-        } catch (Exception e) {
-            throw new LogicaNegocioException("Error");
-        }
+    public void actualizarPedido(Pedido pedido) throws Exception {
+
+        cliente.edit_XML(pedido);
+
     }
 
     @Override
-    public void borrarPedido(Pedido pedido) throws LogicaNegocioException {
-        try {
-            cliente.remove(pedido.getId());
-        } catch (Exception e) {
-            throw new LogicaNegocioException("Error");
-        }
+    public void borrarPedido(Pedido pedido) throws Exception {
+
+        cliente.remove(pedido.getId());
+
     }
 }

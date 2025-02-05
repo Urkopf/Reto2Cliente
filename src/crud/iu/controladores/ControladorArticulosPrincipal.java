@@ -1,13 +1,12 @@
 package crud.iu.controladores;
 
+import crud.excepciones.ExcepcionesUtilidad;
 import crud.negocio.FactoriaArticulos;
 import crud.negocio.FactoriaPedidos;
 import crud.negocio.FactoriaUsuarios;
 import crud.objetosTransferibles.Articulo;
 import crud.objetosTransferibles.Trabajador;
 import crud.utilidades.AlertUtilities;
-import static crud.utilidades.ExcepcionesUtilidad.clasificadorExcepciones;
-import java.io.InputStream;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
@@ -486,7 +485,9 @@ public class ControladorArticulosPrincipal implements Initializable {
             LOGGER.log(Level.SEVERE,
                     "UI GestionUsuariosController: Error printing report: {0}",
                     ex.getMessage());
-            clasificadorExcepciones(ex, ex.getMessage());
+            ExcepcionesUtilidad.centralExcepciones(ex, ex.getMessage());
+
+
         }
     }
 

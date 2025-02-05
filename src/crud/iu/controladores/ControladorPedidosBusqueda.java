@@ -1,12 +1,12 @@
 package crud.iu.controladores;
 
+import crud.excepciones.ExcepcionesUtilidad;
 import crud.negocio.FactoriaPedidos;
 import crud.negocio.FactoriaUsuarios;
 import crud.objetosTransferibles.Cliente;
 import crud.objetosTransferibles.Estado;
 import crud.objetosTransferibles.Pedido;
 import crud.objetosTransferibles.Trabajador;
-import static crud.utilidades.ExcepcionesUtilidad.clasificadorExcepciones;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -374,7 +374,7 @@ public class ControladorPedidosBusqueda implements Initializable {
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al filtrar los pedidos", e);
-            clasificadorExcepciones(e, e.getMessage());
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 
@@ -480,7 +480,7 @@ public class ControladorPedidosBusqueda implements Initializable {
             comboBoxCIF.getItems().setAll(cifsClientes);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cargar los CIF de los clientes", e);
-            clasificadorExcepciones(e, e.getMessage());
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 
@@ -493,7 +493,7 @@ public class ControladorPedidosBusqueda implements Initializable {
             comboBoxEstado.getItems().setAll(Estado.values());
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al cargar los estados", e);
-            clasificadorExcepciones(e, e.getMessage());
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 

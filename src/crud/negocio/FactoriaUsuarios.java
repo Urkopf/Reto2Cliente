@@ -5,6 +5,7 @@
  */
 package crud.negocio;
 
+import crud.excepciones.ExcepcionesUtilidad;
 import crud.iu.controladores.ControladorAyuda;
 import crud.iu.controladores.ControladorCambiarContrasena;
 
@@ -66,8 +67,7 @@ public class FactoriaUsuarios {
             controlador.setCorreo(email);
             controlador.initStage(root);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al abrir la ventnaa de InicioSesion: {0}", e.getMessage());
-            showErrorDialog(AlertType.ERROR, "Error", "No se puede cargar la ventana de Inicio de sesión");
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 
@@ -81,8 +81,7 @@ public class FactoriaUsuarios {
             controlador.setModoActualizar(usuario != null);
             controlador.initStage(root);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al abrir la ventnaa de Registro: {0}", e.getMessage());
-            showErrorDialog(AlertType.ERROR, "Error", "No se puede cargar la ventana de Registro");
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 
@@ -95,8 +94,7 @@ public class FactoriaUsuarios {
             controlador.setUser(usuario);
             controlador.initStage(root);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al abrir la ventnaa de  Menú principal: {0}", e.getMessage());
-            showErrorDialog(AlertType.ERROR, "Error", "No se puede cargar la ventana de Menú principal");
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 
@@ -109,8 +107,7 @@ public class FactoriaUsuarios {
             controlador.setUser(usuario);
             controlador.initStage(root);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al abrir la ventnaa de  CambiarContrasena: {0}", e.getMessage());
-            showErrorDialog(AlertType.ERROR, "Error", "No se puede cargar la ventana de CambiarContrasena");
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 
@@ -122,8 +119,7 @@ public class FactoriaUsuarios {
             controlador.setStage(stage);
             controlador.initStage(root);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al abrir la ventnaa de  Recuperar Contrasena: {0}", e.getMessage());
-            showErrorDialog(AlertType.ERROR, "Error", "No se puede cargar la ventana de Recuperar Contrasena");
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 
@@ -136,8 +132,7 @@ public class FactoriaUsuarios {
             controlador.setTipo(titulo);
             controlador.initStage(root);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al abrir la ventana de  Ayuda: {0}", e.getMessage());
-            showErrorDialog(AlertType.ERROR, "Error", "No se puede cargar la ventana de Ayuda");
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 

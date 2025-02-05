@@ -15,11 +15,11 @@ import java.util.Collection;
  */
 public interface IPedido {
 
-    public Collection<Pedido> getAllPedidos() throws LogicaNegocioException;
+    public Collection<Pedido> getAllPedidos() throws Exception;
 
-    public void crearPedido(Pedido pedido) throws LogicaNegocioException;
+    public void crearPedido(Pedido pedido) throws Exception;
 
-    public void actualizarPedido(Pedido pedido) throws LogicaNegocioException;
+    public void actualizarPedido(Pedido pedido) throws Exception;
 
-    public void borrarPedido(Pedido pedido) throws LogicaNegocioException;
+    public void borrarPedido(Pedido pedido) throws Exception;
 }
