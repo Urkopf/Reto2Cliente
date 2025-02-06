@@ -342,6 +342,18 @@ public class ControladorArticulosPrincipal implements Initializable {
             } else if (event.isAltDown() && event.getCode() == KeyCode.G) {
                 botonGuardar.fire();  // Simula el clic en el boton guardar
                 event.consume();  // Evita la propagación adicional del evento
+            } else if (event.isAltDown() && event.getCode() == KeyCode.LEFT) {
+                int currentPage = paginador.getCurrentPageIndex();
+                if (currentPage > 0) {
+                    paginador.setCurrentPageIndex(currentPage - 1);
+                    event.consume();
+                }
+            } else if (event.isAltDown() && event.getCode() == KeyCode.RIGHT) {
+                int currentPage = paginador.getCurrentPageIndex();
+                if (currentPage < paginador.getPageCount() - 1) {
+                    paginador.setCurrentPageIndex(currentPage + 1);
+                    event.consume();
+                }
             }
 
         });
