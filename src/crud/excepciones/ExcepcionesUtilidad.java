@@ -47,9 +47,11 @@ public class ExcepcionesUtilidad {
         } else if (exception instanceof ClientErrorException) {
             showErrorDialog(AlertType.ERROR, "Error", "Hubo un problema con la solicitud enviada.");
         } else if (exception instanceof ProcessingException) {
-            showErrorDialog(AlertType.ERROR, "Error", "Conexion con servidor fallida. Por seguridad se procede a cerrar la sesión");
+            LOGGER.log(Level.SEVERE, "Conexión con servidor fallida.");
+            showErrorDialog(AlertType.ERROR, "Error", "Conexión con servidor fallida. Por seguridad se procede a cerrar la sesión.");
         } else if (exception instanceof ConnectException) {
-            showErrorDialog(AlertType.ERROR, "Error", "Conexion con servidor fallida. Por seguridad se procede a cerrar la sesión. Intenteo");
+            LOGGER.log(Level.SEVERE, "Conexión con servidor fallida.");
+            showErrorDialog(AlertType.ERROR, "Error", "Conexión con servidor fallida. Por seguridad se procede a cerrar la sesión.");
         } else if (exception instanceof JRException) {
             showErrorDialog(AlertType.ERROR, "Error", "Hubo un problema generando el informe.");
         } else if (exception instanceof NullPointerException) {

@@ -175,6 +175,7 @@ public class ControladorPedidosPrincipal implements Initializable {
             configurarPaginador();
             stage.show();
         } catch (Exception e) {
+
             ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
             if (e instanceof ConnectException || e instanceof ProcessingException) {
 
@@ -853,6 +854,7 @@ public class ControladorPedidosPrincipal implements Initializable {
     private void reiniciarTabla() {
         try {
             cargarDatosPedidos();
+            setHayCambiosNoGuardados(false);
         } catch (Exception ex) {
             ExcepcionesUtilidad.centralExcepciones(ex, ex.getMessage());
             if (ex instanceof ConnectException || ex instanceof ProcessingException) {
