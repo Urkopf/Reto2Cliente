@@ -169,6 +169,7 @@ public class ControladorPedidosPrincipal implements Initializable {
     public void initStage(Parent root) throws Exception {
         Scene scene = new Scene(root);
         stage.setScene(scene);
+        stage.setResizable(false);
         stage.setTitle("Gestión de Pedidos");
         LOGGER.info("Inicializando la escena principal");
         try {
@@ -323,7 +324,6 @@ public class ControladorPedidosPrincipal implements Initializable {
      *
      * @param stage El {@code Stage} principal de la aplicación.
      */
-
     public void setStage(Stage stage) {
         this.stage = stage;
         LOGGER.info("Stage asignado.");

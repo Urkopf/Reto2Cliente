@@ -262,7 +262,6 @@ public class ControladorArticulosDetalle implements Initializable {
                 cargarArticuloEnFormulario();
                 cargarAlmacenesDelArticulo();
                 cargarAlmacenesDisponibles();
-                configureMnemotecnicKeys();
             }
         } catch (Exception e) {
             ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
@@ -274,29 +273,6 @@ public class ControladorArticulosDetalle implements Initializable {
             }
 
         }
-    }
-
-    /**
-     * Configura las teclas de acceso rápido para los botones de iniciar sesión
-     * y registrar.
-     */
-    private void configureMnemotecnicKeys() {
-        stage.getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.isAltDown() && event.getCode() == KeyCode.R) {
-                botonAlmacen.fire();  // Simula el clic en el botón agregar almacen
-                event.consume();  // Evita la propagación adicional del evento
-            } else if (event.isAltDown() && event.getCode() == KeyCode.R) {
-                botonEliminar.fire();  // Simula el clic en el boton eliminar
-                event.consume();  // Evita la propagación adicional del evento
-            } else if (event.isAltDown() && event.getCode() == KeyCode.A) {
-                botonAtras.fire();  // Simula el clic botom atras
-                event.consume();  // Evita la propagación adicional del evento
-            } else if (event.isAltDown() && event.getCode() == KeyCode.G) {
-                botonGuardar.fire();  // Simula el clic en el boton guardar
-                event.consume();  // Evita la propagación adicional del evento
-            }
-
-        });
     }
 
     /**

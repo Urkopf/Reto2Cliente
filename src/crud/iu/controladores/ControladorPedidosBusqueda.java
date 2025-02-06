@@ -29,6 +29,8 @@ import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javax.ws.rs.ProcessingException;
 
 /**
@@ -189,6 +191,7 @@ public class ControladorPedidosBusqueda implements Initializable {
 
             // Configurar estado inicial de la vista
             configurarEstadoInicial();
+            configureMnemotecnicKeys();
 
         } catch (Exception e) {
             ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
@@ -225,6 +228,26 @@ public class ControladorPedidosBusqueda implements Initializable {
                 LOGGER.info("Usuario asignado (Trabajador): " + userTrabajador.getId());
             }
         }
+    }
+
+    /**
+     * Configura las teclas de acceso rápido para los botones de iniciar sesión
+     * y registrar.
+     */
+    private void configureMnemotecnicKeys() {
+        stage.getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.isAltDown() && event.getCode() == KeyCode.R) {
+                botonReiniciarCampos.fire();  // Simula el clic en el boton eliminar
+                event.consume();  // Evita la propagación adicional del evento
+            } else if (event.isAltDown() && event.getCode() == KeyCode.A) {
+                botonAtras.fire();  // Simula el clic botom atras
+                event.consume();  // Evita la propagación adicional del evento
+            } else if (event.isAltDown() && event.getCode() == KeyCode.B) {
+                botonBuscar.fire();  // Simula el clic en el boton guardar
+                event.consume();  // Evita la propagación adicional del evento
+            }
+
+        });
     }
 
     /**

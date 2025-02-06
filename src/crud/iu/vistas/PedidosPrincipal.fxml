@@ -13,9 +13,9 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="anchorPane" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="crud.iu.controladores.ControladorPedidosPrincipal">
+<AnchorPane fx:id="anchorPane" prefHeight="768.0" prefWidth="1245.0" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="crud.iu.controladores.ControladorPedidosPrincipal">
     <children>
-        <BorderPane fx:id="BorderPane" prefHeight="768" prefWidth="1024">
+        <BorderPane fx:id="BorderPane" prefHeight="768" prefWidth="1245.0">
             <top>
                 <fx:include fx:id="menuBar" source="MenuVentanas.fxml" />
             </top>
@@ -23,16 +23,19 @@
             <center>
                 <VBox>
                     <HBox fx:id="HBoxSuperior" alignment="CENTER_LEFT">
-                        <GridPane fx:id="gridSuperior" prefHeight="35.0" prefWidth="983.0">
+                        <GridPane fx:id="gridSuperior" prefHeight="24.0" prefWidth="1203.0">
                             <children>
                                 <Button fx:id="botonNuevo" minWidth="30" prefWidth="100.0" text="Nuevo" />
-                                <Button fx:id="botonReiniciar" minWidth="30" prefHeight="35.0" prefWidth="153.0" text="Reiniciar tabla" GridPane.columnIndex="2" GridPane.halignment="RIGHT" />
-                                <Button fx:id="botonBusqueda" text="Búsqueda avanzada" GridPane.columnIndex="3" GridPane.halignment="RIGHT" />
+                                <Button fx:id="botonReiniciar" minWidth="30" prefHeight="35.0" prefWidth="153.0" text="Reiniciar tabla" GridPane.columnIndex="2" GridPane.halignment="RIGHT">
+                           <GridPane.margin>
+                              <Insets right="20.0" />
+                           </GridPane.margin></Button>
+                                <Button fx:id="botonBusqueda" prefWidth="246.0" text="Búsqueda avanzada" GridPane.columnIndex="3" GridPane.halignment="RIGHT" />
                             </children>
                             <columnConstraints>
                                 <ColumnConstraints />
-                                <ColumnConstraints hgrow="ALWAYS" maxWidth="421.5651660756222" minWidth="0.0" prefWidth="318.88700871891297" />
-                                <ColumnConstraints hgrow="ALWAYS" maxWidth="421.5651660756222" minWidth="0.0" prefWidth="364.46088547820216" />
+                                <ColumnConstraints hgrow="ALWAYS" maxWidth="534.0" minWidth="0.0" prefWidth="431.0" />
+                                <ColumnConstraints hgrow="ALWAYS" maxWidth="421.5651660756222" minWidth="0.0" prefWidth="413.0" />
                                 <ColumnConstraints maxWidth="270.469569924829" minWidth="25.04354439113456" prefWidth="196.173915627954" />
                             </columnConstraints>
                             <rowConstraints>
@@ -47,25 +50,27 @@
                         </GridPane>
                     </HBox>
 
-                    <TableView fx:id="tablaPedidos" fixedCellSize="39.0" prefHeight="585.0" prefWidth="984.0" VBox.vgrow="NEVER">
+                    <TableView fx:id="tablaPedidos" fixedCellSize="39.0" prefHeight="585.0" prefWidth="1205.0" VBox.vgrow="NEVER">
                         <columns>
                             <TableColumn fx:id="columnaId" prefWidth="93.49563491344452" resizable="false" styleClass="tablas" text="ID">
                                 <!-- Aquí también podrías meter un cellValueFactory si lo quisieras desde FXML. -->
                             </TableColumn>
 
-                            <TableColumn fx:id="columnaUsuarioId" prefWidth="166.12178802490234" resizable="false" styleClass="tablas" text="ID Usuario" />
+                            <TableColumn fx:id="columnaUsuarioId" minWidth="0.0" prefWidth="0.0" resizable="false" styleClass="tablas" text="ID Usuario" />
 
-                            <TableColumn fx:id="columnaCif" prefWidth="147.75653076171875" resizable="false" styleClass="tablas" text="CIF/NIF" />
+                            <TableColumn fx:id="columnaCif" prefWidth="315.0" resizable="false" styleClass="tablas" text="CIF/NIF" />
 
                             <!-- Aquí añadimos el cellValueFactory a la columna Direccion -->
-                            <TableColumn fx:id="columnaDireccion" prefWidth="147.75653076171875"
-                                         resizable="false" styleClass="tablas" text="Dirección">
+                            <TableColumn fx:id="columnaDireccion" prefWidth="244.0" resizable="false" styleClass="tablas" text="Dirección">
                             </TableColumn>
 
-                            <TableColumn fx:id="columnaFecha" prefWidth="205.35665893554688" resizable="false" styleClass="tablas" text="Fecha pedido" />
-                            <TableColumn fx:id="columnaEstado" prefWidth="177.80877685546875" resizable="false" styleClass="tablas" text="Estado" />
-                            <TableColumn fx:id="columnaTotal" minWidth="0.0" prefWidth="138.57391357421875" resizable="false" styleClass="tablas" text="Total" />
+                            <TableColumn fx:id="columnaFecha" prefWidth="197.0" resizable="false" styleClass="tablas" text="Fecha pedido" />
+                            <TableColumn fx:id="columnaEstado" prefWidth="168.0" resizable="false" styleClass="tablas" text="Estado" />
+                            <TableColumn fx:id="columnaTotal" minWidth="0.0" prefWidth="182.0" resizable="false" styleClass="tablas" text="Total" />
                         </columns>
+                  <VBox.margin>
+                     <Insets left="20.0" right="20.0" />
+                  </VBox.margin>
                     </TableView>
 
                 </VBox>
