@@ -19,6 +19,7 @@ import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,6 +30,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -47,6 +49,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -64,10 +68,7 @@ import javax.ws.rs.ProcessingException;
  * pedido.
  * </p>
  *
- * <p>
- * <strong>Autor:</strong>
- * <a href="mailto:urkoperitz@example.com">Urko Peritz</a>
- * </p>
+ * @author Urko Peritz
  */
 public class ControladorPedidosDetalle implements Initializable {
 
@@ -213,6 +214,7 @@ public class ControladorPedidosDetalle implements Initializable {
             configurarMenu();
             configurarHandlers();
             stage.show();
+            configureMnemotecnicKeys();
 
             // Si ya tenemos el pedido, cargamos sus datos en la vista
             if (pedido != null) {
@@ -289,8 +291,9 @@ public class ControladorPedidosDetalle implements Initializable {
         if (userCliente != null) {
             menuIr.setVisible(false);
             opcionIrArticulos.setVisible(false);
-            opcionIrArticulos.setOnAction(event -> irVistaArticulos());
+
         }
+        opcionIrArticulos.setOnAction(event -> irVistaArticulos());
         MenuItem botonAyuda = menuAyuda.getItems().get(0);
         botonAyuda.setOnAction(event -> {
             mostrarAyuda();
@@ -365,6 +368,9 @@ public class ControladorPedidosDetalle implements Initializable {
 
         // Evitar reordenación de columnas
         tablaArticulosDisponibles.getColumns().forEach(col -> col.setSortable(false));
+        tablaArticulosDisponibles.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
+            updateBotonCompraState();
+        });
 
         // ---------------- Tabla de artículos en el pedido ----------------
         columnaPedidoArticuloId.setCellValueFactory(new PropertyValueFactory<>("pedidoArticuloId"));
@@ -396,17 +402,29 @@ public class ControladorPedidosDetalle implements Initializable {
                 spinner = new Spinner<>();
                 spinner.setEditable(true);
 
-                // Definir el rango de valores
+                // Configura el rango del spinner
                 SpinnerValueFactory<Integer> valueFactory
                         = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, maxStock, pa.getCantidad());
                 spinner.setValueFactory(valueFactory);
 
-                // Listener para actualizar el modelo al cambiar el valor del Spinner
+                // Listener para actualizar el modelo
                 spinner.valueProperty().addListener((obs, oldVal, newVal) -> {
                     if (newVal != null && !newVal.equals(pa.getCantidad())) {
                         pa.setCantidad(newVal);
                         actualizarTotal();
-                        cambiosNoGuardados = true; // Se ha modificado la cantidad
+                        cambiosNoGuardados = true;
+                    }
+                    // Asegura que el spinner esté renderizado para hacer el lookup
+                    spinner.applyCss();
+                    spinner.layout();
+                    Node incrementArrow = spinner.lookup(".increment-arrow-button");
+                    if (incrementArrow != null) {
+                        // Si el valor actual es igual al stock máximo, deshabilita el botón de incremento
+                        if (newVal.equals(maxStock)) {
+                            incrementArrow.setDisable(true);
+                        } else {
+                            incrementArrow.setDisable(false);
+                        }
                     }
                 });
 
@@ -415,12 +433,11 @@ public class ControladorPedidosDetalle implements Initializable {
                     if (!isFocused) {
                         commitEdit(spinner.getValue());
                         getTableView().refresh();
-                        // Ordenar si se desea
                         ordenarTablaPorArticuloId();
                     }
                 });
 
-                // Manejar edición manual (teclado)
+                // Listener para manejo de edición manual (teclado)
                 spinner.getEditor().textProperty().addListener((obs, oldText, newText) -> {
                     try {
                         int value = Integer.parseInt(newText);
@@ -438,6 +455,7 @@ public class ControladorPedidosDetalle implements Initializable {
 
                 setGraphic(spinner);
             }
+
         });
 
         // Precio (Subtotal)
@@ -451,11 +469,21 @@ public class ControladorPedidosDetalle implements Initializable {
                     setText(null);
                     return;
                 }
+                // Obtenemos el PedidoArticulo de la fila
                 PedidoArticulo pa = (PedidoArticulo) getTableRow().getItem();
+                // Buscamos el Articulo correspondiente en la lista de disponibles
                 Articulo articulo = buscarArticuloPorId(pa.getArticuloId());
-                double precioUnitario = (articulo != null ? articulo.getPrecio() : 0);
-                double subtotal = precioUnitario * pa.getCantidad();
 
+                double precioUnitario;
+                // Si el PedidoArticulo ya está guardado (tiene ID asignado) se usa su precioCompra
+                if (pa.getId() != null) {
+                    precioUnitario = pa.getPrecioCompra();
+                } else {
+                    // Si no está guardado, se usa el precio original del artículo
+                    precioUnitario = (articulo != null) ? articulo.getPrecio() : 0;
+                }
+
+                double subtotal = precioUnitario * pa.getCantidad();
                 setText(String.format("%.2f €", subtotal));
                 setStyle("-fx-alignment: CENTER-RIGHT;");
             }
@@ -531,6 +559,25 @@ public class ControladorPedidosDetalle implements Initializable {
         // Asigna la lista filtrada a la tabla
         tablaArticulosDisponibles.setItems(articulosDisponibles);
 
+    }
+
+    private void configureMnemotecnicKeys() {
+        stage.getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.isAltDown() && event.getCode() == KeyCode.A) {
+                botonAtras.fire();  // Simula el clic en el boton atras
+                event.consume();  // Evita la propagación adicional del evento
+            } else if (event.isAltDown() && event.getCode() == KeyCode.E) {
+                botonEliminar.fire();  // Simula el clic en el boton eliminar
+                event.consume();  // Evita la propagación adicional del evento
+            } else if (event.isAltDown() && event.getCode() == KeyCode.C) {
+                botonCompra.fire();  // Simula el clic en el boton eliminar
+                event.consume();  // Evita la propagación adicional del evento
+            } else if (event.isAltDown() && event.getCode() == KeyCode.G) {
+                botonGuardar.fire();  // Simula el clic en el boton guardar
+                event.consume();  // Evita la propagación adicional del evento
+            }
+
+        });
     }
 
     /**
@@ -719,8 +766,16 @@ public class ControladorPedidosDetalle implements Initializable {
                 .orElse(null);
 
         if (pedidoArticulo != null) {
-            // Si existe, incrementar la cantidad
-            pedidoArticulo.setCantidad(pedidoArticulo.getCantidad() + 1);
+            if (pedidoArticulo.getCantidad() >= articuloSeleccionado.getStock()) {
+                // Ya se alcanzó el stock máximo, se muestra una alerta y se deshabilita el botón
+                mostrarAlerta(Alert.AlertType.WARNING, "Stock alcanzado",
+                        "Ya se alcanzó el stock máximo para este artículo.");
+                botonCompra.setDisable(true);
+                return;
+            } else {
+                // Si no ha alcanzado el stock, se incrementa la cantidad
+                pedidoArticulo.setCantidad(pedidoArticulo.getCantidad() + 1);
+            }
         } else {
             // Crear nuevo PedidoArticulo
             pedidoArticulo = new PedidoArticulo();
@@ -728,13 +783,31 @@ public class ControladorPedidosDetalle implements Initializable {
             pedidoArticulo.setPedido(pedido);
             pedidoArticulo.setCantidad(1);
             pedidoArticulo.setPrecioCompra(articuloSeleccionado.getPrecio());
-
             articulosDelPedido.add(pedidoArticulo);
         }
 
         tablaArticulosPedidos.refresh();
         actualizarTotal();
         cambiosNoGuardados = true;
+        updateBotonCompraState();
+    }
+
+    private void updateBotonCompraState() {
+        Articulo seleccionado = tablaArticulosDisponibles.getSelectionModel().getSelectedItem();
+        if (seleccionado != null) {
+            // Busca el PedidoArticulo correspondiente en el pedido actual
+            PedidoArticulo pa = articulosDelPedido.stream()
+                    .filter(p -> p.getArticuloId().equals(seleccionado.getId()))
+                    .findFirst()
+                    .orElse(null);
+            if (pa != null && pa.getCantidad() >= seleccionado.getStock()) {
+                botonCompra.setDisable(true);
+            } else {
+                botonCompra.setDisable(false);
+            }
+        } else {
+            botonCompra.setDisable(false);
+        }
     }
 
     /**
