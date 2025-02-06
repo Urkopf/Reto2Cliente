@@ -471,8 +471,8 @@ public class ControladorArticulosDetalle implements Initializable {
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    setText(String.format("%f", item));
-                    setStyle("-fx-alignment: CENTER-RIGHT;");
+                    setText(String.format("%.0f", item));
+                    setStyle("-fx-alignment: CENTER;");
                 }
             }
         });
@@ -491,8 +491,8 @@ public class ControladorArticulosDetalle implements Initializable {
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    setText(String.format("%f", item));
-                    setStyle("-fx-alignment: CENTER-RIGHT;");
+                    setText(String.format("%.0f", item));
+                    setStyle("-fx-alignment: CENTER;");
                 }
             }
         });

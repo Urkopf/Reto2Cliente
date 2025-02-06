@@ -83,13 +83,13 @@
                         <Label text="Fecha reposición" GridPane.columnIndex="3" />
                         <Label text="Descripción" GridPane.columnIndex="4" />
                         <TextField fx:id="campoId" disable="true" GridPane.rowIndex="1" />
-                        <DatePicker fx:id="campoFecha" minHeight="37.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-                        <TextField fx:id="campoNombre" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <DatePicker fx:id="campoFecha" disable="true" minHeight="37.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                        <TextField fx:id="campoNombre" disable="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <Label text="Precio" GridPane.columnIndex="2" />
                         <Label text="Stock" GridPane.columnIndex="5" />
-                        <TextField fx:id="campoPrecio" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                        <TextField fx:id="campoDescripcion" GridPane.columnIndex="4" GridPane.rowIndex="1" />
-                        <TextField fx:id="campoStock" GridPane.columnIndex="5" GridPane.rowIndex="1" />
+                        <TextField fx:id="campoPrecio" disable="true" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                        <TextField fx:id="campoDescripcion" disable="true" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+                        <TextField fx:id="campoStock" disable="true" GridPane.columnIndex="5" GridPane.rowIndex="1" />
                      </children>
                      <padding>
                         <Insets left="20.0" right="20.0" top="20.0" />
@@ -109,11 +109,11 @@
                                           </children>
                                       </HBox>
       
-                                            <TableView fx:id="tablaAlmacenesDisponibles">
+                                            <TableView fx:id="tablaAlmacenesDisponibles" prefHeight="400.0" prefWidth="407.0">
                                           <columns>
                                               <TableColumn fx:id="columnaId" prefWidth="45.0" resizable="false" text="ID" />
-                                              <TableColumn fx:id="columnaDireccion" prefWidth="238.0" resizable="false" text="Dirección" />
-                                              <TableColumn fx:id="columnaEspacios" prefWidth="103.0" resizable="false" text="Espacios" />
+                                              <TableColumn fx:id="columnaDireccion" prefWidth="236.0" resizable="false" text="Dirección" />
+                                              <TableColumn fx:id="columnaEspacios" prefWidth="98.0" resizable="false" text="Espacios" />
                                           </columns>
                                       </TableView>
                                       <Button fx:id="botonAlmacen" mnemonicParsing="false" styleClass="btnVerde" text="Asignar almacén">
@@ -140,11 +140,11 @@
                                     <Insets />
                                  </VBox.margin>
                                     </HBox>
-                                    <TableView fx:id="tablaAlmacenesArticulo" prefWidth="600.0">
+                                    <TableView fx:id="tablaAlmacenesArticulo" prefHeight="400.0" prefWidth="611.0">
                                         <columns>
-                                            <TableColumn fx:id="columnaId2" prefWidth="61.0" resizable="false" text="ID" />
-                                            <TableColumn fx:id="columnaDireccion2" prefWidth="428.0" resizable="false" text="Dirección" />
-                                            <TableColumn fx:id="columnaEspacios2" prefWidth="96.0" resizable="false" text="Espacios" />
+                                            <TableColumn fx:id="columnaId2" prefWidth="70.0" resizable="false" text="ID" />
+                                            <TableColumn fx:id="columnaDireccion2" prefWidth="407.0" resizable="false" text="Dirección" />
+                                            <TableColumn fx:id="columnaEspacios2" prefWidth="108.0" resizable="false" text="Espacios" />
                                         </columns>
                                  <VBox.margin>
                                     <Insets left="20.0" />
