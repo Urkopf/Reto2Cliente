@@ -184,7 +184,7 @@ public class ControladorPedidosPrincipal implements Initializable {
             configurarEventosTabla();
             stage.show();
         } catch (Exception e) {
-
+            stage.show();
             ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
             if (e instanceof ConnectException || e instanceof ProcessingException) {
 

@@ -519,10 +519,17 @@ public class ControladorPedidosDetalle implements Initializable {
     private void cargarArticulosDisponibles() throws Exception {
 
         Collection<Articulo> articulos = factoriaArticulos.acceso().getAllArticulos();
-        articulosDisponibles = FXCollections.observableArrayList(articulos);
+        // Filtra solo los artículos que tengan stock mayor que 0
+        articulosDisponibles = FXCollections.observableArrayList(
+                articulos.stream()
+                        .filter(articulo -> articulo.getStock() > 0)
+                        .collect(Collectors.toList())
+        );
 
-        // Ordenar por ID para mayor claridad
+        // Ordena los artículos por ID para mayor claridad
         FXCollections.sort(articulosDisponibles, Comparator.comparing(Articulo::getId));
+
+        // Asigna la lista filtrada a la tabla
         tablaArticulosDisponibles.setItems(articulosDisponibles);
 
     }
