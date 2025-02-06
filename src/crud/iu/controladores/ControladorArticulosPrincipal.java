@@ -2,9 +2,11 @@ package crud.iu.controladores;
 
 import crud.excepciones.ExcepcionesUtilidad;
 import crud.negocio.FactoriaArticulos;
+import crud.negocio.FactoriaPedidoArticulo;
 import crud.negocio.FactoriaPedidos;
 import crud.negocio.FactoriaUsuarios;
 import crud.objetosTransferibles.Articulo;
+import crud.objetosTransferibles.PedidoArticulo;
 import crud.objetosTransferibles.Trabajador;
 import crud.utilidades.AlertUtilities;
 import java.io.InputStream;
@@ -676,6 +678,7 @@ public class ControladorArticulosPrincipal implements Initializable {
             LOGGER.log(Level.SEVERE, "Error al guardar cambios", e);
             AlertUtilities.showErrorDialog(Alert.AlertType.ERROR, "Error",
                     "No se pudieron guardar los cambios. Intentelo de nuevo.");
+            ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
 
@@ -778,10 +781,31 @@ public class ControladorArticulosPrincipal implements Initializable {
             AlertUtilities.showErrorDialog(Alert.AlertType.WARNING, "Eliminar Articulos",
                     "Debe seleccionar al menos un articulo para eliminar.");
         } else {
-            articulosObservableList.removeAll(seleccionados);
-            setHayCambiosNoGuardados(true);
-            actualizarTablaYPaginador();
-            LOGGER.info("Articulos eliminados de la tabla.");
+            try {
+                for (Articulo articulo : seleccionados) {
+                    Collection<PedidoArticulo> coleccion = FactoriaPedidoArticulo.getInstance().acceso().getAllPedidoArticulo();
+                    ObservableList<PedidoArticulo> lista = FXCollections.observableArrayList(coleccion);
+                    lista = FXCollections.observableArrayList(lista.stream()
+                            .filter(p -> p.getPedidoId().equals(articulo.getId()))
+                            .collect(Collectors.toList()));
+
+                    if (lista.size() == 0) {
+                        articulosObservableList.removeAll(seleccionados);
+                        setHayCambiosNoGuardados(true);
+                        LOGGER.info("Articulos eliminados de la tabla.");
+
+                    } else {
+                        AlertUtilities.showErrorDialog(Alert.AlertType.WARNING, "Detalles de Articulo",
+                                "No puede borrar el articulo, porque esta en un pedido.");
+                    }
+                }
+
+                actualizarTablaYPaginador();
+
+            } catch (Exception ex) {
+                ExcepcionesUtilidad.centralExcepciones(ex, ex.getMessage());
+            }
+
         }
     }
 

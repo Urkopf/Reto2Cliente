@@ -9,45 +9,83 @@ import crud.excepciones.ExcepcionesUtilidad;
 import crud.iu.controladores.ControladorPedidosBusqueda;
 import crud.iu.controladores.ControladorPedidosPrincipal;
 import crud.objetosTransferibles.Pedido;
-import crud.objetosTransferibles.Usuario;
-import static crud.utilidades.AlertUtilities.showErrorDialog;
 import java.util.Collection;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
-
 import javafx.scene.Parent;
-import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
 /**
+ * Factoría para la gestión de pedidos.
+ * <p>
+ * Esta clase implementa el patrón Singleton para asegurar que exista una única
+ * instancia de la factoría durante la ejecución de la aplicación. Proporciona
+ * métodos para obtener una implementación de la interfaz {@link IPedido} y para
+ * cargar las ventanas relacionadas con la gestión de pedidos, como la ventana
+ * principal y la de búsqueda.
+ * </p>
  *
- * @author 2dam
+ * @author Urko
  */
 public class FactoriaPedidos {
 
+    /**
+     * Logger para la clase {@code FactoriaPedidos}.
+     */
     private static final Logger LOGGER = Logger.getLogger(FactoriaPedidos.class.getName());
 
+    /**
+     * Instancia única de la factoría.
+     */
     private static FactoriaPedidos instance;
 
+    /**
+     * Constructor privado para evitar instanciación externa.
+     */
     private FactoriaPedidos() {
     }
 
+    /**
+     * Retorna la instancia única de {@code FactoriaPedidos}.
+     * <p>
+     * Si la instancia aún no ha sido creada, se crea una nueva.
+     * </p>
+     *
+     * @return La instancia única de {@code FactoriaPedidos}.
+     */
     public static FactoriaPedidos getInstance() {
         if (instance == null) {
             instance = new FactoriaPedidos();
         }
-
         return instance;
     }
 
+    /**
+     * Proporciona acceso a una implementación de la interfaz {@link IPedido}.
+     * <p>
+     * Este método retorna una nueva instancia de {@link PedidoImpl}.
+     * </p>
+     *
+     * @return Una implementación de {@code IPedido}.
+     */
     public IPedido acceso() {
         return new PedidoImpl();
     }
 
-    //Ventanas
+    /**
+     * Carga y muestra la ventana principal de pedidos.
+     * <p>
+     * Este método carga la vista FXML para la ventana principal de pedidos,
+     * configura el controlador con el escenario, el usuario actual y la
+     * colección de pedidos obtenidos en la búsqueda, y posteriormente
+     * inicializa el escenario.
+     * </p>
+     *
+     * @param stage El escenario en el cual se mostrará la ventana.
+     * @param user El usuario actual.
+     * @param pedidoBusqueda La colección de pedidos resultantes de la búsqueda.
+     */
     public void cargarPedidosPrincipal(Stage stage, Object user, Collection<Pedido> pedidoBusqueda) {
         try {
             FXMLLoader cargador = new FXMLLoader(getClass().getResource("/crud/iu/vistas/PedidosPrincipal.fxml"));
@@ -63,6 +101,17 @@ public class FactoriaPedidos {
         }
     }
 
+    /**
+     * Carga y muestra la ventana de búsqueda de pedidos.
+     * <p>
+     * Este método carga la vista FXML para la ventana de búsqueda de pedidos,
+     * configura el controlador con el escenario y el usuario actual, y
+     * posteriormente inicializa el escenario.
+     * </p>
+     *
+     * @param stage El escenario en el cual se mostrará la ventana.
+     * @param user El usuario actual.
+     */
     public void cargarPedidosBusqueda(Stage stage, Object user) {
         try {
             FXMLLoader cargador = new FXMLLoader(getClass().getResource("/crud/iu/vistas/PedidosBusqueda.fxml"));
@@ -76,5 +125,4 @@ public class FactoriaPedidos {
             ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }
     }
-
 }

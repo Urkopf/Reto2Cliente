@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.scene.image.ImageView;
@@ -38,10 +37,8 @@ import javax.ws.rs.ProcessingException;
  * lógica para filtrar pedidos según varios criterios (ID, CIF, dirección,
  * fecha, estado y precio).
  *
- * <p>
- * <strong>Autor:</strong>
- * <a href="mailto:urkoperitz@example.com">Urko Peritz</a>
- * </p>
+ * @author: Urko
+ *
  */
 public class ControladorPedidosBusqueda implements Initializable {
 
