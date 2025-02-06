@@ -13,6 +13,7 @@ import crud.objetosTransferibles.PedidoArticulo;
 import crud.objetosTransferibles.Trabajador;
 import crud.objetosTransferibles.Usuario;
 import crud.utilidades.AlertUtilities;
+import javafx.scene.control.SeparatorMenuItem;
 
 import static crud.utilidades.AlertUtilities.showErrorDialog;
 import crud.excepciones.ExcepcionesUtilidad;
@@ -48,6 +49,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -55,9 +57,13 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TablePosition;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -103,6 +109,7 @@ public class ControladorPedidosPrincipal implements Initializable {
      * borrado) que aún no se hayan guardado.
      */
     private boolean hayCambiosNoGuardados = false;
+    private ContextMenu menuContextual;
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Elementos FXML">
@@ -173,6 +180,8 @@ public class ControladorPedidosPrincipal implements Initializable {
             configurarListeners();
             cargarDatosPedidos();
             configurarPaginador();
+            configurarMenuContextual();
+            configurarEventosTabla();
             stage.show();
         } catch (Exception e) {
 
@@ -187,6 +196,83 @@ public class ControladorPedidosPrincipal implements Initializable {
         }
 
         // Cargar datos y configurar paginador
+    }
+
+    /**
+     * Configura el menú contextual de la tabla de pedidos. Este menú incluye
+     * opciones para editar, ver detalles, crear un nuevo registro y eliminar un
+     * registro. Se asignan los manejadores de eventos a cada opción del menú.
+     */
+    private void configurarMenuContextual() {
+        menuContextual = new ContextMenu();
+
+        MenuItem mEditar = new MenuItem("Editar");
+        mEditar.setOnAction(event -> editarCelda());
+
+        MenuItem mDetalles = new MenuItem("Ver Detalles");
+        mDetalles.setOnAction(event -> handleDetalles(event));
+
+        MenuItem mNuevo = new MenuItem("Nuevo registro");
+        mNuevo.setOnAction(event -> handleNuevoPedido(event));
+
+        MenuItem mEliminar = new MenuItem("Eliminar registro");
+        mEliminar.setOnAction(event -> handleEliminar(event));
+
+        menuContextual.getItems().addAll(mEditar, mDetalles, new SeparatorMenuItem(), mNuevo, mEliminar);
+    }
+
+    /**
+     * Muestra el menú contextual en la posición del clic derecho sobre una fila
+     * de la tabla.
+     *
+     * @param fila La fila sobre la que se ha hecho clic derecho.
+     * @param event Evento del ratón que contiene la posición del clic.
+     */
+    private void mostrarMenuContextual(TableRow<Pedido> fila, MouseEvent event) {
+        menuContextual.hide(); // Oculta si hay un menú ya abierto
+        menuContextual.show(fila, event.getScreenX(), event.getScreenY());
+    }
+
+    /**
+     * Activa el modo edición de la celda seleccionada en la tabla. Si no hay
+     * ninguna celda seleccionada, muestra una alerta de advertencia.
+     */
+    private void editarCelda() {
+        Pedido pedidoSeleccionado = tablaPedidos.getSelectionModel().getSelectedItem();
+        if (pedidoSeleccionado == null) {
+            showErrorDialog(AlertType.WARNING, "Editar Pedido", "Debe seleccionar un pedido para editar.");
+            return;
+        }
+
+        // Obtener la posición de la celda seleccionada
+        TablePosition<Pedido, ?> posicion = tablaPedidos.getSelectionModel().getSelectedCells().get(0);
+        if (posicion != null) {
+            int fila = posicion.getRow(); // Obtener la fila seleccionada
+            TableColumn<Pedido, ?> columna = posicion.getTableColumn(); // Obtener la columna seleccionada
+
+            if (columna != null) {
+                tablaPedidos.edit(fila, columna); // Poner la celda en modo edición
+            }
+        }
+    }
+
+    /**
+     * Configura los eventos de la tabla para detectar clics del usuario. Si se
+     * detecta un clic derecho sobre una fila válida, se despliega el menú
+     * contextual.
+     */
+    private void configurarEventosTabla() {
+        tablaPedidos.setRowFactory(tv -> {
+            TableRow<Pedido> fila = new TableRow<>();
+
+            fila.setOnMouseClicked(event -> {
+                if (event.getButton() == MouseButton.SECONDARY && !fila.isEmpty()) {
+                    mostrarMenuContextual(fila, event);
+                }
+            });
+
+            return fila;
+        });
     }
 
     /**
@@ -415,7 +501,7 @@ public class ControladorPedidosPrincipal implements Initializable {
      * comprueba si hay cambios sin guardar.
      */
     @FXML
-    private void handleBusqueda(ActionEvent event) {
+    private void mostrarVentanaBusqueda(ActionEvent event) {
         confirmarCambiosSinGuardar(this::handleBusquedaInterno);
     }
 
@@ -720,7 +806,7 @@ public class ControladorPedidosPrincipal implements Initializable {
         botonNuevo.setOnAction(this::handleNuevoPedido);
         botonReiniciar.setOnAction(this::handleReiniciarTabla);
         botonDetalles.setOnAction(this::handleDetalles);
-        botonBusqueda.setOnAction(this::handleBusqueda);
+        botonBusqueda.setOnAction(this::mostrarVentanaBusqueda);
         botonEliminar.setOnAction(this::handleEliminar);
         botonGuardar.setOnAction(this::handleGuardarCambios);
         botonAtras.setOnAction(this::handleAtras);
