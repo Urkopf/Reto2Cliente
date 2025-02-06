@@ -183,8 +183,10 @@ public class ControladorPedidosPrincipal implements Initializable {
             configurarEventosTabla();
             configureMnemotecnicKeys();
             stage.show();
+            stage.centerOnScreen();
         } catch (Exception e) {
             stage.show();
+            stage.centerOnScreen();
             ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
             if (e instanceof ConnectException || e instanceof ProcessingException) {
 
@@ -514,7 +516,7 @@ public class ControladorPedidosPrincipal implements Initializable {
         paginador.setCurrentPageIndex(indicePagina);
         actualizarPagina(indicePagina);
         tablaPedidos.scrollTo(nuevoPedido);
-
+        tablaPedidos.refresh();
         LOGGER.info("Nuevo pedido añadido con valores predeterminados.");
     }
 

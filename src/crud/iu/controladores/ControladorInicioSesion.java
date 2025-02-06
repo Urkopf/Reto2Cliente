@@ -324,6 +324,7 @@ public class ControladorInicioSesion implements Initializable {
 
             configurarTeclasMnemotecnicas();  // Configurar teclas mnemotécnicas
             stage.show();  // Mostrar el escenario
+            stage.centerOnScreen();
         } catch (Exception e) {
             ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
             if (e instanceof ConnectException || e instanceof ProcessingException) {
@@ -483,7 +484,7 @@ public class ControladorInicioSesion implements Initializable {
             Trabajador ainhoa = new Trabajador();
             ainhoa.setActivo(true);
             ainhoa.setNombre("Ainhoa Zugadi Zulueta");
-            factoria.cargarMenuPrincipal(stage, respuesta);
+            factoria.cargarMenuPrincipal(stage, ainhoa);
         } else {
 
             // Cargar clave pública y cifrar contraseña

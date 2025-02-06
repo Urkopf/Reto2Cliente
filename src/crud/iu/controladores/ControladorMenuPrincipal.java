@@ -222,7 +222,7 @@ public class ControladorMenuPrincipal implements Initializable {
             });
             //configurarTeclasMnemotecnicas();  // Configurar teclas mnemotécnicas
             stage.show();  // Mostrar el escenario
-
+            stage.centerOnScreen();
         } catch (Exception e) {
             ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
             if (e instanceof ConnectException || e instanceof ProcessingException) {

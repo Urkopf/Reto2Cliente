@@ -235,6 +235,7 @@ public class ControladorCambiarContrasena implements Initializable {
 
             //configurarTeclasMnemotecnicas();  // Configurar teclas mnemotécnicas
             stage.show();  // Mostrar el escenario
+            stage.centerOnScreen();
             botonCancelar.addEventHandler(ActionEvent.ACTION, this::handleButtonCancel);
             botonGuardar.addEventHandler(ActionEvent.ACTION, this::handleButtonRegister);
             botonAyuda.setOnMouseClicked(event -> {

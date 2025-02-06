@@ -660,6 +660,7 @@ public class ControladorRegistro implements Initializable {
                 actualizarInit();
             }
             stage.show();
+            stage.centerOnScreen();
         } catch (Exception e) {
             ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
         }

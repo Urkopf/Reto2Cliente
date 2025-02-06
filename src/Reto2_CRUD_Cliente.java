@@ -60,8 +60,8 @@ public class Reto2_CRUD_Cliente extends Application {
         pedido.setEstado(Estado.PREPARACION);
         pedido.setCliente(cliente);
 
-        //factoria.cargarInicioSesion(stage, "");
-        factoriaPedidos.cargarPedidosPrincipal(stage, trabajador, null);
+        factoria.cargarInicioSesion(stage, "");
+        //factoriaPedidos.cargarPedidosPrincipal(stage, trabajador, null);
         //factoriaPedidoArticulo.cargarPedidosDetalle(stage, cliente, pedido);
 
     }

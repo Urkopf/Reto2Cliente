@@ -204,6 +204,7 @@ public class ControladorArticulosBusqueda implements Initializable {
             botonAtras.addEventHandler(ActionEvent.ACTION, this::handleAtras);
 
             stage.show();  // Mostrar el escenario
+            stage.centerOnScreen();
         } catch (Exception e) {
             ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
             if (e instanceof ConnectException || e instanceof ProcessingException) {

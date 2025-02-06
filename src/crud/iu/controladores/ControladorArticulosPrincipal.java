@@ -302,6 +302,7 @@ public class ControladorArticulosPrincipal implements Initializable {
             cargarDatosArticulos();
             configurarPaginador();
             stage.show();
+            stage.centerOnScreen();
         } catch (Exception e) {
             ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
             if (e instanceof ConnectException || e instanceof ProcessingException) {

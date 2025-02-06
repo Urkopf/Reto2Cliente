@@ -79,6 +79,7 @@ public class ControladorAyuda implements Initializable {
             stage.setMinHeight(600);
             stage.setOnShowing(this::handleWindowShowing);
             stage.show();
+            stage.centerOnScreen();
         } catch (Exception e) {
             ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
             if (e instanceof ConnectException || e instanceof ProcessingException) {

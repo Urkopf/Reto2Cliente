@@ -214,6 +214,7 @@ public class ControladorPedidosDetalle implements Initializable {
             configurarMenu();
             configurarHandlers();
             stage.show();
+            stage.centerOnScreen();
             configureMnemotecnicKeys();
 
             // Si ya tenemos el pedido, cargamos sus datos en la vista

@@ -167,6 +167,7 @@ public class ControladorPedidosBusqueda implements Initializable {
             stage.setTitle("Búsqueda avanzada");
             LOGGER.info("Inicializando la escena principal");
             stage.show();
+            stage.centerOnScreen();
 
             // Configurar spinner con validaciones
             configurarSpinnerId(spinnerIdDesde);

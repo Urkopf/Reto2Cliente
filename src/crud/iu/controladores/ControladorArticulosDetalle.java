@@ -257,7 +257,7 @@ public class ControladorArticulosDetalle implements Initializable {
             configurarMenu();
             configurarHandlers();
             stage.show();  // Mostrar el escenario
-
+            stage.centerOnScreen();
             if (articulo != null) {
                 cargarArticuloEnFormulario();
                 cargarAlmacenesDelArticulo();
