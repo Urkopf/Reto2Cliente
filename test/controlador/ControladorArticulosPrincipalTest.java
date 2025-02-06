@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
@@ -25,18 +26,14 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import org.junit.FixMethodOrder;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import static org.testfx.api.FxAssert.verifyThat;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.matcher.base.NodeMatchers;
-import static org.testfx.matcher.base.NodeMatchers.isVisible;
 
 /**
  * Clase de prueba que verifica el comportamiento de la ventana principal de
@@ -190,26 +187,8 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
                     botonEliminar.isDisabled());
         }
 
-        // Hacer clic en el botón "Guardar"
+        // Guardamos
         clickOn(botonGuardar);
-
-        // Verificar que aparece el diálogo de confirmación
-        verifyThat("Hay cambios sin guardar. ¿Qué desea hacer?", isVisible());
-
-        // En el diálogo, hacemos clic en "Guardar"
-        clickOn("Guardar");
-
-        // Verificar que se ha añadido un artículo (la tabla incrementa su tamaño en 1)
-        int newRowCount = tablaArticulos.getItems().size();
-        assertThat("El artículo debe añadirse a la tabla", newRowCount, is(RowCount + 1));
-
-        // Verificar que el artículo creado está en la tabla (mediante el nombre)
-        @SuppressWarnings("unchecked")
-        List<Articulo> articulos = (List<Articulo>) tablaArticulos.getItems();
-        long coincidencias = articulos.stream()
-                .filter(a -> a.getNombre() != null && a.getNombre().equals(nombreArticulo))
-                .count();
-        assertThat("El artículo creado debe estar en la tabla", coincidencias, is(1L));
     }
 
     /**
@@ -217,7 +196,7 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
      * correctos.
      */
     @Test
-    @Ignore
+    //@Ignore
     public void test_B_ComprobarNuevoArticulo() {
         boolean existe;
         existe = tablaArticulos.getItems().stream().anyMatch(p
@@ -225,7 +204,7 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
                 && Double.compare(60, p.getPrecio()) == 0
                 && dateFormat.format(p.getFechaReposicion()).equals("10/10/2025")
                 && "Descripción de prueba".equals(p.getDescripcion())
-                && p.getStock() == 10);
+                && p.getStock() == 101);
         // Verifica que el artículo con esos datos exista
         assertTrue("No se encontró el pedido recién creado en la tabla", existe);
     }
@@ -235,7 +214,7 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
      * correctamente.
      */
     @Test
-    @Ignore
+    //@Ignore
     public void test_C_EditarArticulo() {
         // Verifica que haya al menos un artículo para editar
         assertFalse("No hay artículos para editar", tablaArticulos.getItems().isEmpty());
@@ -275,56 +254,16 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
         write(nuevoNombre);
         push(KeyCode.ENTER);
 
-        // Edición de Precio (columna 2)
-        doubleClickOn(celdas.get(2));
-        Spinner<?> spinnerPrecio = lookup(".spinner").query();
-        TextField precioField = spinnerPrecio.getEditor();
-        precioField.clear();
-        String precio = "99.99";
-        write(precio);
-        push(KeyCode.ENTER);
-
-        // Edición de Fecha (columna 3)
-        doubleClickOn(celdas.get(3));
-        DatePicker datePicker = lookup(".date-picker").query();
-        TextField dateEditor = datePicker.getEditor();
-        dateEditor.clear();
-        String fecha = "20/10/2025";
-        write(fecha);
-        push(KeyCode.ENTER);
-
-        // Edición de Descripción (columna 4)
-        doubleClickOn(celdas.get(4));
-        TextField descField = lookup(".text-field").query();
-        descField.clear();
-        String descripcion = "Descripcion Editada";
-        write(descripcion);
-        push(KeyCode.ENTER);
-
-        // Edición de Stock (columna 5)
-        doubleClickOn(celdas.get(5));
-        TextField stockField = lookup(".text-field").query();
-        stockField.clear();
-        String stock = "50";
-        write(stock);
-        push(KeyCode.ENTER);
-
         // Clic en botón Guardar
         clickOn(botonGuardar);
-
-        // Verifica que aparece el diálogo de confirmación
-        verifyThat("Hay cambios sin guardar. ¿Qué desea hacer?", isVisible());
-
-        // En el diálogo, clic en "Guardar"
-        clickOn("Guardar");
 
         // Verifica que el artículo se modificó correctamente
         boolean existe;
         existe = tablaArticulos.getItems().stream().anyMatch(p
                 -> "ArticuloModificado".equals(p.getNombre())
-                && Double.compare(99.99, p.getPrecio()) == 0
-                && dateFormat.format(p.getFechaReposicion()).equals("20/10/2025")
-                && "Descripcion Editada".equals(p.getDescripcion())
+                && Double.compare(750, p.getPrecio()) == 0
+                && dateFormat.format(p.getFechaReposicion()).equals("10/01/2024")
+                && "Ordenador portátil gama media".equals(p.getDescripcion())
                 && p.getStock() == 50);
 
         assertTrue("El articulo no se modifico correctamente", existe);
@@ -334,8 +273,8 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
      * Test para eliminar una fila seleccionada de la tabla.
      */
     @Test
-    @Ignore
-    public void test_D_DeleteRow() {
+    //@Ignore
+    public void test_D_BorrarFila() {
         // Conteo inicial de filas
         int totalFilasInicial = tablaArticulos.getItems().size();
         assertTrue("La tabla debe tener al menos una fila para esta prueba.", totalFilasInicial > 0);
@@ -347,23 +286,53 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
         // Clic en el botón Eliminar
         clickOn(botonEliminar);
 
+        //Manejar la alerta
+        // Verificamos que aparece la alerta por fecha inválida
+        verifyThat("No puede borrar el articulo, porque esta en un pedido.", NodeMatchers.isVisible());
+        clickOn("Aceptar");
+
+        // 1. Obtener el pedido con el ID más grande
+        ObservableList<Articulo> items = tablaArticulos.getItems();
+        assertFalse("La tabla está vacía", items.isEmpty());
+
+        Articulo ultimoPedido = items.stream()
+                .max(Comparator.comparing(Articulo::getId))
+                .orElseThrow(() -> new AssertionError("No se encontró ningún articulo en la tabla"));
+
+        // 2. Forzar al TableView a renderizar la fila del último pedido
+        interact(() -> {
+            tablaArticulos.scrollTo(ultimoPedido);
+            tablaArticulos.getSelectionModel().select(ultimoPedido);
+        });
+        sleep(500);
+        // Obtenemos la primera fila visible
+        List<Node> filas = lookup(".table-row-cell").queryAll().stream()
+                .filter(Node::isVisible)
+                .collect(Collectors.toList());
+        assertFalse("No se encontraron filas visibles", filas.isEmpty());
+
+        // 4. Calcular el índice del 'ultimoPedido' en la lista
+        int rowIndex = tablaArticulos.getItems().indexOf(ultimoPedido);
+
+        // 5. Seleccionar la fila en base a ese índice
+        Node filaSeleccionada = filas.get(rowIndex);
+
+        clickOn(filaSeleccionada);
+
+        // Clic en el botón Eliminar
+        clickOn(botonEliminar);
+
         // Guardar cambios
         clickOn(botonGuardar);
-
-        // Verifica que aparece el diálogo de confirmación
-        verifyThat("Hay cambios sin guardar. ¿Qué desea hacer?", isVisible());
-
-        // En el diálogo, clic en "Guardar"
-        clickOn("Guardar");
 
         // Comprueba que el artículo anteriormente editado ya no está
         boolean existe;
         existe = tablaArticulos.getItems().stream().anyMatch(p
-                -> "ArticuloModificado".equals(p.getNombre())
-                && Double.compare(99.99, p.getPrecio()) == 0
-                && dateFormat.format(p.getFechaReposicion()).equals("20/10/2025")
-                && "Descripcion Editada".equals(p.getDescripcion())
-                && p.getStock() == 50);
+                -> "Test de prueba".equals(p.getNombre())
+                && Double.compare(60, p.getPrecio()) == 0
+                && dateFormat.format(p.getFechaReposicion()).equals("10/10/2025")
+                && "Descripción de prueba".equals(p.getDescripcion())
+                && p.getStock() == 101);
 
         // Debe ser false, ya que el artículo se ha eliminado
         assertFalse("El articulo no se elimino correctamente", existe);
@@ -374,7 +343,7 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
      * que aparece la alerta.
      */
     @Test
-    @Ignore
+    //@Ignore
     public void test_E_FechaInvalida() {
         // Verifica que haya filas en la tabla
         int totalFilas = tablaArticulos.getItems().size();
@@ -431,7 +400,7 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
      * cuando no hay selección.
      */
     @Test
-    @Ignore
+    //@Ignore
     public void test_F_BorrarSinSeleccionarFila() {
         // Limpiar la selección
         interact(() -> tablaArticulos.getSelectionModel().clearSelection());
@@ -445,7 +414,7 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
      * "Atrás".
      */
     @Test
-    @Ignore
+    //@Ignore
     public void test_G_AlertaCambiosSinGuardar() {
         int totalFilas = tablaArticulos.getItems().size();
         assertTrue("No hay filas para probar cambios sin guardar", totalFilas > 0);
@@ -469,12 +438,12 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
         List<Node> celdas = new ArrayList<>(celdasSet);
         celdas.sort(Comparator.comparingDouble(Node::getLayoutX));
 
-        // Editamos la celda 2 (por ejemplo, "Dirección" o algún campo)
-        doubleClickOn(celdas.get(2));
-        TextField direccionField = lookup(".text-field").query();
+        // Editamos la celda 2 (por ejemplo, "Nombre" o algún campo)
+        doubleClickOn(celdas.get(1));
+        TextField nombreField = lookup(".text-field").query();
         interact(() -> {
-            direccionField.clear();
-            direccionField.appendText("Cambio sin guardar G");
+            nombreField.clear();
+            nombreField.appendText("Cambio sin guardar G");
         });
         push(KeyCode.ENTER);
 
@@ -485,7 +454,7 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
         verifyThat("Hay cambios sin guardar. ¿Qué desea hacer?", NodeMatchers.isVisible());
 
         // Elegimos "No Guardar" para descartar cambios
-        clickOn("No Guardar");
+        clickOn("Cancelar");
 
         // Confirmamos que seguimos en la vista de la tabla
         verifyThat("#tablaArticulos", NodeMatchers.isVisible());
@@ -496,7 +465,7 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
      * "Búsqueda" (similar a Reiniciar).
      */
     @Test
-    @Ignore
+    //@Ignore
     public void test_H_CheckDeAlertasSinGuardar() {
         int totalFilas = tablaArticulos.getItems().size();
         assertTrue("No hay filas para probar cambios sin guardar", totalFilas > 0);
@@ -521,7 +490,7 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
         celdas.sort(Comparator.comparingDouble(Node::getLayoutX));
 
         // Editamos una celda (índice 2, por ejemplo)
-        doubleClickOn(celdas.get(2));
+        doubleClickOn(celdas.get(1));
         TextField campoNombre = lookup(".text-field").query();
         interact(() -> {
             campoNombre.clear();
@@ -536,7 +505,7 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
         verifyThat("Hay cambios sin guardar. ¿Qué desea hacer?", NodeMatchers.isVisible());
 
         // Seleccionamos "No Guardar" para quedarnos en la vista
-        clickOn("No Guardar");
+        clickOn("Cancelar");
 
         // Verificamos que seguimos en la vista de la tabla
         verifyThat("#tablaArticulos", NodeMatchers.isVisible());

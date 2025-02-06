@@ -2,23 +2,22 @@ package crud.excepciones;
 
 import static crud.utilidades.AlertUtilities.showErrorDialog;
 import java.net.ConnectException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.scene.control.Alert.AlertType;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.RedirectionException;
-import javax.ws.rs.ServiceUnavailableException;
 import javax.ws.rs.ServerErrorException;
+import javax.ws.rs.ServiceUnavailableException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javafx.scene.control.Alert.AlertType;
-import javax.ws.rs.ProcessingException;
 import net.sf.jasperreports.engine.JRException;
 
 /**
@@ -62,7 +61,7 @@ public class ExcepcionesUtilidad {
         } else if (exception instanceof RedirectionException) {
             showErrorDialog(AlertType.INFORMATION, "Redirección", "El recurso ha sido movido a otra ubicación.");
         } else if (exception instanceof InternalServerErrorException) {
-            showErrorDialog(AlertType.ERROR, "Error del servidor", "Se produjo un error interno en el servidor. Inténtelo más tarde.");
+            showErrorDialog(AlertType.ERROR, "Error del servidor", "Se produjo un error interno en el servidor.");
         } else if (exception instanceof ServiceUnavailableException) {
             showErrorDialog(AlertType.ERROR, "Servicio no disponible", "El servidor no está disponible actualmente. Inténtelo más tarde.");
         } else if (exception instanceof ServerErrorException) {
