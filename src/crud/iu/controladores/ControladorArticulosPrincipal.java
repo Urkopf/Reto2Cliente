@@ -595,9 +595,11 @@ public class ControladorArticulosPrincipal implements Initializable {
         cancelarEdicionEnTabla();
         LOGGER.info("Botón Nuevo Articulo presionado");
         Articulo nuevoArticulo = new Articulo();
+        nuevoArticulo.setNombre("Aqui el nombre");
+        nuevoArticulo.setDescripcion("Aqui descripcion");
         nuevoArticulo.setPrecio(0);
         nuevoArticulo.setFechaReposicion(new Date());
-        nuevoArticulo.setStock(0);
+        nuevoArticulo.setStock(1);
 
         articulosObservableList.add(nuevoArticulo);
         setHayCambiosNoGuardados(true);
@@ -617,7 +619,7 @@ public class ControladorArticulosPrincipal implements Initializable {
      */
     @FXML
     private void handleGuardarCambios(ActionEvent event) {
-        confirmarCambiosSinGuardar(this::guardarCambios);
+        guardarCambios();
         recargarTabla();
     }
 
