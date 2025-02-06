@@ -11,11 +11,27 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 /**
+ * Clase de utilidades para la serialización de objetos a XML.
+ * <p>
+ * Esta clase proporciona métodos para convertir objetos en su representación en
+ * formato XML utilizando JAXB.
+ * </p>
  *
- * @author 2dam
+ * @author Urko
  */
 public class Utilidades {
 
+    /**
+     * Serializa un objeto a una cadena en formato XML.
+     * <p>
+     * Este método utiliza JAXB para convertir el objeto proporcionado en una
+     * cadena que contiene su representación en XML.
+     * </p>
+     *
+     * @param objeto El objeto a serializar.
+     * @return Una cadena en formato XML que representa el objeto, o
+     * {@code null} si ocurre un error.
+     */
     public static String serializaAXML(Object objeto) {
         try {
             JAXBContext contexto = JAXBContext.newInstance(Object.class);
