@@ -5,7 +5,6 @@ import crud.negocio.FactoriaUsuarios;
 import crud.objetosTransferibles.Categoria;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -31,7 +30,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 //import utilidades.Message;
-import crud.objetosTransferibles.Usuario;
 import crud.objetosTransferibles.Cliente;
 import crud.objetosTransferibles.Departamento;
 import crud.objetosTransferibles.Trabajador;
@@ -41,16 +39,11 @@ import static crud.seguridad.UtilidadesCifrado.cifrarConClavePublica;
 import static crud.utilidades.AlertUtilities.showConfirmationDialog;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
 import static crud.utilidades.ValidateUtilities.isValid;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.ConnectException;
 import java.security.PublicKey;
-import java.util.Base64;
 import java.util.Optional;
-import java.util.Properties;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextInputDialog;
@@ -58,118 +51,342 @@ import javafx.scene.control.ToggleGroup;
 import javax.ws.rs.ProcessingException;
 
 /**
- * Controlador FXML para la vista de registro (SignUp). Este controlador
- * gestiona la interacción entre la interfaz de usuario y la lógica de negocio
- * para el registro de nuevos usuarios.
+ * Controlador FXML para la vista de registro (SignUp).
+ * <p>
+ * Este controlador gestiona la interacción entre la interfaz de usuario y la
+ * lógica de negocio para el registro de nuevos usuarios, incluyendo la
+ * validación de campos, la asignación de menús contextuales y la configuración
+ * de los elementos de la interfaz.
+ * </p>
  *
  * @author Urko, Sergio
  */
 public class ControladorRegistro implements Initializable {
 
+    /**
+     * Logger para registrar la ejecución y errores del controlador.
+     */
     private static final Logger LOGGER = Logger.getLogger(ControladorRegistro.class.getName());
+
+    /**
+     * Stage principal para mostrar la ventana de registro.
+     */
     private Stage stage = new Stage();
+
+    /**
+     * Instancia de la factoría de usuarios.
+     */
     private FactoriaUsuarios factoria = FactoriaUsuarios.getInstance();
+
+    /**
+     * Usuario original de tipo Cliente para actualización.
+     */
     private Cliente userClienteOriginal;
+
+    /**
+     * Usuario original de tipo Trabajador para actualización.
+     */
     private Trabajador userTrabajadorOriginal;
+
+    /**
+     * Usuario de tipo Cliente.
+     */
     private Cliente userCliente;
+
+    /**
+     * Usuario de tipo Trabajador.
+     */
     private Trabajador userTrabajador;
+
+    /**
+     * Indica si existen errores en el formulario.
+     */
     private boolean hasError = false;  // Indica si hay errores en el formulario
 
     // Elementos de la interfaz FXML
+    /**
+     * Label que muestra el título de la vista.
+     */
     @FXML
     private Label labelTitulo;
+
+    /**
+     * Campo de texto para el nombre.
+     */
     @FXML
     private TextField campoNombre;
+
+    /**
+     * Campo de texto para el primer apellido.
+     */
     @FXML
     private TextField campoApellido1;
+
+    /**
+     * Campo de texto para el segundo apellido.
+     */
     @FXML
     private TextField campoApellido2;
+
+    /**
+     * Campo de texto para el email.
+     */
     @FXML
     private TextField campoEmail;
+
+    /**
+     * PasswordField para la contraseña.
+     */
     @FXML
     private PasswordField campoContrasena;
+
+    /**
+     * PasswordField para la confirmación de la contraseña.
+     */
     @FXML
     private PasswordField campoRepiteContrasena;
+
+    /**
+     * Campo de texto para visualizar la contraseña.
+     */
     @FXML
     private TextField campoContrasenaVista;
+
+    /**
+     * Campo de texto para visualizar la confirmación de la contraseña.
+     */
     @FXML
     private TextField campoRepiteContrasenaVista;
+
+    /**
+     * Campo de texto para la dirección.
+     */
     @FXML
     private TextField campoDireccion;
+
+    /**
+     * Campo de texto para la ciudad.
+     */
     @FXML
     private TextField campoCiudad;
+
+    /**
+     * Campo de texto para el código postal.
+     */
     @FXML
     private TextField campoCodigoPostal;
+
+    /**
+     * Campo de texto para el CIF.
+     */
     @FXML
     private TextField campoCIF;
+
+    /**
+     * Campo de texto para el sector.
+     */
     @FXML
     private TextField campoSector;
+
+    /**
+     * Campo de texto para el teléfono.
+     */
     @FXML
     private TextField campoTelefono;
+
+    /**
+     * RadioButton para seleccionar que el usuario es Cliente.
+     */
     @FXML
     private RadioButton radioCliente;
+
+    /**
+     * RadioButton para seleccionar que el usuario es Trabajador.
+     */
     @FXML
     private RadioButton radioTrabajador;
+
+    /**
+     * CheckBox que indica si el usuario está activo.
+     */
     @FXML
     private CheckBox checkActivo;
+
+    /**
+     * Botón para registrar el usuario.
+     */
     @FXML
     private Button botonRegistrar;
+
+    /**
+     * Botón para cancelar el registro.
+     */
     @FXML
     private Button botonCancelar;
+
+    /**
+     * GridPane que contiene el formulario.
+     */
     @FXML
     private GridPane gridPane;
+
+    /**
+     * Icono de error para el campo nombre.
+     */
     @FXML
     private ImageView errorNombre;
+
+    /**
+     * Icono de error para el campo primer apellido.
+     */
     @FXML
     private ImageView errorApellido1;
+
+    /**
+     * Icono de error para el campo segundo apellido.
+     */
     @FXML
     private ImageView errorApellido2;
+
+    /**
+     * Icono de error para el campo email.
+     */
     @FXML
     private ImageView errorEmail;
+
+    /**
+     * Icono de error para el campo contraseña.
+     */
     @FXML
     private ImageView errorContrasena;
+
+    /**
+     * Icono de error para el campo repite contraseña.
+     */
     @FXML
     private ImageView errorRepiteContrasena;
+
+    /**
+     * Icono de error para el campo dirección.
+     */
     @FXML
     private ImageView errorDireccion;
+
+    /**
+     * Icono de error para el campo ciudad.
+     */
     @FXML
     private ImageView errorCiudad;
+
+    /**
+     * Icono de error para el campo código postal.
+     */
     @FXML
     private ImageView errorCodigoPostal;
+
+    /**
+     * Icono de error para el campo CIF.
+     */
     @FXML
     private ImageView errorCIF;
+
+    /**
+     * Icono de error para el campo sector.
+     */
     @FXML
     private ImageView errorSector;
+
+    /**
+     * Icono de error para el campo teléfono.
+     */
     @FXML
     private ImageView errorTelefono;
+
+    /**
+     * ComboBox para seleccionar el departamento.
+     */
     @FXML
     private ComboBox<Departamento> comboDepartamento = new ComboBox();
+
+    /**
+     * ComboBox para seleccionar la categoría.
+     */
     @FXML
     private ComboBox<Categoria> comboCategoria = new ComboBox();
+
+    /**
+     * Label para el campo categoría.
+     */
     @FXML
     private Label labelCategoria;
+
+    /**
+     * Label para el campo departamento.
+     */
     @FXML
     private Label labelDepartamento;
+
+    /**
+     * Caja de advertencia para mostrar información adicional cuando el usuario
+     * no está activo.
+     */
     @FXML
-    private HBox avisoNoActivo;  // Caja de advertencia para mostrar información adicional
+    private HBox avisoNoActivo;
+
+    /**
+     * Botón para alternar la visibilidad de la contraseña.
+     */
     @FXML
-    private Button botonOjoContrasena;  // Botón para alternar la visibilidad de la contraseña
+    private Button botonOjoContrasena;
+
+    /**
+     * Botón para alternar la visibilidad de la confirmación de la contraseña.
+     */
     @FXML
-    private Button botonOjoRepite;  // Botón para alternar la visibilidad de la confirmación de la contraseña
+    private Button botonOjoRepite;
+
+    /**
+     * Imagen relacionada con el sector.
+     */
     @FXML
     private ImageView imagenSector;
+
+    /**
+     * Imagen relacionada con el teléfono.
+     */
     @FXML
     private ImageView imagenTelefono;
+
+    /**
+     * Grupo que contiene los elementos del sector.
+     */
     @FXML
     private Group grupoSector;
+
+    /**
+     * Grupo que contiene los elementos del teléfono.
+     */
     @FXML
     private Group grupoTelefono;
 
-    private ContextMenu contextMenu;  // Menú contextual personalizado
+    /**
+     * Menú contextual personalizado.
+     */
+    private ContextMenu contextMenu;
+
+    /**
+     * Indica si se está en modo de actualización.
+     */
     private boolean actualizar;
+
+    /**
+     * Indica si el usuario es de tipo Cliente.
+     */
     private boolean esCliente;
 
-    // Crea un ToggleGroup desde Java
+    /**
+     * Grupo de Toggle para los botones de radio.
+     */
     private ToggleGroup grupoRadio = new ToggleGroup();
 
     /**
@@ -178,8 +395,6 @@ public class ControladorRegistro implements Initializable {
      *
      * @param location La ubicación de la vista FXML.
      * @param resources Los recursos de internacionalización.
-     *
-     * @author Urko
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -313,6 +528,12 @@ public class ControladorRegistro implements Initializable {
         }
     }
 
+    /**
+     * Filtra y actualiza el ComboBox de Categorías según el Departamento
+     * seleccionado.
+     *
+     * @param departamento El departamento seleccionado.
+     */
     private void actualizarCategorias(Departamento departamento) {
         // Filtra las categorías según el departamento
         ObservableList<Categoria> categoriasFiltradas = FXCollections.observableArrayList();
@@ -336,36 +557,42 @@ public class ControladorRegistro implements Initializable {
     /**
      * Asigna el menú contextual personalizado a un campo de texto.
      *
-     * @param textField El campo de texto al que se le asignará el menú
-     * contextual.
-     * @author Sergio
+     * @param textField El campo de texto al que se asignará el menú contextual.
      */
     private void assignCustomContextMenu(TextField textField) {
         // Asignar el menú contextual personalizado y eliminar el predeterminado
         textField.setContextMenu(contextMenu);
     }
 
+    /**
+     * Asigna el menú contextual personalizado a un ComboBox.
+     *
+     * @param combobox El ComboBox al que se asignará el menú contextual.
+     */
     private void assignCustomContextMenuCombo(ComboBox combobox) {
         // Asignar el menú contextual personalizado y eliminar el predeterminado
         combobox.setContextMenu(contextMenu);
     }
 
     /**
-     * Establece la ventana principal.
+     * Establece el Stage principal para la ventana de registro.
      *
      * @param stage El escenario de la aplicación.
-     * @author Sergio
      */
     public void setStage(Stage stage) {
         this.stage = stage;
     }
 
+    /**
+     * Asigna el usuario para actualizar o registrar.
+     *
+     * @param user El objeto usuario (Cliente o Trabajador).
+     */
     public void setUser(Object user) {
         if (user != null) {
             if (user instanceof Cliente) {
                 this.userClienteOriginal = new Cliente();
                 this.userClienteOriginal = (Cliente) user;
-
             } else {
                 this.userTrabajadorOriginal = new Trabajador();
                 this.userTrabajadorOriginal = (Trabajador) user;
@@ -373,15 +600,21 @@ public class ControladorRegistro implements Initializable {
         }
     }
 
+    /**
+     * Configura el modo de actualización.
+     *
+     * @param modo {@code true} si se va a actualizar, {@code false} si es un
+     * registro nuevo.
+     */
     public void setModoActualizar(boolean modo) {
         this.actualizar = modo;
     }
 
     /**
-     * Inicializa el escenario con el contenido de la vista.
+     * Inicializa el Stage con el contenido de la vista y configura los
+     * manejadores de eventos.
      *
      * @param root El nodo raíz de la escena.
-     * @author Sergio
      */
     public void initStage(Parent root) {
         try {
@@ -433,10 +666,8 @@ public class ControladorRegistro implements Initializable {
     }
 
     /**
-     * Configura las teclas de acceso rápido para los botones de registrar y
+     * Configura las teclas mnemotécnicas para los botones de registrar y
      * cancelar.
-     *
-     * @author Urko
      */
     private void configureMnemotecnicKeys() {
         stage.getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
@@ -454,20 +685,16 @@ public class ControladorRegistro implements Initializable {
      * Maneja la acción al mostrar la ventana de registro.
      *
      * @param event El evento de acción.
-     *
-     * @author Urko
      */
     private void handleWindowShowing(javafx.event.Event event) {
         LOGGER.info("Mostrando Ventana de registro");
         gridPane.requestFocus();  // Establecer el foco en el GridPane
     }
 
-    /*
     /**
      * Maneja la acción del botón de registro.
      *
      * @param event El evento de acción.
-     * @author Sergio
      */
     @FXML
     private void handleButtonRegister(ActionEvent event) {
@@ -533,7 +760,6 @@ public class ControladorRegistro implements Initializable {
         if (hasError) {
             LOGGER.severe("Hay errores en el formulario.");
             showErrorDialog(AlertType.ERROR, "Error", "Uno o varios campos incorrectos o vacíos. Mantenga el cursor encima de los campos para más información.");
-
         } else {
             LOGGER.info("Validación de campos correcta.");
 
@@ -600,7 +826,6 @@ public class ControladorRegistro implements Initializable {
                             factoria.accesoTrabajador().actualizarTrabajador(userTrabajador);
                             factoria.cargarInicioSesion(stage, userTrabajador.getCorreo());
                         }
-
                     } else {
                         if (radioCliente.isSelected()) {
                             factoria.accesoCliente().crearCliente(userCliente);
@@ -621,11 +846,16 @@ public class ControladorRegistro implements Initializable {
                     ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
                 }
             }
-
             //  messageManager(response);
         }
     }
 
+    /**
+     * Verifica la clave única para el registro de un Trabajador.
+     *
+     * @return {@code true} si la clave es correcta; {@code false} en caso
+     * contrario.
+     */
     private boolean verificarClaveUnicaTrabajador() {
         // Creamos un diálogo de texto
         TextInputDialog dialog = new TextInputDialog();
@@ -662,23 +892,25 @@ public class ControladorRegistro implements Initializable {
         }
     }
 
+    /**
+     * Solicita confirmación para registrar un usuario que no está activo.
+     *
+     * @return {@code true} si el usuario confirma continuar; {@code false} en
+     * caso contrario.
+     */
     private boolean confirmNoActiveUserRegister() {
         // Crear la alerta de confirmación
         return showConfirmationDialog("Confirmación de Registro", "Si el usuario esta 'No Activo', no podrá iniciar sesión ¿Desea continuar el registro?");
-
     }
 
     /**
      * Maneja la acción del botón de cancelar.
      *
      * @param event El evento de acción.
-     *
-     * @author Urko
      */
     @FXML
     private void handleButtonCancel(ActionEvent event) {
         // Crear la alerta de confirmación
-
         if (showConfirmationDialog("Confirmación", "¿Estás seguro de que deseas cancelar?")) {
             // Si el usuario confirma, realizar la acción de cancelar
             factoria.cargarInicioSesion(stage, "");
@@ -689,7 +921,6 @@ public class ControladorRegistro implements Initializable {
      * Maneja el cambio en el estado del CheckBox de actividad.
      *
      * @param event El evento de acción.
-     * @author Sergio
      */
     @FXML
     private void handleActiveCheckBoxChange(ActionEvent event) {
@@ -701,7 +932,6 @@ public class ControladorRegistro implements Initializable {
      * validación.
      *
      * @param node El nodo que representa el campo.
-     * @author Urko
      */
     private void showErrorImage(Node node) {
         node.getStyleClass().add("error-field");  // Añadir clase CSS para marcar el error
@@ -712,7 +942,6 @@ public class ControladorRegistro implements Initializable {
      * Oculta el icono de error en un campo cuando se corrige el error.
      *
      * @param node El nodo que representa el campo.
-     * @author Urko
      */
     private void hideErrorImage(Node node) {
         node.getStyleClass().remove("error-field");  // Eliminar clase CSS
@@ -723,7 +952,6 @@ public class ControladorRegistro implements Initializable {
      * Muestra el icono de error correspondiente al campo indicado.
      *
      * @param node El nodo que representa el campo.
-     * @author Urko
      */
     private void showErrorIcon(Node node) {
         if (node == campoNombre) {
@@ -757,7 +985,6 @@ public class ControladorRegistro implements Initializable {
      * Oculta el icono de error correspondiente al campo indicado.
      *
      * @param node El nodo que representa el campo.
-     * @author Urko
      */
     private void hideErrorIcon(Node node) {
         if (node == campoNombre) {
@@ -790,8 +1017,8 @@ public class ControladorRegistro implements Initializable {
     /**
      * Verifica que todos los campos obligatorios estén llenos.
      *
-     * @return true si todos los campos están llenos, false en caso contrario.
-     * @author Sergio
+     * @return {@code true} si todos los campos están llenos, {@code false} en
+     * caso contrario.
      */
     private boolean areAllFieldsFilled() {
         for (Node node : gridPane.getChildren()) {
@@ -833,8 +1060,6 @@ public class ControladorRegistro implements Initializable {
 
     /**
      * Limpia todos los campos del formulario.
-     *
-     * @author Sergio
      */
     @FXML
     private void handleClearFields() {
@@ -855,13 +1080,10 @@ public class ControladorRegistro implements Initializable {
         campoTelefono.clear();
         comboDepartamento.getSelectionModel().clearSelection();
         labelTitulo.requestFocus();  // Devuelve el foco al título
-
     }
 
     /**
      * Cierra la ventana de registro.
-     *
-     * @author Sergio
      */
     @FXML
     private void handleExit() {
@@ -875,7 +1097,6 @@ public class ControladorRegistro implements Initializable {
      *
      * @param passwordFieldParam El PasswordField que se está mostrando.
      * @param textFieldParam El TextField alternativo para ver la contraseña.
-     * @author Urko
      */
     private void utilidadVisibilidadContrasena(PasswordField passwordFieldParam, TextField textFieldParam) {
         textFieldParam.setText(passwordFieldParam.getText());  // Copiar contenido del PasswordField al TextField
@@ -901,7 +1122,6 @@ public class ControladorRegistro implements Initializable {
      * @param passwordFieldParam El PasswordField que se mostrará.
      * @param textFieldParam El TextField alternativo para ocultar la
      * contraseña.
-     * @author Sergio
      */
     private void utilidadOcultacionContrasena(PasswordField passwordFieldParam, TextField textFieldParam) {
         passwordFieldParam.setText(textFieldParam.getText());  // Copiar contenido del TextField al PasswordField
@@ -921,6 +1141,9 @@ public class ControladorRegistro implements Initializable {
         passwordFieldParam.positionCaret(passwordFieldParam.getText().length());
     }
 
+    /**
+     * Inicializa los campos con los datos del usuario para la actualización.
+     */
     private void actualizarInit() {
         labelTitulo.setText("Actualizar Datos");
 
@@ -969,11 +1192,11 @@ public class ControladorRegistro implements Initializable {
 
         botonOjoContrasena.setVisible(false);
         botonOjoRepite.setVisible(false);;
-
     }
 
     /**
-     * Método para manejar los cambios en los botones de radio.
+     * Maneja los cambios en los botones de radio para ajustar la visibilidad de
+     * los campos.
      */
     @FXML
     private void handleRadioChange() {
@@ -998,8 +1221,6 @@ public class ControladorRegistro implements Initializable {
             labelCategoria.setVisible(true);
             imagenSector.setVisible(false);
             imagenTelefono.setVisible(false);
-
         }
     }
-
 }

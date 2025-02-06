@@ -6,7 +6,6 @@ import crud.negocio.FactoriaPedidos;
 import crud.negocio.FactoriaUsuarios;
 import crud.objetosTransferibles.Cliente;
 import crud.objetosTransferibles.Trabajador;
-import static crud.utilidades.AlertUtilities.showErrorDialog;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -14,14 +13,9 @@ import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.stage.Stage;
-import static crud.utilidades.AlertUtilities.showErrorDialog;
 import java.net.ConnectException;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
@@ -34,6 +28,15 @@ import javax.ws.rs.ProcessingException;
 
 /**
  * Controlador para la ventana del Menú Principal.
+ * <p>
+ * Este controlador gestiona la interacción con la ventana principal de la
+ * aplicación, permitiendo acceder a las distintas funcionalidades (gestión de
+ * pedidos, artículos, cambio de contraseña, cerrar sesión, etc.) según el tipo
+ * de usuario (Cliente o Trabajador). Además, configura un menú contextual
+ * personalizado para opciones adicionales.
+ * </p>
+ *
+ * @author Urko
  */
 public class ControladorMenuPrincipal implements Initializable {
 
@@ -46,27 +49,76 @@ public class ControladorMenuPrincipal implements Initializable {
     private ContextMenu contextMenu;
 
     // Elementos FXML
+    /**
+     * Etiqueta que muestra el título y el mensaje de bienvenida.
+     */
     @FXML
     private Label labelTitulo;
+
+    /**
+     * Botón para salir de la aplicación.
+     */
     @FXML
     private Button botonSalir;
+
+    /**
+     * Icono que permite acceder a la ayuda.
+     */
     @FXML
     private ImageView botonAyuda;
+
+    /**
+     * Botón para cerrar la sesión del usuario actual.
+     */
     @FXML
     private Button botonCerrarSesion;
+
+    /**
+     * Botón para acceder a la funcionalidad de cambio de contraseña.
+     */
     @FXML
     private Button botonCambiarContrasena;
+
+    /**
+     * Botón para gestionar pedidos.
+     */
     @FXML
     private Button botonPedido;
+
+    /**
+     * Botón para gestionar artículos.
+     */
     @FXML
     private Button botonArticulo;
+
+    /**
+     * Panel contenedor principal de la vista.
+     */
     @FXML
     private AnchorPane panel;
+
+    /**
+     * Usuario de tipo Cliente activo.
+     */
     private Cliente userCliente;
+
+    /**
+     * Usuario de tipo Trabajador activo.
+     */
     private Trabajador userTrabajador;
 
     /**
      * Inicializa el controlador.
+     * <p>
+     * Configura el menú contextual personalizado, sus estilos y las acciones
+     * asociadas a cada opción. Además, asigna el menú contextual al panel para
+     * que se muestre al hacer clic derecho.
+     * </p>
+     *
+     * @param url La URL utilizada para resolver rutas relativas para el objeto
+     * raíz, o {@code null} si no se conoce.
+     * @param rb Los recursos utilizados para la localización, o {@code null} si
+     * no se aplican.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -131,6 +183,16 @@ public class ControladorMenuPrincipal implements Initializable {
         }
     }
 
+    /**
+     * Inicializa el escenario (Stage) con el contenido de la vista.
+     * <p>
+     * Configura la escena, el título, la redimensión y asigna los eventos a los
+     * botones, como la gestión de pedidos, artículos, cambio de contraseña,
+     * cerrar sesión y salir.
+     * </p>
+     *
+     * @param root El nodo raíz de la escena.
+     */
     public void initStage(Parent root) {
         try {
             LOGGER.info("Inicializando la carga del stage");
@@ -174,8 +236,13 @@ public class ControladorMenuPrincipal implements Initializable {
 
     /**
      * Asigna el usuario activo y actualiza el mensaje del título.
+     * <p>
+     * Dependiendo del tipo de usuario (Cliente o Trabajador), se actualiza la
+     * etiqueta de bienvenida y se configuran las vistas de los botones (por
+     * ejemplo, se oculta el botón de artículos para clientes).
+     * </p>
      *
-     * @param usuario Usuario activo.
+     * @param user Objeto que representa el usuario activo.
      */
     public void setUser(Object user) {
         if (user != null) {
@@ -198,7 +265,7 @@ public class ControladorMenuPrincipal implements Initializable {
     }
 
     /**
-     * Asigna el stage principal.
+     * Asigna el escenario principal.
      *
      * @param stage Stage principal de la aplicación.
      */
@@ -209,8 +276,12 @@ public class ControladorMenuPrincipal implements Initializable {
 
     /**
      * Maneja el evento del botón "Salir".
+     * <p>
+     * Al presionar este botón se invoca el método {@link #salir()} para cerrar
+     * el escenario.
+     * </p>
      *
-     * @param event Evento de acción.
+     * @param event Evento de acción generado al presionar el botón "Salir".
      */
     @FXML
     private void manejarBotonSalir(ActionEvent event) {
@@ -225,8 +296,13 @@ public class ControladorMenuPrincipal implements Initializable {
 
     /**
      * Maneja el evento del botón "Cerrar Sesión".
+     * <p>
+     * Al presionar este botón se cierra la sesión del usuario actual y se
+     * redirige a la pantalla de inicio de sesión.
+     * </p>
      *
-     * @param event Evento de acción.
+     * @param event Evento de acción generado al presionar el botón "Cerrar
+     * Sesión".
      */
     @FXML
     private void manejarBotonCerrarSesion(ActionEvent event) {
@@ -242,8 +318,12 @@ public class ControladorMenuPrincipal implements Initializable {
 
     /**
      * Maneja el evento del botón "Cambiar Contraseña".
+     * <p>
+     * Invoca la funcionalidad para cambiar la contraseña del usuario activo.
+     * </p>
      *
-     * @param event Evento de acción.
+     * @param event Evento de acción generado al presionar el botón "Cambiar
+     * Contraseña".
      */
     @FXML
     private void manejarBotonCambiarContrasena(ActionEvent event) {
@@ -258,16 +338,18 @@ public class ControladorMenuPrincipal implements Initializable {
 
     /**
      * Maneja el evento del botón "Gestión de Pedidos".
+     * <p>
+     * Invoca la funcionalidad para gestionar los pedidos del usuario activo.
+     * </p>
      *
-     * @param event Evento de acción.
+     * @param event Evento de acción generado al presionar el botón "Gestión de
+     * Pedidos".
      */
     @FXML
     private void manejarBotonPedido(ActionEvent event) {
         try {
             LOGGER.info("Botón 'Gestión de Pedidos' presionado.");
-
             factoriaPedidos.cargarPedidosPrincipal(stage, (userCliente != null) ? userCliente : userTrabajador, null);
-
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al gestionar pedidos", e);
             ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
@@ -276,8 +358,13 @@ public class ControladorMenuPrincipal implements Initializable {
 
     /**
      * Maneja el evento del botón "Gestión de Artículos".
+     * <p>
+     * Invoca la funcionalidad para gestionar los artículos, accesible
+     * únicamente para usuarios de tipo Trabajador.
+     * </p>
      *
-     * @param event Evento de acción.
+     * @param event Evento de acción generado al presionar el botón "Gestión de
+     * Artículos".
      */
     @FXML
     private void manejarBotonArticulo(ActionEvent event) {
@@ -290,14 +377,24 @@ public class ControladorMenuPrincipal implements Initializable {
         }
     }
 
+    /**
+     * Cierra la sesión del usuario actual y redirige a la pantalla de inicio de
+     * sesión.
+     */
     private void cerrarSesion() {
         factoriaUsuarios.cargarInicioSesion(stage, "");
     }
 
+    /**
+     * Cierra el escenario actual.
+     */
     private void salir() {
         stage.close();
     }
 
+    /**
+     * Muestra la ayuda relacionada con el Menú Principal.
+     */
     private void mostrarAyuda() {
         factoriaUsuarios.cargarAyuda("menuPrincipal");
     }

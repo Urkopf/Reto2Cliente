@@ -1,7 +1,6 @@
 package crud.iu.controladores;
 
 import crud.excepciones.ExcepcionesUtilidad;
-import crud.excepciones.LogicaNegocioException;
 import crud.negocio.FactoriaArticulos;
 import crud.negocio.FactoriaPedidoArticulo;
 import crud.negocio.FactoriaPedidos;

@@ -3,7 +3,6 @@ package crud.iu.controladores;
 import crud.negocio.FactoriaUsuarios;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -11,7 +10,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -28,31 +26,25 @@ import javafx.stage.Stage;
 import crud.objetosTransferibles.Usuario;
 import crud.objetosTransferibles.Cliente;
 import crud.objetosTransferibles.Trabajador;
-import crud.seguridad.UtilidadesCifrado;
 import static crud.seguridad.UtilidadesCifrado.cargarClavePublica;
 import static crud.seguridad.UtilidadesCifrado.cifrarConClavePublica;
 import static crud.utilidades.AlertUtilities.showErrorDialog;
 import crud.excepciones.ExcepcionesUtilidad;
-import static crud.excepciones.ExcepcionesUtilidad.centralExcepciones;
 import static crud.utilidades.ValidateUtilities.isValid;
-import java.awt.Cursor;
 import java.net.ConnectException;
 import java.security.PublicKey;
-import java.util.Base64;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.ProcessingException;
-import javax.ws.rs.WebApplicationException;
 
 /**
- * Controlador FXML para la vista de inicio de sesión (SignIn). Este controlador
- * gestiona la interacción entre la interfaz de usuario y la lógica de negocio
- * para el inicio de sesión de usuarios existentes.
+ * Controlador FXML para la vista de inicio de sesión (SignIn).
+ * <p>
+ * Este controlador gestiona la interacción entre la interfaz de usuario y la
+ * lógica de negocio para el inicio de sesión de usuarios existentes.
+ * </p>
  *
- * @author Lucian
+ * @author Sergio
  */
 public class ControladorInicioSesion implements Initializable {
 
@@ -66,38 +58,113 @@ public class ControladorInicioSesion implements Initializable {
     private Cliente cliente;
 
     // Elementos de la interfaz FXML
+    /**
+     * Etiqueta utilizada en la vista.
+     */
     @FXML
     private Label label;
+
+    /**
+     * Campo de texto para el correo electrónico (nombre de usuario).
+     */
     @FXML
-    private TextField campoEmail;  // Campo de texto para el nombre de usuario
+    private TextField campoEmail;
+
+    /**
+     * Campo de contraseña para ingresar la contraseña oculta.
+     */
     @FXML
-    private PasswordField campoContrasena;  // Campo de contraseña
+    private PasswordField campoContrasena;
+
+    /**
+     * Campo de texto para mostrar la contraseña en forma visible.
+     */
     @FXML
-    private TextField campoContrasenaVisible;  // Campo de texto visual para la contraseña
+    private TextField campoContrasenaVisible;
+
+    /**
+     * Botón para iniciar sesión.
+     */
     @FXML
-    private Button botonIniciarSesion;  // Botón para iniciar sesión
+    private Button botonIniciarSesion;
+
+    /**
+     * Botón que redirige a la vista de registro.
+     */
     @FXML
-    private Button botonRegistrar;  // Hipervínculo para ir a la página de registro
+    private Button botonRegistrar;
+
+    /**
+     * Botón para salir de la aplicación.
+     */
     @FXML
     private Button botonSalir;
+
+    /**
+     * Contenedor que agrupa los campos del formulario.
+     */
     @FXML
-    private GridPane gridPane;  // Contenedor de todos los campos del formulario
+    private GridPane gridPane;
+
+    /**
+     * Icono de error asociado al campo de correo electrónico.
+     */
     @FXML
-    private ImageView errorEmail;  // Icono de error para el campo de inicio de sesión
+    private ImageView errorEmail;
+
+    /**
+     * Icono de error asociado al campo de contraseña.
+     */
     @FXML
-    private ImageView errorContrasena;  // Icono de error para el campo de contraseña
+    private ImageView errorContrasena;
+
+    /**
+     * Botón para alternar la visibilidad de la contraseña.
+     */
     @FXML
-    private Button botonOjo;  // Botón para alternar la visibilidad de la contraseña
+    private Button botonOjo;
+
+    /**
+     * Botón para actualizar la información de inicio de sesión.
+     */
     @FXML
     private Button botonActualizar;
+
+    /**
+     * Botón para recuperar la contraseña.
+     */
     @FXML
     private Button botonRecuperar;
+
+    /**
+     * Icono que despliega la ayuda relacionada con el inicio de sesión.
+     */
     @FXML
     private ImageView botonAyuda;
 
-    private ContextMenu contextMenu;  // Menú contextual personalizado
+    /**
+     * Menú contextual personalizado.
+     */
+    private ContextMenu contextMenu;
+
+    /**
+     * Indicador que determina si se debe actualizar la sesión.
+     */
     private Boolean actualizar = false;
 
+    /**
+     * Inicializa el controlador de inicio de sesión.
+     * <p>
+     * Configura el menú contextual personalizado, asigna los eventos para los
+     * campos y el contenedor, y establece los listeners para ocultar los iconos
+     * de error al escribir.
+     * </p>
+     *
+     * @param location La ubicación utilizada para resolver rutas relativas para
+     * el objeto raíz, o {@code null} si no se conoce.
+     * @param resources Los recursos utilizados para la localización, o
+     * {@code null} si no se aplican.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
@@ -141,7 +208,7 @@ public class ControladorInicioSesion implements Initializable {
             // Añadir las opciones personalizadas al menú contextual
             contextMenu.getItems().addAll(clearFieldsItem, exitItem);
 
-            // Asignar el menú personalizado a cada campo de texto y eliminar el menú predeterminado
+            // Asignar el menú contextual personalizado a cada campo de texto y eliminar el menú predeterminado
             asignarMenuContextualPersonalizado(campoEmail);
             asignarMenuContextualPersonalizado(campoContrasena);
 
@@ -171,6 +238,9 @@ public class ControladorInicioSesion implements Initializable {
 
     /**
      * Maneja la acción de salir de la aplicación.
+     * <p>
+     * Cierra la ventana principal.
+     * </p>
      */
     private void controladorDeSalida() {
         Stage stage = (Stage) gridPane.getScene().getWindow();
@@ -179,6 +249,10 @@ public class ControladorInicioSesion implements Initializable {
 
     /**
      * Limpia los campos de inicio de sesión.
+     * <p>
+     * Borra el contenido de los campos de correo electrónico y contraseña, y
+     * retorna el foco a la etiqueta principal.
+     * </p>
      */
     private void controladordeLimpiezaDeCampos() {
         campoEmail.clear();  // Limpiar el campo de nombre de usuario
@@ -197,8 +271,15 @@ public class ControladorInicioSesion implements Initializable {
 
     /**
      * Inicializa el escenario con el contenido de la vista.
+     * <p>
+     * Configura la escena, el título, el tamaño, los eventos de los botones y
+     * otros elementos de la interfaz. Además, establece la configuración de
+     * teclas mnemotécnicas y la visibilidad del icono de la contraseña.
+     * </p>
      *
      * @param root El nodo raíz de la escena.
+     * @throws Exception Si ocurre algún error durante la inicialización del
+     * escenario.
      */
     public void initStage(Parent root) throws Exception {
         try {
@@ -255,6 +336,9 @@ public class ControladorInicioSesion implements Initializable {
         }
     }
 
+    /**
+     * Muestra la ayuda relacionada con el inicio de sesión.
+     */
     private void mostrarAyuda() {
         factoria.cargarAyuda("inicioSesion");
     }
@@ -262,6 +346,10 @@ public class ControladorInicioSesion implements Initializable {
     /**
      * Configura las teclas de acceso rápido para los botones de iniciar sesión
      * y registrar.
+     * <p>
+     * Se agregan filtros de eventos para detectar combinaciones de teclas (Alt
+     * + I y Alt + R) que simulan el clic en los botones correspondientes.
+     * </p>
      */
     private void configurarTeclasMnemotecnicas() {
         stage.getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
@@ -276,9 +364,9 @@ public class ControladorInicioSesion implements Initializable {
     }
 
     /**
-     * Establece el nombre de usuario en el campo de inicio de sesión.
+     * Establece el correo electrónico en el campo de inicio de sesión.
      *
-     * @param login El nombre de usuario a establecer.
+     * @param login El correo electrónico a establecer.
      */
     public void setCorreo(String login) {
         if (login != null && !login.isEmpty()) {
@@ -299,12 +387,18 @@ public class ControladorInicioSesion implements Initializable {
     /**
      * Maneja la acción al mostrar la ventana de inicio de sesión.
      *
-     * @param event El evento de acción.
+     * @param event El evento de acción al mostrar la ventana.
      */
     private void handleWindowShowing(javafx.stage.WindowEvent event) {
         LOGGER.info("Mostrando Ventana de Inicio de Sesión");
     }
 
+    /**
+     * Maneja la acción del botón para recuperar la contraseña.
+     *
+     * @param event El evento de acción generado al presionar el botón de
+     * recuperación.
+     */
     private void handleBotonRecuperar(ActionEvent event) {
         factoria.cargarRecuperarContrasena(stage);
     }
@@ -312,21 +406,35 @@ public class ControladorInicioSesion implements Initializable {
     /**
      * Maneja el clic en el hipervínculo para registrar un nuevo usuario.
      *
-     * @param event El evento de acción.
+     * @param event El evento de acción generado al presionar el hipervínculo de
+     * registro.
      */
     @FXML
     private void handleButtonRegistro(ActionEvent event) {
         factoria.cargarRegistro(stage, null);  // Cargar la ventana de registro
     }
 
+    /**
+     * Maneja la acción del botón para salir de la aplicación.
+     *
+     * @param event El evento de acción generado al presionar el botón de
+     * salida.
+     */
     private void handleButtonSalir(ActionEvent event) {
         stage.close();
     }
 
     /**
      * Maneja la acción del botón de inicio de sesión.
+     * <p>
+     * Valida los campos del formulario, cifra la contraseña utilizando una
+     * clave pública y envía la solicitud de inicio de sesión. Dependiendo de la
+     * respuesta del servidor, carga la ventana correspondiente o muestra un
+     * mensaje de error.
+     * </p>
      *
-     * @param event El evento de acción.
+     * @param event El evento de acción generado al presionar el botón de inicio
+     * de sesión.
      */
     @FXML
     private void handleButtonLoginButton(ActionEvent event) {
@@ -422,7 +530,8 @@ public class ControladorInicioSesion implements Initializable {
     /**
      * Verifica que todos los campos obligatorios estén llenos.
      *
-     * @return true si todos los campos están llenos, false en caso contrario.
+     * @return {@code true} si todos los campos están completos; {@code false}
+     * en caso contrario.
      */
     private boolean comprobarCamposCompletos() {
         for (Node node : gridPane.getChildren()) {
@@ -485,6 +594,11 @@ public class ControladorInicioSesion implements Initializable {
 
     /**
      * Muestra el campo de contraseña en texto plano y oculta el PasswordField.
+     * <p>
+     * Copia el contenido del campo de contraseña oculto al campo visible,
+     * cambia la visibilidad de los campos y actualiza la imagen del botón para
+     * reflejar el cambio.
+     * </p>
      */
     private void togglePasswordVisibility() {
         campoContrasenaVisible.setText(campoContrasena.getText());  // Copiar contenido del PasswordField al TextField
@@ -499,6 +613,11 @@ public class ControladorInicioSesion implements Initializable {
 
     /**
      * Oculta el campo de texto plano y muestra el PasswordField.
+     * <p>
+     * Copia el contenido del campo de texto visible al PasswordField,
+     * restablece la visibilidad y actualiza la imagen del botón para reflejar
+     * el cambio.
+     * </p>
      */
     private void togglePasswordVisibilityReleased() {
         campoContrasena.setText(campoContrasenaVisible.getText());  // Copiar contenido del TextField al PasswordField
