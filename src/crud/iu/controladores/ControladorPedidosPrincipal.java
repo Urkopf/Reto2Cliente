@@ -62,6 +62,8 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -182,6 +184,7 @@ public class ControladorPedidosPrincipal implements Initializable {
             configurarPaginador();
             configurarMenuContextual();
             configurarEventosTabla();
+            configureMnemotecnicKeys();
             stage.show();
         } catch (Exception e) {
             stage.show();
@@ -276,10 +279,55 @@ public class ControladorPedidosPrincipal implements Initializable {
     }
 
     /**
+     * Configura las teclas de acceso rápido para los botones de iniciar sesión
+     * y registrar.
+     */
+    private void configureMnemotecnicKeys() {
+        stage.getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.isAltDown() && event.getCode() == KeyCode.N) {
+                botonNuevo.fire();  // Simula el clic en el botón Nuevo
+                event.consume();  // Evita la propagación adicional del evento
+            } else if (event.isAltDown() && event.getCode() == KeyCode.R) {
+                botonReiniciar.fire();  // Simula el clic en el boton reiniciar
+                event.consume();  // Evita la propagación adicional del evento
+            } else if (event.isAltDown() && event.getCode() == KeyCode.B) {
+                botonBusqueda.fire();  // Simula el clic botom busqueda
+                event.consume();  // Evita la propagación adicional del evento
+            } else if (event.isAltDown() && event.getCode() == KeyCode.A) {
+                botonAtras.fire();  // Simula el clic en el boton atras
+                event.consume();  // Evita la propagación adicional del evento
+            } else if (event.isAltDown() && event.getCode() == KeyCode.E) {
+                botonEliminar.fire();  // Simula el clic en el boton eliminar
+                event.consume();  // Evita la propagación adicional del evento
+            } else if (event.isAltDown() && event.getCode() == KeyCode.D) {
+                botonDetalles.fire();  // Simula el clic en el boton detalles
+                event.consume();  // Evita la propagación adicional del evento
+            } else if (event.isAltDown() && event.getCode() == KeyCode.G) {
+                botonGuardar.fire();  // Simula el clic en el boton guardar
+                event.consume();  // Evita la propagación adicional del evento
+            } else if (event.isAltDown() && event.getCode() == KeyCode.LEFT) {
+                int currentPage = paginador.getCurrentPageIndex();
+                if (currentPage > 0) {
+                    paginador.setCurrentPageIndex(currentPage - 1);
+                    event.consume();
+                }
+            } else if (event.isAltDown() && event.getCode() == KeyCode.RIGHT) {
+                int currentPage = paginador.getCurrentPageIndex();
+                if (currentPage < paginador.getPageCount() - 1) {
+                    paginador.setCurrentPageIndex(currentPage + 1);
+                    event.consume();
+                }
+            }
+
+        });
+    }
+
+    /**
      * Asigna el objeto {@code Stage} para este controlador.
      *
      * @param stage El {@code Stage} principal de la aplicación.
      */
+
     public void setStage(Stage stage) {
         this.stage = stage;
         LOGGER.info("Stage asignado.");
