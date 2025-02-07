@@ -41,6 +41,8 @@ import javax.ws.rs.ProcessingException;
  * Permite aplicar distintos filtros (ID, nombre, fecha, precio, stock) y
  * mostrar los resultados de la búsqueda en la vista principal de Artículos.
  * Además, maneja la navegación para regresar o reiniciar los filtros.
+ *
+ * @author Sergio
  */
 public class ControladorArticulosBusqueda implements Initializable {
 

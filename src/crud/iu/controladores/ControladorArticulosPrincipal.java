@@ -69,6 +69,8 @@ import net.sf.jasperreports.view.JasperViewer;
  * Permite la creación, edición y eliminación de artículos, así como la
  * impresión de informes y navegación hacia otras vistas (Menú principal,
  * Búsqueda, Detalles, Pedidos, etc.).
+ *
+ * @author Sergio
  */
 public class ControladorArticulosPrincipal implements Initializable {
 

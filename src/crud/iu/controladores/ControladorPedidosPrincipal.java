@@ -15,6 +15,7 @@ import javafx.scene.control.SeparatorMenuItem;
 
 import static crud.utilidades.AlertUtilities.showErrorDialog;
 import crud.excepciones.ExcepcionesUtilidad;
+import crud.objetosTransferibles.Articulo;
 import java.io.InputStream;
 import java.net.ConnectException;
 
@@ -79,7 +80,7 @@ import net.sf.jasperreports.view.JasperViewer;
  * Controlador para la ventana principal de Pedidos. Se encarga de la
  * visualización, creación, edición, eliminación y búsqueda de pedidos.
  *
- * @author Urko Peritz
+ * @author Urko
  */
 public class ControladorPedidosPrincipal implements Initializable {
 
@@ -374,39 +375,98 @@ public class ControladorPedidosPrincipal implements Initializable {
 
     }
 
-    // Métodos de acción
+    /**
+     * Imprime un informe.
+     * <p>
+     * Este método muestra un mensaje en la consola indicando que se está
+     * imprimiendo el informe y llama al método {@link #crearInforme()} para
+     * generar y mostrar el informe.
+     * </p>
+     */
     private void imprimirInforme() {
         System.out.println("Imprimiendo informe...");
         crearInforme();
     }
 
+    /**
+     * Cierra la sesión actual.
+     * <p>
+     * Este método muestra un mensaje en la consola indicando que se está
+     * cerrando la sesión y cierra la ventana principal de la aplicación
+     * (referenciada por {@code stage}).
+     * </p>
+     */
     private void cerrarSesion() {
         System.out.println("Cerrando sesión...");
         stage.close();
     }
 
+    /**
+     * Sale del programa.
+     * <p>
+     * Este método muestra un mensaje en la consola indicando que se está
+     * saliendo del programa y finaliza la ejecución de la aplicación llamando a
+     * {@code System.exit(0)}.
+     * </p>
+     */
     private void salirPrograma() {
         System.out.println("Saliendo del programa...");
         System.exit(0);
     }
 
+    /**
+     * Vuelve al menú principal de la aplicación.
+     * <p>
+     * Utiliza la factoría de usuarios para cargar el menú principal, pasando
+     * como parámetro el usuario cliente si está presente; de lo contrario, se
+     * utiliza el usuario trabajador.
+     * </p>
+     */
     private void volverAlMenuPrincipal() {
         factoriaUsuarios.cargarMenuPrincipal(stage, (userCliente != null) ? userCliente : userTrabajador);
     }
 
+    /**
+     * Navega a la vista principal de artículos.
+     * <p>
+     * Utiliza la factoría de artículos para cargar la vista de artículos,
+     * pasando como usuario el cliente si está presente; de lo contrario, se
+     * utiliza el trabajador. El tercer parámetro se deja en {@code null}.
+     * </p>
+     */
     private void irVistaArticulos() {
         factoriaArticulos.cargarArticulosPrincipal(stage, (userCliente != null) ? userCliente : userTrabajador, null);
     }
 
+    /**
+     * Crea y muestra un informe de pedidos.
+     * <p>
+     * Este método realiza las siguientes acciones:
+     * <ol>
+     * <li>Compila el reporte Jasper a partir del archivo JRXML ubicado en el
+     * classpath.</li>
+     * <li>Carga una imagen (logo) desde el classpath y la añade a los
+     * parámetros del informe.</li>
+     * <li>Obtiene los datos para el informe desde la tabla de pedidos y crea un
+     * datasource para el reporte.</li>
+     * <li>Llena el reporte con los datos y parámetros utilizando
+     * {@code JasperFillManager}.</li>
+     * <li>Muestra el informe en una ventana utilizando
+     * {@code JasperViewer}.</li>
+     * </ol>
+     * En caso de error, se registra la excepción y se delega su manejo a
+     * {@link ExcepcionesUtilidad#centralExcepciones(Exception, String)}.
+     * </p>
+     */
     public void crearInforme() {
         try {
             LOGGER.info("Beginning printing action...");
 
-            // Cargar el informe desde el classpath
+            // Cargar el informe desde el classpath.
             JasperReport report = JasperCompileManager.compileReport(getClass()
                     .getResourceAsStream("/crud/iu/reportes/PedidosReport.jrxml"));
 
-            // Cargar la imagen desde el classpath
+            // Cargar la imagen desde el classpath.
             InputStream logoStream = getClass().getResourceAsStream("/recursos/logoFullrecortado.jpg");
             if (logoStream == null) {
                 throw new RuntimeException("No se pudo cargar la imagen del logo desde el JAR.");
@@ -415,14 +475,14 @@ public class ControladorPedidosPrincipal implements Initializable {
             Map<String, Object> parameters = new HashMap<>();
             parameters.put("LOGO_PATH", logoStream);
 
-            // Crear los datos del informe
+            // Crear los datos del informe.
             JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource(
                     (Collection<Pedido>) this.tablaPedidos.getItems());
 
-            // Llenar el informe
+            // Llenar el informe.
             JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
 
-            // Mostrar el informe en una ventana
+            // Mostrar el informe en una ventana.
             JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
             jasperViewer.setVisible(true);
 
@@ -607,7 +667,7 @@ public class ControladorPedidosPrincipal implements Initializable {
 
                         // Esperar la respuesta del usuario
                         Optional<ButtonType> resultado = alerta.showAndWait();
-                        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+                        if (resultado.isPresent() && resultado.get() != ButtonType.OK) {
                             quiereBorrar = false;
                             break;
 
@@ -697,9 +757,23 @@ public class ControladorPedidosPrincipal implements Initializable {
                     } else {
 
                         for (PedidoArticulo pa : lista) {
+                            // Obtener el artículo asociado al PedidoArticulo
+                            Articulo articulo = factoriaArticulos.acceso().getAllArticulos()
+                                    .stream()
+                                    .filter(a -> a.getId().equals(pa.getArticuloId()))
+                                    .findFirst()
+                                    .orElse(null);
+
+                            if (articulo != null) {
+                                // Actualizar el stock sumándole la cantidad reservada en el pedido
+                                int nuevoStock = articulo.getStock() + pa.getCantidad();
+                                articulo.setStock(nuevoStock);
+                                factoriaArticulos.acceso().actualizarArticulo(articulo);
+                            }
+                            // Borrar el registro de PedidoArticulo
                             FactoriaPedidoArticulo.getInstance().acceso().borrarPedidoArticulo(pa);
                         }
-                        // Eliminar el pedido
+                        // Finalmente, borrar el pedido
                         factoriaPedidos.acceso().borrarPedido(pedidoOriginal);
 
                     }
@@ -1530,6 +1604,15 @@ public class ControladorPedidosPrincipal implements Initializable {
     }
     // </editor-fold>
 
+    /**
+     * Muestra la ayuda para la sección de detalles de pedidos.
+     * <p>
+     * Este método utiliza la factoría de usuarios para cargar la ayuda asociada
+     * al identificador "pedidosDetalle". Esto permite al usuario acceder a la
+     * documentación o guía de uso relacionada con la vista principal de
+     * pedidos.
+     * </p>
+     */
     private void mostrarAyuda() {
         factoriaUsuarios.cargarAyuda("pedidosPrincipal");
     }

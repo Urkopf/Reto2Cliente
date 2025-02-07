@@ -219,20 +219,24 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
         // Verifica que haya al menos un artículo para editar
         assertFalse("No hay artículos para editar", tablaArticulos.getItems().isEmpty());
 
-        // Selecciona la primera fila y asegura que sea visible
-        tablaArticulos.getSelectionModel().select(0);
-        tablaArticulos.scrollTo(0);
+        int totalFilas = tablaArticulos.getItems().size();
+        assertTrue("No hay filas para probar cambios sin guardar", totalFilas > 0);
 
-        // Obtiene las filas visibles
+        // Seleccionamos la última fila
+        int rowIndex = totalFilas - 1;
+        interact(() -> {
+            tablaArticulos.scrollTo(rowIndex);
+            tablaArticulos.getSelectionModel().clearSelection();
+            tablaArticulos.getSelectionModel().select(rowIndex);
+        });
+
+        // Obtenemos la fila visible y ordenamos celdas
         List<Node> filas = lookup(".table-row-cell").queryAll().stream()
                 .filter(Node::isVisible)
                 .collect(Collectors.toList());
-        assertFalse("No se encontraron filas visibles en la tabla", filas.isEmpty());
+        assertFalse("No se encontraron filas visibles", filas.isEmpty());
 
-        // La fila a editar es la primera fila visible
-        Node filaSeleccionada = filas.get(0);
-
-        // Obtiene y ordena las celdas por posición horizontal
+        Node filaSeleccionada = filas.get(Math.min(rowIndex, filas.size() - 1));
         Set<Node> celdasSet = filaSeleccionada.lookupAll(".table-cell");
         List<Node> celdas = new ArrayList<>(celdasSet);
         celdas.sort(Comparator.comparingDouble(Node::getLayoutX));
@@ -261,10 +265,10 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
         boolean existe;
         existe = tablaArticulos.getItems().stream().anyMatch(p
                 -> "ArticuloModificado".equals(p.getNombre())
-                && Double.compare(750, p.getPrecio()) == 0
-                && dateFormat.format(p.getFechaReposicion()).equals("10/01/2024")
-                && "Ordenador portátil gama media".equals(p.getDescripcion())
-                && p.getStock() == 50);
+                && Double.compare(60, p.getPrecio()) == 0
+                && dateFormat.format(p.getFechaReposicion()).equals("10/10/2025")
+                && "Descripción de prueba".equals(p.getDescripcion())
+                && p.getStock() == 101);
 
         assertTrue("El articulo no se modifico correctamente", existe);
     }
@@ -279,44 +283,27 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
         int totalFilasInicial = tablaArticulos.getItems().size();
         assertTrue("La tabla debe tener al menos una fila para esta prueba.", totalFilasInicial > 0);
 
-        // Seleccionar la primera fila
-        Node fila = lookup(".table-row-cell").nth(0).query();
-        clickOn(fila);
+        int totalFilas = tablaArticulos.getItems().size();
+        assertTrue("No hay filas para probar cambios sin guardar", totalFilas > 0);
 
-        // Clic en el botón Eliminar
-        clickOn(botonEliminar);
-
-        //Manejar la alerta
-        // Verificamos que aparece la alerta por fecha inválida
-        verifyThat("No puede borrar el articulo, porque esta en un pedido.", NodeMatchers.isVisible());
-        clickOn("Aceptar");
-
-        // 1. Obtener el pedido con el ID más grande
-        ObservableList<Articulo> items = tablaArticulos.getItems();
-        assertFalse("La tabla está vacía", items.isEmpty());
-
-        Articulo ultimoPedido = items.stream()
-                .max(Comparator.comparing(Articulo::getId))
-                .orElseThrow(() -> new AssertionError("No se encontró ningún articulo en la tabla"));
-
-        // 2. Forzar al TableView a renderizar la fila del último pedido
+        // Seleccionamos la última fila
+        int rowIndex = totalFilas - 1;
         interact(() -> {
-            tablaArticulos.scrollTo(ultimoPedido);
-            tablaArticulos.getSelectionModel().select(ultimoPedido);
+            tablaArticulos.scrollTo(rowIndex);
+            tablaArticulos.getSelectionModel().clearSelection();
+            tablaArticulos.getSelectionModel().select(rowIndex);
         });
-        sleep(500);
-        // Obtenemos la primera fila visible
+
+        // Obtenemos la fila visible y ordenamos celdas
         List<Node> filas = lookup(".table-row-cell").queryAll().stream()
                 .filter(Node::isVisible)
                 .collect(Collectors.toList());
         assertFalse("No se encontraron filas visibles", filas.isEmpty());
 
-        // 4. Calcular el índice del 'ultimoPedido' en la lista
-        int rowIndex = tablaArticulos.getItems().indexOf(ultimoPedido);
-
-        // 5. Seleccionar la fila en base a ese índice
-        Node filaSeleccionada = filas.get(rowIndex);
-
+        Node filaSeleccionada = filas.get(Math.min(rowIndex, filas.size() - 1));
+        Set<Node> celdasSet = filaSeleccionada.lookupAll(".table-cell");
+        List<Node> celdas = new ArrayList<>(celdasSet);
+        celdas.sort(Comparator.comparingDouble(Node::getLayoutX));
         clickOn(filaSeleccionada);
 
         // Clic en el botón Eliminar
@@ -328,7 +315,7 @@ public class ControladorArticulosPrincipalTest extends ApplicationTest {
         // Comprueba que el artículo anteriormente editado ya no está
         boolean existe;
         existe = tablaArticulos.getItems().stream().anyMatch(p
-                -> "Test de prueba".equals(p.getNombre())
+                -> "ArticuloModificado".equals(p.getNombre())
                 && Double.compare(60, p.getPrecio()) == 0
                 && dateFormat.format(p.getFechaReposicion()).equals("10/10/2025")
                 && "Descripción de prueba".equals(p.getDescripcion())

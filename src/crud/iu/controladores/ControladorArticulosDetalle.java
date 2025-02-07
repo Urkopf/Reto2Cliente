@@ -53,6 +53,8 @@ import javax.ws.rs.ProcessingException;
  * Permite visualizar y asignar almacenes a un artículo, así como gestionar el
  * resto de campos que describen al artículo. También maneja la navegación y
  * acciones disponibles (guardar cambios, eliminar asignaciones, entre otros).
+ *
+ * @author Sergio
  */
 public class ControladorArticulosDetalle implements Initializable {
 

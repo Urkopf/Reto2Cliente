@@ -68,7 +68,7 @@ import javax.ws.rs.ProcessingException;
  * pedido.
  * </p>
  *
- * @author Urko Peritz
+ * @author Urko
  */
 public class ControladorPedidosDetalle implements Initializable {
 
@@ -302,20 +302,51 @@ public class ControladorPedidosDetalle implements Initializable {
 
     }
 
+    /**
+     * Cierra la sesión actual.
+     * <p>
+     * Imprime un mensaje en la consola indicando que se está cerrando la sesión
+     * y cierra el escenario principal de la aplicación.
+     * </p>
+     */
     private void cerrarSesion() {
         System.out.println("Cerrando sesión...");
         stage.close();
     }
 
+    /**
+     * Finaliza la ejecución del programa.
+     * <p>
+     * Imprime un mensaje en la consola indicando que se está saliendo del
+     * programa y llama a {@code System.exit(0)} para terminar la aplicación.
+     * </p>
+     */
     private void salirPrograma() {
         System.out.println("Saliendo del programa...");
         System.exit(0);
     }
 
+    /**
+     * Vuelve al menú principal de la aplicación.
+     * <p>
+     * Utiliza la factoría de usuarios para cargar la pantalla principal del
+     * menú. Se comprueba si existe un usuario cliente; en caso afirmativo, se
+     * utiliza este, de lo contrario se pasa el usuario trabajador.
+     * </p>
+     */
     private void volverAlMenuPrincipal() {
         factoriaUsuarios.cargarMenuPrincipal(stage, (userCliente != null) ? userCliente : userTrabajador);
     }
 
+    /**
+     * Navega a la vista principal de artículos.
+     * <p>
+     * Utiliza la factoría de artículos para cargar la interfaz principal de
+     * artículos. Se pasa como usuario el cliente si está disponible; de lo
+     * contrario, se utiliza el trabajador. El tercer parámetro se deja en
+     * {@code null}.
+     * </p>
+     */
     private void irVistaArticulos() {
         factoriaArticulos.cargarArticulosPrincipal(stage, (userCliente != null) ? userCliente : userTrabajador, null);
     }
@@ -387,6 +418,7 @@ public class ControladorPedidosDetalle implements Initializable {
         columnaUnidades2.setCellFactory(tc -> new TableCell<PedidoArticulo, Integer>() {
 
             private Spinner<Integer> spinner;
+            private boolean actualizando = false;
 
             @Override
             protected void updateItem(Integer item, boolean empty) {
@@ -399,37 +431,42 @@ public class ControladorPedidosDetalle implements Initializable {
                 PedidoArticulo pa = (PedidoArticulo) getTableRow().getItem();
                 Articulo articulo = buscarArticuloPorId(pa.getArticuloId());
 
-                int maxStock = (articulo != null) ? articulo.getStock() : 1000;
+                // Calculamos el stock disponible actual del artículo.
+                int availableStock = (articulo != null) ? articulo.getStock() : 0;
+                int maxStock;
+                // Si el pedido ya tiene el artículo (es decir, ya fue guardado previamente),
+                // el máximo permitido es la cantidad ya comprada más el stock disponible.
+                // Si es un nuevo pedido-artículo, el máximo es el stock disponible.
+                if (pa.getId() != null) {
+                    maxStock = pa.getCantidad() + availableStock;
+                } else {
+                    maxStock = availableStock;
+                }
+
+                // Inicializamos el spinner con el rango adecuado.
                 spinner = new Spinner<>();
                 spinner.setEditable(true);
-
-                // Configura el rango del spinner
                 SpinnerValueFactory<Integer> valueFactory
                         = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, maxStock, pa.getCantidad());
                 spinner.setValueFactory(valueFactory);
 
-                // Listener para actualizar el modelo
+                // Listener para actualizar el modelo cuando cambia el valor del spinner.
                 spinner.valueProperty().addListener((obs, oldVal, newVal) -> {
                     if (newVal != null && !newVal.equals(pa.getCantidad())) {
                         pa.setCantidad(newVal);
                         actualizarTotal();
                         cambiosNoGuardados = true;
                     }
-                    // Asegura que el spinner esté renderizado para hacer el lookup
                     spinner.applyCss();
                     spinner.layout();
                     Node incrementArrow = spinner.lookup(".increment-arrow-button");
                     if (incrementArrow != null) {
-                        // Si el valor actual es igual al stock máximo, deshabilita el botón de incremento
-                        if (newVal.equals(maxStock)) {
-                            incrementArrow.setDisable(true);
-                        } else {
-                            incrementArrow.setDisable(false);
-                        }
+                        // Deshabilita el botón de incremento si se alcanza el máximo.
+                        incrementArrow.setDisable(newVal.equals(maxStock));
                     }
                 });
 
-                // Listener para refrescar la tabla al perder el foco
+                // Listener para confirmar la edición cuando el spinner pierde el foco.
                 spinner.focusedProperty().addListener((obs, wasFocused, isFocused) -> {
                     if (!isFocused) {
                         commitEdit(spinner.getValue());
@@ -438,25 +475,36 @@ public class ControladorPedidosDetalle implements Initializable {
                     }
                 });
 
-                // Listener para manejo de edición manual (teclado)
+                // Listener para el editor del spinner, con control de recursión.
                 spinner.getEditor().textProperty().addListener((obs, oldText, newText) -> {
+                    if (actualizando) {
+                        return;
+                    }
                     try {
                         int value = Integer.parseInt(newText);
                         if (value < 1) {
-                            spinner.getValueFactory().setValue(1);
+                            value = 1;
                         } else if (value > maxStock) {
-                            spinner.getValueFactory().setValue(maxStock);
-                        } else {
+                            value = maxStock;
+                        }
+                        if (!valueEquals(spinner.getValueFactory().getValue(), value)) {
+                            actualizando = true;
                             spinner.getValueFactory().setValue(value);
+                            actualizando = false;
                         }
                     } catch (NumberFormatException e) {
+                        actualizando = true;
                         spinner.getEditor().setText(oldText);
+                        actualizando = false;
                     }
                 });
 
                 setGraphic(spinner);
             }
 
+            private boolean valueEquals(Integer a, int b) {
+                return a != null && a == b;
+            }
         });
 
         // Precio (Subtotal)
@@ -545,39 +593,51 @@ public class ControladorPedidosDetalle implements Initializable {
      * muestra en la tabla de artículos disponibles.
      */
     private void cargarArticulosDisponibles() throws Exception {
-
         Collection<Articulo> articulos = factoriaArticulos.acceso().getAllArticulos();
-        // Filtra solo los artículos que tengan stock mayor que 0
+        // Se obtienen todos los artículos sin filtrar por stock
         articulosDisponibles = FXCollections.observableArrayList(
                 articulos.stream()
-                        .filter(articulo -> articulo.getStock() > 0)
                         .collect(Collectors.toList())
         );
 
         // Ordena los artículos por ID para mayor claridad
         FXCollections.sort(articulosDisponibles, Comparator.comparing(Articulo::getId));
 
-        // Asigna la lista filtrada a la tabla
+        // Asigna la lista a la tabla
         tablaArticulosDisponibles.setItems(articulosDisponibles);
-
     }
 
+    /**
+     * Configura los atajos mnemotécnicos para la interfaz de usuario.
+     * <p>
+     * Este método añade un filtro de eventos al escenario actual para
+     * interceptar las pulsaciones de teclas. Si se detecta que se presiona la
+     * tecla Alt junto con alguna de las teclas definidas, se simula el clic en
+     * el botón correspondiente y se consume el evento para evitar su
+     * propagación.
+     * </p>
+     * <ul>
+     * <li><b>Alt + A</b>: Simula el clic en el botón de "Atrás".</li>
+     * <li><b>Alt + E</b>: Simula el clic en el botón de "Eliminar".</li>
+     * <li><b>Alt + C</b>: Simula el clic en el botón de "Compra".</li>
+     * <li><b>Alt + G</b>: Simula el clic en el botón de "Guardar".</li>
+     * </ul>
+     */
     private void configureMnemotecnicKeys() {
         stage.getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.isAltDown() && event.getCode() == KeyCode.A) {
-                botonAtras.fire();  // Simula el clic en el boton atras
-                event.consume();  // Evita la propagación adicional del evento
+                botonAtras.fire();  // Simula el clic en el botón "Atrás".
+                event.consume();    // Evita la propagación adicional del evento.
             } else if (event.isAltDown() && event.getCode() == KeyCode.E) {
-                botonEliminar.fire();  // Simula el clic en el boton eliminar
-                event.consume();  // Evita la propagación adicional del evento
+                botonEliminar.fire();  // Simula el clic en el botón "Eliminar".
+                event.consume();       // Evita la propagación adicional del evento.
             } else if (event.isAltDown() && event.getCode() == KeyCode.C) {
-                botonCompra.fire();  // Simula el clic en el boton eliminar
-                event.consume();  // Evita la propagación adicional del evento
+                botonCompra.fire();    // Simula el clic en el botón "Compra".
+                event.consume();       // Evita la propagación adicional del evento.
             } else if (event.isAltDown() && event.getCode() == KeyCode.G) {
-                botonGuardar.fire();  // Simula el clic en el boton guardar
-                event.consume();  // Evita la propagación adicional del evento
+                botonGuardar.fire();   // Simula el clic en el botón "Guardar".
+                event.consume();       // Evita la propagación adicional del evento.
             }
-
         });
     }
 
@@ -793,10 +853,33 @@ public class ControladorPedidosDetalle implements Initializable {
         updateBotonCompraState();
     }
 
+    /**
+     * Actualiza el estado del botón de compra en función del artículo
+     * seleccionado y la cantidad ya pedida.
+     * <p>
+     * Este método realiza las siguientes acciones:
+     * <ol>
+     * <li>Obtiene el artículo seleccionado de la tabla de artículos
+     * disponibles.</li>
+     * <li>Si se ha seleccionado un artículo, busca en la lista
+     * {@code articulosDelPedido} el {@code PedidoArticulo} correspondiente,
+     * comparando el identificador del artículo.</li>
+     * <li>
+     * Si se encuentra un {@code PedidoArticulo} y la cantidad solicitada es
+     * mayor o igual que el stock disponible del artículo, deshabilita el botón
+     * de compra. En caso contrario, lo habilita.
+     * </li>
+     * <li>
+     * Si no hay ningún artículo seleccionado, se habilita el botón de compra
+     * por defecto.
+     * </li>
+     * </ol>
+     * </p>
+     */
     private void updateBotonCompraState() {
         Articulo seleccionado = tablaArticulosDisponibles.getSelectionModel().getSelectedItem();
         if (seleccionado != null) {
-            // Busca el PedidoArticulo correspondiente en el pedido actual
+            // Busca el PedidoArticulo correspondiente en el pedido actual.
             PedidoArticulo pa = articulosDelPedido.stream()
                     .filter(p -> p.getArticuloId().equals(seleccionado.getId()))
                     .findFirst()
@@ -837,11 +920,49 @@ public class ControladorPedidosDetalle implements Initializable {
         cambiosNoGuardados = true;
     }
 
+    /**
+     * Maneja el evento de guardar cambios en el pedido.
+     * <p>
+     * Este método realiza las siguientes acciones:
+     * <ol>
+     * <li>Registra en el log que se ha presionado el botón "Guardar
+     * Cambios".</li>
+     * <li>Actualiza el total del pedido a partir del valor obtenido del
+     * campoTotal, eliminando el sufijo " €" y convirtiendo el valor a un
+     * número.</li>
+     * <li>Actualiza el pedido en la base de datos mediante la factoría de
+     * pedidos.</li>
+     * <li>Itera sobre la lista de artículos del pedido para:
+     * <ul>
+     * <li>
+     * Crear un nuevo {@code PedidoArticulo} si no posee identificador y restar
+     * la cantidad correspondiente del stock del artículo.
+     * </li>
+     * <li>
+     * Actualizar un {@code PedidoArticulo} existente si ha sufrido cambios,
+     * ajustando el stock según la diferencia de cantidades.
+     * </li>
+     * </ul>
+     * </li>
+     * <li>Elimina de la base de datos los {@code PedidoArticulo} que han sido
+     * removidos del pedido y devuelve el stock correspondiente a cada
+     * artículo.</li>
+     * <li>Actualiza la lista original de {@code PedidoArticulo} para reflejar
+     * los cambios guardados, marca que no hay cambios pendientes y reinicia el
+     * estado de la vista.</li>
+     * <li>Registra en el log que los cambios se han guardado exitosamente.</li>
+     * </ol>
+     * En caso de error, se registra la excepción y se delega su manejo a
+     * {@code ExcepcionesUtilidad.centralExcepciones}.
+     * </p>
+     *
+     * @param event el evento de acción que dispara el guardado de cambios.
+     */
     @FXML
     private void handleGuardarCambios(ActionEvent event) {
         LOGGER.info("Botón Guardar Cambios presionado");
         try {
-            // Actualizar el total del pedido
+            // Actualizar el total del pedido.
             NumberFormat nf = NumberFormat.getInstance(Locale.getDefault());
             String valor = campoTotal.getText().replace(" €", "");
             Number number = nf.parse(valor);
@@ -849,7 +970,7 @@ public class ControladorPedidosDetalle implements Initializable {
             pedido.setTotal(total);
             factoriaPedidos.acceso().actualizarPedido(pedido);
 
-            // Actualizar stock y pedido-artículo en la base de datos
+            // Actualizar stock y pedido-artículo en la base de datos.
             for (PedidoArticulo pedidoArticulo : articulosDelPedido) {
                 Articulo articulo = buscarArticuloPorId(pedidoArticulo.getArticuloId());
                 PedidoArticulo pedidoArticuloOriginal = articulosDelPedidoOriginales.stream()
@@ -858,22 +979,22 @@ public class ControladorPedidosDetalle implements Initializable {
                         .orElse(null);
 
                 if (pedidoArticulo.getId() == null) {
-                    // Nuevo PedidoArticulo: crear y restar stock
+                    // Nuevo PedidoArticulo: crear y restar stock.
                     LOGGER.info("Creando nuevo PedidoArticulo (ArticuloID=" + pedidoArticulo.getArticuloId() + ")");
                     factoriaPedidoArticulo.acceso().crearPedidoArticulo(pedidoArticulo);
                     actualizarStock(articulo, -pedidoArticulo.getCantidad());
                 } else if (pedidoArticuloOriginal != null && haCambiado(pedidoArticuloOriginal, pedidoArticulo)) {
-                    // Actualizar PedidoArticulo existente
+                    // Actualizar PedidoArticulo existente.
                     LOGGER.info("Actualizando PedidoArticulo con ID=" + pedidoArticulo.getId());
                     factoriaPedidoArticulo.acceso().actualizarPedidoArticulo(pedidoArticulo);
 
-                    // Ajustar stock según la diferencia de cantidades
+                    // Ajustar stock según la diferencia de cantidades.
                     int diferenciaCantidad = pedidoArticulo.getCantidad() - pedidoArticuloOriginal.getCantidad();
                     actualizarStock(articulo, -diferenciaCantidad);
                 }
             }
 
-            // Eliminar PedidoArticulo y devolver stock
+            // Eliminar PedidoArticulo y devolver stock.
             for (PedidoArticulo pedidoArticuloOriginal : articulosDelPedidoOriginales) {
                 if (!articulosDelPedido.contains(pedidoArticuloOriginal)) {
                     LOGGER.info("Borrando PedidoArticulo con ID=" + pedidoArticuloOriginal.getId());
@@ -883,7 +1004,7 @@ public class ControladorPedidosDetalle implements Initializable {
                 }
             }
 
-            // Actualizar la lista original y marcar como guardados
+            // Actualizar la lista original y marcar como guardados.
             articulosDelPedidoOriginales.setAll(articulosDelPedido);
             cambiosNoGuardados = false;
             reiniciar();
@@ -892,7 +1013,6 @@ public class ControladorPedidosDetalle implements Initializable {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al guardar cambios", e);
             ExcepcionesUtilidad.centralExcepciones(e, e.getMessage());
-
         }
     }
 
@@ -1055,9 +1175,18 @@ public class ControladorPedidosDetalle implements Initializable {
                 .orElse(null);
     }
 
+    /**
+     * Muestra la ayuda para la sección de detalles de pedidos.
+     * <p>
+     * Este método utiliza la factoría de usuarios para cargar la ayuda asociada
+     * al identificador "pedidosDetalle". Esto permite al usuario acceder a la
+     * documentación o guía de uso relacionada con la vista de detalle de
+     * pedidos.
+     * </p>
+     */
     private void mostrarAyuda() {
         factoriaUsuarios.cargarAyuda("pedidosDetalle");
     }
-    // </editor-fold>
 
+    // </editor-fold>
 }

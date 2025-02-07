@@ -1,169 +1,157 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manual de Usuario - Búsqueda de Artículos</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.8;
-            margin: 20px;
-            background-color: #ffffff;
-            color: #333;
-        }
-        header {
-            background: #007bff;
-            color: white;
-            padding: 20px 0;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        header h1 {
-            color: #ffffff;
-        }
-        section {
-            margin-bottom: 30px;
-        }
-        h2 {
-            color: #007bff;
-            font-size: 1.5em;
-            margin-bottom: 10px;
-        }
-        p {
-            font-size: 1.1em;
-        }
-        .image-container {
-            text-align: center;
-            margin: 20px 0;
-        }
-        .image-container img {
-            max-width: 90%;
-            height: auto;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 5px;
-        }
-        .step-instruction {
-            margin: 15px 0;
-            padding: 10px;
-            background-color: #f9f9f9;
-            border-left: 4px solid #007bff;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <h1>Manual de Usuario - Búsqueda de Artículos</h1>
-    </header>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Manual de Usuario - Búsqueda de Artículos</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                line-height: 1.8;
+                margin: 20px;
+                background-color: #ffffff;
+                color: #333;
+            }
+            header {
+                background: #007bff;
+                color: white;
+                padding: 20px 0;
+                text-align: center;
+                margin-bottom: 20px;
+            }
+            header h1 {
+                color: #ffffff;
+            }
+            section {
+                margin-bottom: 30px;
+            }
+            h2 {
+                color: #007bff;
+                font-size: 1.5em;
+                margin-bottom: 10px;
+            }
+            p {
+                font-size: 1.1em;
+            }
+            .image-container {
+                text-align: center;
+                margin: 20px 0;
+            }
+            .image-container img {
+                max-width: 90%;
+                height: auto;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                padding: 5px;
+            }
+            .step-instruction {
+                margin: 15px 0;
+                padding: 10px;
+                background-color: #f9f9f9;
+                border-left: 4px solid #007bff;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1>Manual de Usuario - Búsqueda de Artículos</h1>
+        </header>
 
-    <section>
-        <h2>Introducción</h2>
-        <p>El controlador de búsqueda de artículos permite aplicar filtros avanzados para buscar artículos por distintos criterios como ID, nombre, fecha de reposición, precio y stock. Este manual le guiará en el uso de estas funcionalidades.</p>
-    </section>
+        <section>
+            <h2>Introducción</h2>
+            <p>El controlador de búsqueda de artículos permite aplicar filtros avanzados para buscar artículos por distintos criterios como ID, nombre, fecha de reposición, precio y stock. Este manual le guiará en el uso de estas funcionalidades.</p>
+        </section>
 
-    <section>
-        <h2>Filtros de Búsqueda</h2>
-        <div class="step-instruction">
-            <p>Puede aplicar los siguientes filtros para buscar artículos:</p>
-            <ul>
-                <li><strong>ID:</strong> Filtra por un rango de identificadores (desde/hasta).</li>
-                <li><strong>Nombre:</strong> Filtra los artículos por su nombre exacto.</li>
-                <li><strong>Fecha de Reposición:</strong> Filtra los artículos por un rango de fechas.</li>
-                <li><strong>Precio:</strong> Especifique un rango mínimo y máximo.</li>
-                <li><strong>Stock:</strong> Filtra por el valor exacto del stock.</li>
-            </ul>
-        </div>
-        <div class="image-container">
-            <img src="ruta/a/la/imagen1.jpg" alt="Vista de filtros de búsqueda">
-        </div>
-    </section>
+        <section>
+            <h2>Filtros de Búsqueda</h2>
+            <div class="step-instruction">
+                <p>Puede aplicar los siguientes filtros para buscar artículos:</p>
+                <ul>
+                    <li><strong>ID:</strong> Filtra por un rango de identificadores (desde/hasta).</li>
+                    <li><strong>Nombre:</strong> Filtra los artículos por su nombre exacto.</li>
+                    <li><strong>Fecha de Reposición:</strong> Filtra los artículos por un rango de fechas.</li>
+                    <li><strong>Precio:</strong> Especifique un rango mínimo y máximo.</li>
+                    <li><strong>Stock:</strong> Filtra por el valor exacto del stock.</li>
+                </ul>
+            </div>
 
-    <section>
-        <h2>Configuración de Filtros</h2>
-        <div class="step-instruction">
-            <p>Para configurar los filtros:</p>
-            <ul>
-                <li>Marque los CheckBox correspondientes a los filtros que desea aplicar.</li>
-                <li>Complete los campos asociados, como el rango de ID, fechas, precios o nombres.</li>
-                <li>Puede restablecer los filtros en cualquier momento haciendo clic en <strong>"Reiniciar"</strong>.</li>
-            </ul>
-        </div>
-        <div class="image-container">
-            <img src="ruta/a/la/imagen2.jpg" alt="Configuración de filtros">
-        </div>
-    </section>
+        </section>
 
-    <section>
-        <h2>Ejecutar la Búsqueda</h2>
-        <div class="step-instruction">
-            <p>Una vez configurados los filtros:</p>
-            <ul>
-                <li>Haga clic en el botón <strong>"Buscar"</strong> para ejecutar la búsqueda.</li>
-                <li>Espere unos segundos mientras se procesan los resultados.</li>
-                <li>Los resultados se mostrarán en la vista principal.</li>
-            </ul>
-        </div>
-        <div class="image-container">
-            <img src="ruta/a/la/imagen3.jpg" alt="Botón para ejecutar la búsqueda">
-        </div>
-    </section>
+        <section>
+            <h2>Configuración de Filtros</h2>
+            <div class="step-instruction">
+                <p>Para configurar los filtros:</p>
+                <ul>
+                    <li>Marque los CheckBox correspondientes a los filtros que desea aplicar.</li>
+                    <li>Complete los campos asociados, como el rango de ID, fechas, precios o nombres.</li>
+                    <li>Puede restablecer los filtros en cualquier momento haciendo clic en <strong>"Reiniciar"</strong>.</li>
+                </ul>
+            </div>
 
-    <section>
-        <h2>Resultados de la Búsqueda</h2>
-        <div class="step-instruction">
-            <p>Los resultados de la búsqueda se mostrarán en la tabla principal de artículos. Podrá:</p>
-            <ul>
-                <li>Visualizar los detalles básicos de cada artículo.</li>
-                <li>Seleccionar un artículo para ver o editar sus detalles.</li>
-                <li>Realizar nuevas búsquedas si lo necesita.</li>
-            </ul>
-        </div>
-        <div class="image-container">
-            <img src="ruta/a/la/imagen4.jpg" alt="Vista de resultados de búsqueda">
-        </div>
-    </section>
+        </section>
 
-    <section>
-        <h2>Reiniciar Filtros</h2>
-        <div class="step-instruction">
-            <p>Para reiniciar todos los filtros:</p>
-            <ul>
-                <li>Haga clic en el botón <strong>"Reiniciar"</strong>.</li>
-                <li>Todos los campos volverán a sus valores por defecto.</li>
-            </ul>
-        </div>
-        <div class="image-container">
-            <img src="ruta/a/la/imagen5.jpg" alt="Botón para reiniciar filtros">
-        </div>
-    </section>
+        <section>
+            <h2>Ejecutar la Búsqueda</h2>
+            <div class="step-instruction">
+                <p>Una vez configurados los filtros:</p>
+                <ul>
+                    <li>Haga clic en el botón <strong>"Buscar"</strong> para ejecutar la búsqueda.</li>
+                    <li>Espere unos segundos mientras se procesan los resultados.</li>
+                    <li>Los resultados se mostrarán en la vista principal.</li>
+                </ul>
+            </div>
 
-    <section>
-        <h2>Volver a la Pantalla Principal</h2>
-        <div class="step-instruction">
-            <p>Para regresar a la pantalla principal:</p>
-            <ul>
-                <li>Haga clic en el botón <strong>"Atrás"</strong>.</li>
-                <li>Los filtros configurados se guardarán temporalmente para su próxima búsqueda.</li>
-            </ul>
-        </div>
-        <div class="image-container">
-            <img src="ruta/a/la/imagen6.jpg" alt="Volver a la pantalla principal">
-        </div>
-    </section>
+        </section>
 
-    <section>
-        <h2>Ayuda</h2>
-        <div class="step-instruction">
-            <p>Si necesita más información sobre el uso de esta pantalla, puede acceder a la ayuda:</p>
-            <ul>
-                <li>Haga clic en el menú de ayuda y seleccione <strong>"Manual"</strong>.</li>
-            </ul>
-        </div>
-    </section>
+        <section>
+            <h2>Resultados de la Búsqueda</h2>
+            <div class="step-instruction">
+                <p>Los resultados de la búsqueda se mostrarán en la tabla principal de artículos. Podrá:</p>
+                <ul>
+                    <li>Visualizar los detalles básicos de cada artículo.</li>
+                    <li>Seleccionar un artículo para ver o editar sus detalles.</li>
+                    <li>Realizar nuevas búsquedas si lo necesita.</li>
+                </ul>
+            </div>
 
-    <section>
-        <p>Para cualquier problema o duda, contacte con el equipo de soporte técnico.</p>
-    </section>
-</body>
+        </section>
+
+        <section>
+            <h2>Reiniciar Filtros</h2>
+            <div class="step-instruction">
+                <p>Para reiniciar todos los filtros:</p>
+                <ul>
+                    <li>Haga clic en el botón <strong>"Reiniciar"</strong>.</li>
+                    <li>Todos los campos volverán a sus valores por defecto.</li>
+                </ul>
+            </div>
+
+        </section>
+
+        <section>
+            <h2>Volver a la Pantalla Principal</h2>
+            <div class="step-instruction">
+                <p>Para regresar a la pantalla principal:</p>
+                <ul>
+                    <li>Haga clic en el botón <strong>"Atrás"</strong>.</li>
+                    <li>Los filtros configurados se guardarán temporalmente para su próxima búsqueda.</li>
+                </ul>
+            </div>
+
+        </section>
+
+        <section>
+            <h2>Ayuda</h2>
+            <div class="step-instruction">
+                <p>Si necesita más información sobre el uso de esta pantalla, puede acceder a la ayuda:</p>
+                <ul>
+                    <li>Haga clic en el menú de ayuda y seleccione <strong>"Manual"</strong>.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section>
+            <p>Para cualquier problema o duda, contacte con el equipo de soporte técnico.</p>
+        </section>
+    </body>
 </html>

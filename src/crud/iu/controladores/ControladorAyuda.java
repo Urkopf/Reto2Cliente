@@ -30,7 +30,7 @@ import javax.ws.rs.ProcessingException;
  * conexión.
  * </p>
  *
- * @author 2dam
+ * @author Sergio
  */
 public class ControladorAyuda implements Initializable {
 

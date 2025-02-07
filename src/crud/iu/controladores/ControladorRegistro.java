@@ -59,7 +59,7 @@ import javax.ws.rs.ProcessingException;
  * de los elementos de la interfaz.
  * </p>
  *
- * @author Urko, Sergio
+ * @author Urko
  */
 public class ControladorRegistro implements Initializable {
 

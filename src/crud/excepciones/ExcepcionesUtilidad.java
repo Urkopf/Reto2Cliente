@@ -30,7 +30,7 @@ import net.sf.jasperreports.engine.JRException;
  * excepciones de JAX-RS.
  * </p>
  *
- * @author
+ * @author Urko
  */
 public class ExcepcionesUtilidad {
 

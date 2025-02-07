@@ -39,7 +39,7 @@ import javax.ws.rs.ProcessingException;
  * utilizando mecanismos de cifrado.
  * </p>
  *
- * @author 2dam
+ * @author Urko
  */
 public class ControladorCambiarContrasena implements Initializable {
 

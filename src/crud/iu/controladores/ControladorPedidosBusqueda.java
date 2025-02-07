@@ -39,7 +39,7 @@ import javax.ws.rs.ProcessingException;
  * lógica para filtrar pedidos según varios criterios (ID, CIF, dirección,
  * fecha, estado y precio).
  *
- * @author: Urko
+ * @author Urko
  *
  */
 public class ControladorPedidosBusqueda implements Initializable {
@@ -551,6 +551,15 @@ public class ControladorPedidosBusqueda implements Initializable {
         }
     }
 
+    /**
+     * Muestra la ayuda para la sección de detalles de pedidos.
+     * <p>
+     * Este método utiliza la factoría de usuarios para cargar la ayuda asociada
+     * al identificador "pedidosDetalle". Esto permite al usuario acceder a la
+     * documentación o guía de uso relacionada con la vista de busqueda de
+     * pedidos.
+     * </p>
+     */
     private void mostrarAyuda() {
         factoriaUsuarios.cargarAyuda("pedidosBusqueda");
     }
