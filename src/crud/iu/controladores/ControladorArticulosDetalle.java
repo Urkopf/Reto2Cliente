@@ -249,6 +249,7 @@ public class ControladorArticulosDetalle implements Initializable {
      * Inicializa la escena y configura el menú, handlers, etc.
      *
      * @param root Nodo raíz de la vista.
+     * @throws java.lang.Exception
      */
     public void initStage(Parent root) throws Exception {
         try {

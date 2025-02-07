@@ -35,7 +35,6 @@ public class MainTestPedidosPrincipal extends Application {
     /**
      * Inicializa y muestra la pantalla principal de pedidos.
      *
-     * <p>
      * Este método realiza las siguientes acciones:
      * <ul>
      * <li>Obtiene las instancias singleton de {@link FactoriaPedidos} y
@@ -47,7 +46,6 @@ public class MainTestPedidosPrincipal extends Application {
      * parámetros el escenario actual, el trabajador y un valor nulo para el
      * tercer parámetro.</li>
      * </ul>
-     * </p>
      *
      * @param stage El escenario principal (ventana) de la aplicación.
      * @throws Exception Si ocurre algún error durante la inicialización o carga

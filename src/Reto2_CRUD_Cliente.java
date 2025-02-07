@@ -48,7 +48,6 @@ public class Reto2_CRUD_Cliente extends Application {
     /**
      * Inicializa y muestra la interfaz de usuario principal.
      *
-     * <p>
      * Este método realiza las siguientes acciones:
      * <ul>
      * <li>Obtiene las instancias singleton de las fábricas de usuarios, pedidos
@@ -73,7 +72,6 @@ public class Reto2_CRUD_Cliente extends Application {
      * </ul>
      * Nota: Las llamadas para cargar otras vistas (pedidos principales y
      * detalles de pedidos) están comentadas.
-     * </p>
      *
      * @param stage El escenario principal (ventana) de la aplicación.
      * @throws Exception Si ocurre algún error durante la inicialización o carga

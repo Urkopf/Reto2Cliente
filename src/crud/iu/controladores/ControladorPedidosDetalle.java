@@ -204,6 +204,7 @@ public class ControladorPedidosDetalle implements Initializable {
      * Llamar a este método tras configurar el pedido y el usuario.
      *
      * @param root Nodo raíz (parent) de la escena.
+     * @throws java.lang.Exception
      */
     public void initStage(Parent root) throws Exception {
         Scene scene = new Scene(root);

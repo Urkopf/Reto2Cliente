@@ -46,7 +46,6 @@ public class MainTestArticulosPrincipal extends Application {
     /**
      * Inicializa y muestra la interfaz principal de artículos.
      *
-     * <p>
      * Este método realiza las siguientes acciones:
      * <ul>
      * <li>Obtiene la instancia singleton de la factoría de artículos mediante
@@ -58,7 +57,6 @@ public class MainTestArticulosPrincipal extends Application {
      * escenario actual, el objeto trabajador y un valor nulo para el tercer
      * parámetro.</li>
      * </ul>
-     * </p>
      *
      * @param stage El escenario principal (ventana) de la aplicación.
      * @throws Exception Si ocurre algún error durante la inicialización o carga

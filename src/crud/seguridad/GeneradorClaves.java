@@ -35,7 +35,6 @@ public class GeneradorClaves {
     /**
      * Punto de entrada de la aplicación para generar y manejar claves.
      *
-     * <p>
      * Este método ejecuta la generación y almacenamiento de claves asimétricas
      * mediante el método
      * {@link crud.seguridad.UtilidadesCifrado#generarYGuardarClaves()}. Además,
@@ -49,7 +48,7 @@ public class GeneradorClaves {
      * </ul>
      * Para probar estas funcionalidades, basta con descomentar la sección
      * correspondiente.
-     * </p>
+     *
      *
      * @param args Argumentos de la línea de comandos.
      */

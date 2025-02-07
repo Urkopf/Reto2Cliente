@@ -166,6 +166,7 @@ public class ControladorPedidosPrincipal implements Initializable {
      * eventos. Se encarga de cargar datos y configurar la paginación.
      *
      * @param root Nodo raíz de la escena.
+     * @throws java.lang.Exception
      */
     public void initStage(Parent root) throws Exception {
         Scene scene = new Scene(root);
@@ -439,9 +440,8 @@ public class ControladorPedidosPrincipal implements Initializable {
     }
 
     /**
-     * Crea y muestra un informe de pedidos.
-     * <p>
-     * Este método realiza las siguientes acciones:
+     * Crea y muestra un informe de pedidos. Este método realiza las siguientes
+     * acciones:
      * <ol>
      * <li>Compila el reporte Jasper a partir del archivo JRXML ubicado en el
      * classpath.</li>
@@ -456,7 +456,6 @@ public class ControladorPedidosPrincipal implements Initializable {
      * </ol>
      * En caso de error, se registra la excepción y se delega su manejo a
      * {@link ExcepcionesUtilidad#centralExcepciones(Exception, String)}.
-     * </p>
      */
     public void crearInforme() {
         try {

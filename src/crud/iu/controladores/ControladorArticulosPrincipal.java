@@ -279,6 +279,7 @@ public class ControladorArticulosPrincipal implements Initializable {
      * menús y botones, y finalmente muestra la ventana.
      *
      * @param root Nodo raíz (Parent) cargado desde el FXML.
+     * @throws java.lang.Exception
      */
     public void initStage(Parent root) throws Exception {
         Scene scene = new Scene(root);

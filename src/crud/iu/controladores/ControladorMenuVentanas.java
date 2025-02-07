@@ -67,9 +67,7 @@ public abstract class ControladorMenuVentanas {
 
     /**
      * Configura el menú según el contexto de la ventana actual y el tipo de
-     * usuario.
-     * <p>
-     * Se realizan las siguientes configuraciones:
+     * usuario. Se realizan las siguientes configuraciones:
      * <ul>
      * <li>Si el usuario es una instancia de
      * {@link crud.objetosTransferibles.Cliente}, se oculta la opción de
@@ -77,7 +75,6 @@ public abstract class ControladorMenuVentanas {
      * <li>Se deshabilitan las opciones del menú correspondientes a la ventana
      * actualmente activa.</li>
      * </ul>
-     * </p>
      *
      * @param ventanaActual el nombre de la ventana actual (por ejemplo,
      * "Pedidos" o "Artículos")
