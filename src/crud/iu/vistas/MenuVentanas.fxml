@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<MenuBar stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" >
+    <menus>
+        <!-- Menú principal -->
+        <Menu text="Menú">
+            <items>
+                <MenuItem  text="Imprimir informe" fx:id="opcionImprimir"/>
+                <MenuItem fx:id="opcionCerrarSesion" text="Cerrar Sesión" />
+                <MenuItem fx:id="opcionSalir" text="Salir del programa"/>
+                <MenuItem fx:id="opcionVolver" text="Volver al Menú principal" />
+            </items>
+        </Menu>
+
+        <!-- Menú Ir a -->
+        <Menu fx:id="pestanaIr" text="Ir a">
+            <items>
+                <MenuItem fx:id="opcionIrPedidos" text="Vista Pedido" />
+                <MenuItem fx:id="opcionIrArticulos" text="Vista Artículo" />
+            </items>
+        </Menu>
+
+        <!-- Menú Ayuda -->
+        <Menu text="Ayuda">
+            <items>
+                <MenuItem fx:id="opcionAyuda" text="Ver manual" />
+            </items>
+        </Menu>
+    </menus>
+</MenuBar>
+

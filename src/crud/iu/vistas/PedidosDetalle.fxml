@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane fx:id="anchorPane" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="crud.iu.controladores.ControladorPedidosDetalle">
+    <children>
+        <BorderPane fx:id="borderPane" maxHeight="768.0" maxWidth="1024.0" prefWidth="1024">
+            <top>
+
+                <fx:include fx:id="menuBar" source="MenuVentanas.fxml" />
+                
+            </top>
+
+            <bottom>
+            <VBox AnchorPane.bottomAnchor="0.0">
+               <children>
+                      <GridPane fx:id="gridInferior" hgap="10.0" prefWidth="873.0" vgap="10.0">
+                          <!-- Botón Atrás -->
+                          <Button fx:id="botonAtras" text="Atrás" GridPane.columnIndex="0" GridPane.halignment="LEFT" GridPane.hgrow="NEVER">
+                              <GridPane.margin>
+                                  <Insets />
+                              </GridPane.margin>
+                          </Button>
+                          <Button fx:id="botonGuardar" styleClass="btnAmarillo" text="Guardar cambios" GridPane.columnIndex="4">
+                              <GridPane.margin>
+                                  <Insets />
+                              </GridPane.margin>
+                          </Button>
+      
+                          <!-- Configuración de columnas -->
+                          <columnConstraints>
+                              <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" maxWidth="-Infinity" />
+                              <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" />
+                              <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="10.0" />
+                              <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="10.0" />
+                              <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="94.87831722035992" />
+                          </columnConstraints>
+                          <rowConstraints>
+                              <RowConstraints />
+                          </rowConstraints>
+                     <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                     </padding>
+                      </GridPane>
+               </children>
+            </VBox>
+            </bottom>
+         <center>
+            <VBox BorderPane.alignment="CENTER">
+               <children>
+                  <GridPane hgap="20.0" vgap="5.0">
+                    <columnConstraints>
+                      <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="230.0" minWidth="230.0" prefWidth="230.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="400.0" minWidth="400.0" prefWidth="400.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="230.0" minWidth="230.0" prefWidth="230.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="230.0" minWidth="230.0" prefWidth="230.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" percentHeight="0.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <Label text="Id Pedido" />
+                        <Label text="CIF/NIF" GridPane.columnIndex="1" />
+                        <Label text="Fecha pedido" GridPane.columnIndex="3" />
+                        <Label text="Estado" GridPane.columnIndex="4" />
+                        <TextField fx:id="campoId" disable="true" minHeight="38.0" minWidth="100.0" GridPane.rowIndex="1" />
+                        <ComboBox fx:id="campoCif" minHeight="38.0" prefWidth="230.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <ComboBox fx:id="campoEstado" minHeight="38.0" prefWidth="230.0" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+                        <DatePicker fx:id="campoFecha" minHeight="38.0" minWidth="230.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                        <Label text="Dirección" GridPane.columnIndex="2" />
+                        <TextField fx:id="campoDireccion" maxWidth="400.0" minHeight="38.0" minWidth="400.0" prefWidth="400.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                     </children>
+                     <padding>
+                        <Insets left="20.0" right="20.0" top="20.0" />
+                     </padding>
+                  </GridPane>
+                      <HBox>
+                          <children>
+                              <VBox alignment="CENTER_RIGHT">
+                                  <children>
+                                      <HBox>
+                                          <children>
+                                              <Label text="Artículos disponibles:">
+                                       <padding>
+                                          <Insets left="25.0" />
+                                       </padding>
+                                    </Label>
+                                          </children>
+                                      </HBox>
+      
+                                            <TableView fx:id="tablaArticulosDisponibles" maxWidth="520.0" minWidth="520.0" prefWidth="520.0">
+                                          <columns>
+                                              <TableColumn fx:id="columnaId" prefWidth="93.49563491344452" resizable="false" text="ID" />
+                                              <TableColumn fx:id="columnaNombre" prefWidth="166.12178802490234" resizable="false" text="Nombre" />
+                                              <TableColumn fx:id="columnaPrecio" prefWidth="147.75653076171875" resizable="false" text="Precio" />
+                                          </columns>
+                                      </TableView>
+                                      <Button fx:id="botonCompra" mnemonicParsing="false" styleClass="btnVerde" text="Comprar artículo">
+                                          <VBox.margin>
+                                              <Insets top="20.0" />
+                                          </VBox.margin>
+                                      </Button>
+                                  </children>
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                              </VBox>
+                            <VBox alignment="CENTER_RIGHT">
+                                <children>
+                                    <HBox>
+                                        <children>
+                                            <Label text="Artículos del pedido:">
+                                       <HBox.margin>
+                                          <Insets left="25.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                        </children>
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                                    </HBox>
+                                    <TableView fx:id="tablaArticulosPedidos" prefWidth="740.0">
+                                        <columns>
+                                    <TableColumn fx:id="columnaPedidoArticuloId" prefWidth="93.49563491344452" resizable="false" text="PA_ID" visible="false" />
+                                            <TableColumn fx:id="columnaId2" prefWidth="93.49563491344452" resizable="false" text="ID" />
+                                            <TableColumn fx:id="columnaNombre2" prefWidth="219.5478057861328" resizable="false" text="Nombre" />
+                                            <TableColumn fx:id="columnaUnidades2" prefWidth="114.36529541015625" resizable="false" text="Unidades" />
+                                            <TableColumn fx:id="columnaPrecio2" prefWidth="147.75653076171875" resizable="false" text="Precio" />
+                                        </columns>
+                                 <VBox.margin>
+                                    <Insets left="20.0" />
+                                 </VBox.margin>
+                                    </TableView>
+                                    <Button fx:id="botonEliminar" mnemonicParsing="false" styleClass="btnRojo" text="Eliminar artículo">
+                                        <VBox.margin>
+                                            <Insets top="20.0" />
+                                        </VBox.margin>
+                                    </Button>
+                                </children>
+                            </VBox>
+                          </children>
+                     <VBox.margin>
+                        <Insets left="20.0" right="20.0" top="30.0" />
+                     </VBox.margin>
+                      </HBox>
+                  <HBox alignment="CENTER_RIGHT">
+                     <children>
+                        <Label text="Precio total: " />
+                        <TextField fx:id="campoTotal" alignment="CENTER_RIGHT" disable="true" text="0 €" />
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="20.0" right="20.0" top="20.0" />
+                     </VBox.margin>
+                  </HBox>
+               </children>
+            </VBox>
+         </center>
+        </BorderPane>
+    </children>
+</AnchorPane>

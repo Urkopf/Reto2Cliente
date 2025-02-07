@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane fx:id="signIn" stylesheets="@estilos.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="crud.iu.controladores.ControladorInicioSesion">
+    <children>
+        <BorderPane prefWidth="750.0">
+            <top>
+                <GridPane alignment="CENTER" prefHeight="200.0" prefWidth="750.0" BorderPane.alignment="CENTER">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                    <children>
+                        <HBox alignment="CENTER" prefHeight="184.0" prefWidth="750.0">
+                            <children>
+                                <ImageView fitHeight="165.0" fitWidth="601.0" nodeOrientation="INHERIT" preserveRatio="true" smooth="false">
+                                    <image>
+                                        <Image url="@../../../recursos/fondo_lite_completo.png" />
+                                    </image>
+                                    <effect>
+                                        <DropShadow blurType="GAUSSIAN" />
+                                    </effect>
+                                </ImageView>
+                            </children>
+                            <padding>
+                                <Insets top="50.0" />
+                            </padding>
+                        </HBox>
+                    </children>
+                    <opaqueInsets>
+                        <Insets />
+                    </opaqueInsets>
+                </GridPane>
+            </top>
+            <bottom>
+                <VBox alignment="BOTTOM_CENTER" prefHeight="153.0" prefWidth="750.0" spacing="20.0" BorderPane.alignment="CENTER">
+                    <children>
+                        <!-- Botón de Iniciar Sesión -->
+                        <Button fx:id="botonSalir" contentDisplay="CENTER" graphicTextGap="0.0" text="Salir" />
+                        <HBox alignment="CENTER" prefHeight="74.0" spacing="20.0">
+                            <children>
+                                <Button fx:id="botonRecuperar" contentDisplay="CENTER" graphicTextGap="0.0" prefHeight="60.0" prefWidth="120.0" text="Recuperar Contraseña" textAlignment="CENTER" wrapText="true" />
+                                <Button fx:id="botonActualizar" contentDisplay="CENTER" graphicTextGap="0.0" onAction="#handleButtonLoginButton" prefHeight="60.0" prefWidth="120.0" text="Actualizar datos" textAlignment="CENTER" wrapText="true" />
+                            </children>
+                        </HBox>
+                    </children>
+                    <BorderPane.margin>
+                        <Insets bottom="10.0" />
+                    </BorderPane.margin>
+                </VBox>
+            </bottom>
+            <right>
+                <GridPane fx:id="gridPane" alignment="CENTER" hgap="10" prefHeight="278.0" prefWidth="750.0" vgap="20.0" BorderPane.alignment="CENTER">
+                    <!-- Definición de columnas para mejor alineación -->
+                    <columnConstraints>
+                        <ColumnConstraints />
+                        <ColumnConstraints halignment="CENTER" />
+                        <ColumnConstraints halignment="CENTER" />
+                        <ColumnConstraints halignment="CENTER" prefWidth="500.0" />
+                        <ColumnConstraints />
+                    </columnConstraints>
+                    <HBox alignment="CENTER" GridPane.columnIndex="3">
+                        <GridPane.margin>
+                            <Insets top="50.0" />
+                        </GridPane.margin>
+                        <children>
+
+                            <!-- Título -->
+                            <Label fx:id="label" alignment="CENTER" contentDisplay="CENTER" styleClass="titulo" text="Iniciar Sesión" />
+                        </children>
+                    </HBox>
+                    <HBox alignment="CENTER" fillHeight="false" minHeight="40.0" prefHeight="40.0" spacing="10.0" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="1">
+                        <children>
+
+                            <!-- Campo de Login con Imagen -->
+                            <ImageView fitHeight="40.0" fitWidth="40.0">
+                                <image>
+                                    <Image url="@../../../recursos/iconos/usuario2.png" />
+                                </image>
+                            </ImageView>
+                            <TextField fx:id="campoEmail" prefHeight="40.0" prefWidth="374.0" promptText="Introduce tu correo electrónico">
+                                <tooltip>
+                                    <Tooltip anchorLocation="CONTENT_BOTTOM_LEFT" text="Ingrese su correo electronico para iniciar la sesión." />
+                                </tooltip>
+                            </TextField>
+                          <!-- Errores visuales -->
+                          <ImageView fx:id="errorEmail" fitHeight="28.0" fitWidth="28.0" visible="false">
+                              <image>
+                                  <Image url="@../../../recursos/iconos/error.png" />
+                              </image>
+                          </ImageView>
+                        </children>
+                    </HBox>
+                    <HBox alignment="CENTER" fillHeight="false" minHeight="40.0" prefHeight="40.0" spacing="10.0" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="2">
+                        <children>
+                            <!-- Campo de Contraseña con Imagen -->
+                            <ImageView fitHeight="40.0" fitWidth="40.0">
+                                <image>
+                                    <Image url="@../../../recursos/iconos/contraseña.png" />
+                                </image>
+                            </ImageView>
+                            <Group>
+                                <children>
+                                    <TextField fx:id="campoContrasenaVisible" maxHeight="40.0" minHeight="40.0" prefHeight="40.0" prefWidth="374.0" promptText="Introduce tu contraseña" visible="false">
+
+                                    </TextField>
+                                    <PasswordField fx:id="campoContrasena" maxHeight="40.0" maxWidth="374.0" minHeight="40.0" minWidth="374.0" prefHeight="40.0" prefWidth="374.0" promptText="Introduce tu contraseña">
+                                        <tooltip>
+                                            <Tooltip anchorLocation="CONTENT_BOTTOM_LEFT" text="Introduce tu contraseña." />
+                                        </tooltip>
+                                    </PasswordField>
+                                <!-- Botón con imagen del ojo -->
+                                <Button fx:id="botonOjo" layoutX="340.0" layoutY="8.0" style="-fx-background-color: transparent;" styleClass="mostrarPass">
+                              <graphic>
+                                 <ImageView fitHeight="25" fitWidth="25" pickOnBounds="true" preserveRatio="true" styleClass="mostrarPassImage">
+                                    <image>
+                                       <Image fx:id="imagePassConfirm" url="@../../../recursos/iconos/visualizar.png" />
+                                    </image>
+                                 </ImageView>
+                              </graphic>
+                           </Button>
+                                </children>
+                            </Group>
+      
+                          <ImageView fx:id="errorContrasena" fitHeight="28.0" fitWidth="28.0" visible="false">
+                              <image>
+                                  <Image url="@../../../recursos/iconos/error.png" />
+                              </image>
+                          </ImageView>
+                        </children>
+                    </HBox>
+                    <HBox alignment="CENTER" spacing="20.0" GridPane.columnIndex="3" GridPane.rowIndex="3">
+                        <children>
+                            <Button fx:id="botonRegistrar" maxWidth="Infinity" onAction="#handleButtonRegistro" prefWidth="150.0" text="Registro" />
+                            <!-- Botón de Iniciar Sesión -->
+                            <Button fx:id="botonIniciarSesion" maxWidth="Infinity" onAction="#handleButtonLoginButton" prefWidth="150.0" styleClass="btnAmarillo" text="Iniciar Sesión" />
+                        </children>
+                    </HBox>
+
+                    <!-- Definición de filas para mejor alineación -->
+                    <rowConstraints>
+                        <RowConstraints />
+                        <RowConstraints fillHeight="false" minHeight="40.0" prefHeight="40.0" />
+                        <RowConstraints fillHeight="false" prefHeight="40.0" />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints maxHeight="0.0" minHeight="0.0" prefHeight="0.0" />
+                        <RowConstraints maxHeight="0.0" minHeight="0.0" prefHeight="0.0" />
+                    </rowConstraints>
+                </GridPane>
+            </right>
+        </BorderPane>
+        <ImageView fx:id="botonAyuda" fitHeight="43.0" fitWidth="43.0" layoutX="703.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="643.0" AnchorPane.leftAnchor="703.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="8.0">
+            <image>
+                <Image url="@../../../recursos/iconos/ayuda.png" />
+            </image>
+        </ImageView>
+    </children>
+</AnchorPane>
