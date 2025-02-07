@@ -193,7 +193,8 @@ public class ControladorArticulosBusqueda implements Initializable {
      * Configura la escena principal y muestra la ventana.
      *
      * @param root Nodo raíz de la vista.
-     * @throws java.lang.Exception
+     * @throws java.lang.Exception Cualquier excepcion que se genere fuera del
+     * try lo tratara la factoria
      */
     public void initStage(Parent root) throws Exception {
 

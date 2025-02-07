@@ -166,7 +166,8 @@ public class ControladorPedidosPrincipal implements Initializable {
      * eventos. Se encarga de cargar datos y configurar la paginación.
      *
      * @param root Nodo raíz de la escena.
-     * @throws java.lang.Exception
+     * @throws java.lang.Exception Cualquier excepcion que se genere fuera del
+     * try lo tratara la factoria
      */
     public void initStage(Parent root) throws Exception {
         Scene scene = new Scene(root);
